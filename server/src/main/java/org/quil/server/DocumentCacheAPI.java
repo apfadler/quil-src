@@ -22,7 +22,7 @@ public class DocumentCacheAPI {
 	final Logger logger = LoggerFactory.getLogger(DocumentCacheAPI.class);
  
     @POST
-    @Path("create/{cacheid}")
+    @Path("{cacheid}/create")
     @Produces(MediaType.APPLICATION_JSON)
     public String create(@PathParam("cacheid") String cacheid) {
         try
@@ -38,7 +38,7 @@ public class DocumentCacheAPI {
     }
     
     @POST
-    @Path("createFromCSV/{cacheid}")
+    @Path("{cacheid}/createFromCSV")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public String createFromCSV(@PathParam("cacheid") String cacheid, String data) {
@@ -49,7 +49,7 @@ public class DocumentCacheAPI {
     }
     
     @POST
-    @Path("addFromCSV/{cacheid}")
+    @Path("{cacheid}/addFromCSV")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public String addFromCSV(@PathParam("cacheid") String cacheid, String data) {
@@ -68,8 +68,7 @@ public class DocumentCacheAPI {
         	String[] columns = header.split(";|,");
         	
         	if (lines.length > 1) {
-        		long count = 0;
-        		for (int j=0; j < lines.length; j++) {
+        		for (int j=1; j < lines.length; j++) {
         			String[] values = lines[j].split(";|,");
         			Document doc = new Document();
 					for (int i=0; i < Math.min(values.length,columns.length); i++)
@@ -90,21 +89,21 @@ public class DocumentCacheAPI {
     }
     
     @POST
-    @Path("createFromJSONObject/{cacheid}")
+    @Path("{cacheid}/createFromJSONObject")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public String createFromJSONObject(@PathParam("cacheid") String cacheid, String data) {
     	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
     	cache.removeAll();
     	
-    	return addFromJSONObject(cacheid, data);
+    	return addJSONObject(cacheid, data);
     }
     
     @POST
-    @Path("addFromJSONObject/{cacheid}")
+    @Path("{cacheid}/addJSONObject")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public String addFromJSONObject(@PathParam("cacheid") String cacheid, String data) {
+    public String addJSONObject(@PathParam("cacheid") String cacheid, String data) {
     	try
         {
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
@@ -119,21 +118,61 @@ public class DocumentCacheAPI {
     }
     
     @POST
-    @Path("createFromJSONArray/{cacheid}")
+    @Path("{cacheid}/put/{key}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String put(@PathParam("cacheid") String cacheid, @PathParam("key") String key, String data) {
+    	try
+        {
+        	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
+        	cache.put(key, new Document(data));
+        }
+        catch (Exception e)
+        {
+        	return error(e.toString());
+        }
+        
+        return success();
+    }
+    
+    @GET
+    @Path("{cacheid}/get/{key}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String get(@PathParam("cacheid") String cacheid, @PathParam("key") String key) {
+    	try
+        {
+        	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
+        	
+            Document doc = cache.get(key);
+            if (doc != null) {
+            	return doc.toString();
+            } else {
+            	return empty();
+            }
+        	
+        }
+        catch (Exception e)
+        {
+        	return error(e.toString());
+        }
+    }
+    
+    @POST
+    @Path("{cacheid}/createFromJSONArray")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public String createFromJSONArray(@PathParam("cacheid") String cacheid, String data) {
     	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
     	cache.removeAll();
     	
-    	return addFromJSONArray(cacheid, data);
+    	return addJSONArray(cacheid, data);
     }
     
     @POST
-    @Path("addFromJSONArray/{cacheid}")
+    @Path("{cacheid}/addJSONArray")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public String addFromJSONArray(@PathParam("cacheid") String cacheid, String data) {
+    public String addJSONArray(@PathParam("cacheid") String cacheid, String data) {
     	try
         {
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
@@ -154,6 +193,23 @@ public class DocumentCacheAPI {
         return success();
     }
     
+    @POST
+    @Path("{cacheid}/removeAll")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String removeAll(@PathParam("cacheid") String cacheid) {
+    	
+    	try {
+    		DocumentCache cache = DocumentCache.getOrCreate(cacheid);
+    		cache.removeAll();
+    	}
+    	catch (Exception e)
+    	{
+    		return error(e.getMessage());
+    	}
+    	
+    	return success();
+    }
+    
     private String success() {
     	return "{ Status : \"SUCCESS\" }";
     }
@@ -162,7 +218,7 @@ public class DocumentCacheAPI {
     	return "{ Status : \"ERROR\", Msg : \""+msg+"\" }";
     }
     
-    private String error() {
-    	return "{ Status : \"ERROR\", Msg : \"Undefined.\" }";
+    private String empty() {
+    	return "{  }";
     }
 }

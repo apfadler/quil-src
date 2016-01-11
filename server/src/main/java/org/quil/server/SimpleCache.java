@@ -1,6 +1,7 @@
 package org.quil.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ignite.Ignite;
@@ -15,19 +16,23 @@ import org.apache.ignite.lang.IgniteBiPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DocumentCache extends Cache {
+public class SimpleCache extends Cache {
 	
-	static final Logger logger = LoggerFactory.getLogger(DocumentCache.class);
+	static final Logger logger = LoggerFactory.getLogger(SimpleCache.class);
 	
-	static public DocumentCache getOrCreate(String cacheName)
+	static private HashMap<String, SimpleCache> caches = new HashMap<String, SimpleCache>();
+	
+	private String _cacheName;
+	
+	static public SimpleCache getOrCreate(String cacheName)
 	{
-		if (caches.containsKey(cacheName) ) {
+		if (caches.containsKey(cacheName)) {
 			
 			Cache cache = caches.get(cacheName);
 			
-			if (cache.getClass() == DocumentCache.class)
+			if (cache.getClass() == SimpleCache.class)
 			{
-				return (DocumentCache) caches.get(cacheName);
+				return (SimpleCache) caches.get(cacheName);
 			} 
 			else
 			{
@@ -35,7 +40,7 @@ public class DocumentCache extends Cache {
 			}
 		}
 		else {
-			DocumentCache cache = new DocumentCache(cacheName);
+			SimpleCache cache = new SimpleCache(cacheName);
 			caches.put(cacheName, cache);
 			
 			return cache;
@@ -43,18 +48,18 @@ public class DocumentCache extends Cache {
 		
 	}
 
-	public DocumentCache(String cacheName)
+	public SimpleCache(String cacheName)
 	{
 		logger.debug("Creating cache " + cacheName);
 		
 		_cacheName = cacheName;
 		
-		CacheConfiguration<String, Document> cfg = new CacheConfiguration<String, Document>();
+		CacheConfiguration<String, String> cfg = new CacheConfiguration<String, String>();
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName(_cacheName);
 
-        //cfg.setIndexedTypes(String.class, org.quil.JSON.ComplexElement.class);
+        cfg.setIndexedTypes(String.class, String.class);
    
         Ignite ignite = Ignition.ignite();
         ignite.getOrCreateCache(cfg);
@@ -81,41 +86,42 @@ public class DocumentCache extends Cache {
         return s;
 	}
 	
-	public void put(String key, Document doc)
+	public void put(String key, String value)
 	{
-		CacheConfiguration<String, Document> cfg = new CacheConfiguration<String, Document>();
+		CacheConfiguration<String, String> cfg = new CacheConfiguration<String, String>();
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName(_cacheName);
 
         Ignite ignite = Ignition.ignite();
-        IgniteCache<String, Document>  cache = ignite.getOrCreateCache(cfg);
+        IgniteCache<String, String>  cache = ignite.getOrCreateCache(cfg);
         
-        cache.put(key, doc);
+        cache.put(key, value);
 	}
 	
-	public Document get(String key)
+	public String get(String key)
 	{
 		Ignite ignite = Ignition.ignite();
-        IgniteCache<String, Document>  cache = ignite.cache(_cacheName);
+        IgniteCache<String, String>  cache = ignite.cache(_cacheName);
         
         return cache.get(key);
 	}
 	
-	public  List<Document> filter(IgniteBiPredicate<String, Document> predicate)
+	
+	public  List<javax.cache.Cache.Entry<String, String>> filter(IgniteBiPredicate<String, String> predicate)
 	{
-		ArrayList<Document> res = new ArrayList<Document>();
+		ArrayList<javax.cache.Cache.Entry<String, String>> res = new ArrayList<javax.cache.Cache.Entry<String, String>>();
 				
 		Ignite ignite = Ignition.ignite();
 		
         IgniteCache<String, Document>  cache = ignite.cache(_cacheName);
 
-		QueryCursor<javax.cache.Cache.Entry<String, Document>> cursor = cache.query(new ScanQuery<String, Document>(predicate));
+		QueryCursor<javax.cache.Cache.Entry<String, String>> cursor = cache.query(new ScanQuery<String, String>(predicate));
 
-        for (javax.cache.Cache.Entry<String, Document> e : cursor)
+        for (javax.cache.Cache.Entry<String, String> e : cursor)
         {
         	logger.debug(e.toString());
-        	res.add(e.getValue());
+        	res.add(e);
         }
         
         cursor.close();
