@@ -1,12 +1,15 @@
 package org.quil.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.CacheTypeMetadata;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
@@ -14,6 +17,8 @@ import org.apache.ignite.lang.IgniteBiPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quil.JSON.Document;
+import org.quil.JSON.PrimitiveElement;
+import org.quil.JSON.ComplexElement;
 
 public class DocumentCache extends Cache {
 	
@@ -54,7 +59,7 @@ public class DocumentCache extends Cache {
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName(_cacheName);
 
-        //cfg.setIndexedTypes(String.class, org.quil.JSON.ComplexElement.class);
+        cfg.setIndexedTypes(String.class, org.quil.JSON.ComplexElement.class);
    
         Ignite ignite = Ignition.ignite();
         ignite.getOrCreateCache(cfg);
@@ -91,7 +96,7 @@ public class DocumentCache extends Cache {
         Ignite ignite = Ignition.ignite();
         IgniteCache<String, Document>  cache = ignite.getOrCreateCache(cfg);
         
-        cache.put(key, doc);
+        cache.put(key, (Document)doc);
 	}
 	
 	public Document get(String key)

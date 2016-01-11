@@ -24,7 +24,15 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
  
-        Server jettyServer = new Server(8080);
+        int port = 8080;
+        try {
+        	port = Integer.parseInt(System.getenv("QUIL_PORT"));
+        	logger.info("Using port " + port);
+        } catch (Exception e) {
+        	logger.info("Defaulting to port 8080");
+        }
+        
+        Server jettyServer = new Server(port);
         jettyServer.setHandler(context);
  
         ServletHolder jerseyServletDocumentCacheAPI = context.addServlet(
@@ -49,6 +57,7 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
         
         try {
         	
+        	// TODO Make configurable
         	TcpDiscoverySpi spi = new TcpDiscoverySpi(); 
         	TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
         	ipFinder.setAddresses(Arrays.asList("127.0.0.1", "127.0.0.1:47500..47509"));
@@ -56,6 +65,7 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
         	IgniteConfiguration cfg = new IgniteConfiguration();
         	cfg.setDiscoverySpi(spi);
         	cfg.setClientMode(true);
+        	cfg.setPeerClassLoadingEnabled(true);
         	
         	Ignition.start(cfg);
             jettyServer.start();

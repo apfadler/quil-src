@@ -16,6 +16,7 @@ import org.apache.ignite.lang.IgniteBiPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class SimpleCache extends Cache {
 	
 	static final Logger logger = LoggerFactory.getLogger(SimpleCache.class);
@@ -70,7 +71,7 @@ public class SimpleCache extends Cache {
 	public int size()
 	{
 		Ignite ignite = Ignition.ignite();
-        IgniteCache<String, Document>  cache = ignite.cache(_cacheName);
+        IgniteCache<?, ?>  cache = ignite.cache(_cacheName);
         
         int s;
         try
@@ -114,7 +115,7 @@ public class SimpleCache extends Cache {
 				
 		Ignite ignite = Ignition.ignite();
 		
-        IgniteCache<String, Document>  cache = ignite.cache(_cacheName);
+        IgniteCache<String, String>  cache = ignite.cache(_cacheName);
 
 		QueryCursor<javax.cache.Cache.Entry<String, String>> cursor = cache.query(new ScanQuery<String, String>(predicate));
 
