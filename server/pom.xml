@@ -12,6 +12,21 @@
     <ignite.version>1.4.0</ignite.version>
   </properties>
   
+  <repositories>
+    <repository>
+        <id>scala-tools.org</id>
+        <name>Scala-tools Maven2 Repository</name>
+        <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+</repositories>
+<pluginRepositories>
+	<pluginRepository>
+		<id>scala-tools.org</id>
+		<name>Scala-tools Maven2 Repository</name>
+		<url>http://scala-tools.org/repo-releases</url>
+	</pluginRepository>
+</pluginRepositories>
+ 
   <dependencies>
 	<dependency>
 	  <groupId>junit</groupId>
@@ -79,25 +94,122 @@
 		  <artifactId>json-simple</artifactId>
 		  <version>1.1.1</version>
 	</dependency>
+	<dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>2.11.0</version>
+    </dependency>
+    <dependency>
+	<groupId>org.scala-lang</groupId>
+	<artifactId>scala-parser-combinators</artifactId>
+	<version>2.11.0-M4</version>
+</dependency>
+    
   </dependencies>
   
   <build>
-	  <plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.4.0</version>
-				<executions>
-				  <execution>
-					<goals>
-						<goal>java</goal>
-					</goals>
-				  </execution>
-				</executions>
-				<configuration>
-					<mainClass>org.quil.server.QuilServer</mainClass>
-				</configuration>
-			</plugin>
-	   </plugins>
-   </build>
+	<plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <configuration>
+                <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>net.alchim31.maven</groupId>
+            <artifactId>scala-maven-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+                <recompileMode>incremental</recompileMode>
+                <!-- <args>
+                    <arg>-target:jvm-1.7</arg>
+                </args> -->
+                <javacArgs>
+                    <javacArg>-source</javacArg>
+                    <javacArg>1.7</javacArg>
+                    <javacArg>-target</javacArg>
+                    <javacArg>1.7</javacArg>
+                </javacArgs>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>scala-compile</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>scala-test-compile</id>
+                    <phase>process-test-resources</phase>
+                    <goals>
+                        <goal>testCompile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.7</source>
+                <target>1.7</target>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+ 
+    </plugins>
+    <pluginManagement>
+        <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings 
+                only. It has no influence on the Maven build itself. -->
+            <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>
+                                        net.alchim31.maven
+                                    </groupId>
+                                    <artifactId>
+                                        scala-maven-plugin
+                                    </artifactId>
+                                    <versionRange>
+                                        [3.1.6,)
+                                    </versionRange>
+                                    <goals>
+                                        <goal>compile</goal>
+                                        <goal>testCompile</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <ignore></ignore>
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+</build>
 </project>

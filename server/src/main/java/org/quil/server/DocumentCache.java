@@ -2,7 +2,6 @@ package org.quil.server;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -14,6 +13,7 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.quil.JSON.Document;
 
 public class DocumentCache extends Cache {
 	

@@ -7,6 +7,7 @@ import org.apache.ignite.Ignition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class Cache {
 
 	final Logger logger = LoggerFactory.getLogger(Cache.class);

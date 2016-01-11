@@ -15,8 +15,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.quil.JSON.Document;
  
-@Path("/api/documentcache")
+@Path("/")
 public class DocumentCacheAPI {
 
 	final Logger logger = LoggerFactory.getLogger(DocumentCacheAPI.class);
@@ -48,8 +49,8 @@ public class DocumentCacheAPI {
     	return addFromCSV(cacheid, data);
     }
     
-    @POST
-    @Path("{cacheid}/addFromCSV")
+	@POST
+    @Path("/{cacheid}/addFromCSV")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public String addFromCSV(@PathParam("cacheid") String cacheid, String data) {
@@ -58,7 +59,7 @@ public class DocumentCacheAPI {
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
 
         	// TODO Use String Reader or something to improve mem consumption
-        	String[] lines = data.split(";|,");
+        	String[] lines = data.split("\\r?\\n");
         	
         	if (lines.length == 0) {
         		throw new Exception("No data.");
@@ -70,13 +71,14 @@ public class DocumentCacheAPI {
         	if (lines.length > 1) {
         		for (int j=1; j < lines.length; j++) {
         			String[] values = lines[j].split(";|,");
-        			Document doc = new Document();
+        			JSONObject obj = new JSONObject();
 					for (int i=0; i < Math.min(values.length,columns.length); i++)
 					{
-						doc.put(columns[i],values[i]);
+						obj.put(columns[i],values[i]);
 					}
 					
-					cache.put(cacheid+"_" + UUID.randomUUID(), doc);
+					String jsonStr = obj.toJSONString();
+					cache.put(cacheid+"_" + UUID.randomUUID(), (Document)((new org.quil.JSON.Parser()).parse(jsonStr)));
         		}
         	}
         }
@@ -107,7 +109,7 @@ public class DocumentCacheAPI {
     	try
         {
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
-        	cache.put(cacheid+"_" + UUID.randomUUID(), new Document(data));
+        	cache.put(cacheid+"_" + UUID.randomUUID(), (Document)((new org.quil.JSON.Parser()).parse(data)));
         }
         catch (Exception e)
         {
@@ -125,7 +127,7 @@ public class DocumentCacheAPI {
     	try
         {
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
-        	cache.put(key, new Document(data));
+        	cache.put(key, (Document)((new org.quil.JSON.Parser()).parse(data)));
         }
         catch (Exception e)
         {
@@ -181,7 +183,8 @@ public class DocumentCacheAPI {
         	JSONArray jsonArray = (JSONArray) parser.parse(data);
         	
         	for (Object obj : jsonArray ) {
-        		cache.put(cacheid+"_" + UUID.randomUUID(), new Document(((JSONObject)obj).toJSONString()));
+        		cache.put(cacheid+"_" + UUID.randomUUID(),
+        				(Document)((new org.quil.JSON.Parser()).parse(((JSONObject)obj).toJSONString())));
         	}
         		
         }

@@ -27,15 +27,26 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
         Server jettyServer = new Server(8080);
         jettyServer.setHandler(context);
  
-        ServletHolder jerseyServlet = context.addServlet(
-             org.glassfish.jersey.servlet.ServletContainer.class, "/*");
-        jerseyServlet.setInitOrder(0);
+        ServletHolder jerseyServletDocumentCacheAPI = context.addServlet(
+             org.glassfish.jersey.servlet.ServletContainer.class, "/api/documentcache/*");
+        
+        jerseyServletDocumentCacheAPI.setInitOrder(0);
  
         // Tells the Jersey Servlet which REST service/class to load.
-        jerseyServlet.setInitParameter(
+        jerseyServletDocumentCacheAPI.setInitParameter(
            "jersey.config.server.provider.classnames",
-           DocumentCacheAPI.class.getCanonicalName());
- 
+           DocumentCacheAPI.class.getCanonicalName() );
+        
+        ServletHolder jerseyServletSimpleCacheAPI = context.addServlet(
+                org.glassfish.jersey.servlet.ServletContainer.class, "/api/simplecache/*");
+           
+        jerseyServletSimpleCacheAPI.setInitOrder(0);
+    
+           // Tells the Jersey Servlet which REST service/class to load.
+        jerseyServletSimpleCacheAPI.setInitParameter(
+              "jersey.config.server.provider.classnames",
+              SimpleCacheAPI.class.getCanonicalName() );
+        
         try {
         	
         	TcpDiscoverySpi spi = new TcpDiscoverySpi(); 

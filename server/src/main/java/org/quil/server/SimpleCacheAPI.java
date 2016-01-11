@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("/api/simplecache")
+@Path("/")
 public class SimpleCacheAPI {
 
 	final Logger logger = LoggerFactory.getLogger(SimpleCacheAPI.class);
@@ -52,7 +52,7 @@ public class SimpleCacheAPI {
         	SimpleCache cache = SimpleCache.getOrCreate(cacheid);
 
         	// TODO Use String Reader or something to improve mem consumption
-        	String[] lines = data.split(";|,");
+        	String[] lines = data.split("\\r?\\n");
         	
         	if (lines.length == 0) {
         		throw new Exception("No data.");
@@ -60,8 +60,10 @@ public class SimpleCacheAPI {
         	
         	if (lines.length > 0) {
         		for (int j=0; j < lines.length; j++) {
+        			
         			String[] values = lines[j].split(";|,");
-					cache.put(values[0], values[1]);
+        			if (values.length > 1)
+        				cache.put(values[0], values[1]);
         		}
         	}
         }
