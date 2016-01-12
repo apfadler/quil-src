@@ -44,6 +44,7 @@ public class Task {
 	public Task(String taskName, String taskXML) {
 		_taskStatus = Status.PENDING;
 		_taskXML = taskXML;
+		_taskName = taskName;
 	}
 	
 	

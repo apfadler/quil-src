@@ -12,8 +12,9 @@ import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 
+import static org.apache.ignite.events.EventType.EVTS_TASK_EXECUTION;
  
- public class QuilServer {
+public class QuilServer {
  
 	static final Logger logger = LoggerFactory.getLogger(QuilServer.class);
  
@@ -55,6 +56,16 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
               "jersey.config.server.provider.classnames",
               SimpleCacheAPI.class.getCanonicalName() );
         
+        ServletHolder jerseyServletTaskAPI = context.addServlet(
+                org.glassfish.jersey.servlet.ServletContainer.class, "/api/compute/*");
+           
+        jerseyServletTaskAPI.setInitOrder(0);
+    
+           // Tells the Jersey Servlet which REST service/class to load.
+        jerseyServletTaskAPI.setInitParameter(
+              "jersey.config.server.provider.classnames",
+              TaskAPI.class.getCanonicalName() );
+        
         try {
         	
         	// TODO Make configurable
@@ -66,6 +77,7 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
         	cfg.setDiscoverySpi(spi);
         	cfg.setClientMode(true);
         	cfg.setPeerClassLoadingEnabled(true);
+        	cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
         	
         	Ignition.start(cfg);
             jettyServer.start();
