@@ -10,6 +10,9 @@
   
   <properties>
     <ignite.version>1.4.0</ignite.version>
+
+    <ignite.home>../../../ignite</ignite.home>
+
   </properties>
   
   <repositories>
@@ -172,7 +175,22 @@
                 </execution>
             </executions>
         </plugin>
- 
+     
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>target/libs</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+      
     </plugins>
     <pluginManagement>
         <plugins>

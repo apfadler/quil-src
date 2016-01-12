@@ -32,8 +32,7 @@ public class TaskRunner {
 	            @Override public boolean apply(TaskEvent evt) {
 	                // Remote filter only accepts tasks whose name being with "good-task" prefix.
 	                logger.info("Received task event [evt=" + evt.name() + ", taskName=" + evt.taskName()+"]");
-	                System.out.println("Received task event [evt=" + evt.name() + ", taskName=" + evt.taskName()+"]");
-	
+
 	                if (evt.name().compareTo("TASK_FINISHED") == 0)
 	                {
 	                	Task.updateStatus(evt.taskName(),Task.Status.FINISHED);
