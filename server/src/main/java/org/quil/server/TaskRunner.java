@@ -28,31 +28,23 @@ public class TaskRunner {
 			
 			Ignite ignite = Ignition.ignite();
 			
-			// This optional local callback is called for each event notification
-	        // that passed remote predicate listener.
-	        IgniteBiPredicate<UUID, TaskEvent> locLsnr = new IgniteBiPredicate<UUID, TaskEvent>() {
-	            @Override public boolean apply(UUID nodeId, TaskEvent evt) {
+	        IgnitePredicate<TaskEvent> locLsnr = new IgnitePredicate<TaskEvent>() {
+	            @Override public boolean apply(TaskEvent evt) {
 	                // Remote filter only accepts tasks whose name being with "good-task" prefix.
 	                logger.info("Received task event [evt=" + evt.name() + ", taskName=" + evt.taskName()+"]");
+	                System.out.println("Received task event [evt=" + evt.name() + ", taskName=" + evt.taskName()+"]");
 	
-	                if (evt.name() == "TASK_FINISHED")
+	                if (evt.name().compareTo("TASK_FINISHED") == 0)
 	                {
-	                	Task.get(evt.taskName()).setStatus(Task.Status.FINISHED);
+	                	Task.updateStatus(evt.taskName(),Task.Status.FINISHED);
 	                }
 	                
 	                return true; // Return true to continue listening.
 	            }
 	        };
 	
-	        // Remote filter which only accepts tasks whose name begins with "good-task" prefix.
-	        IgnitePredicate<TaskEvent> rmtLsnr = new IgnitePredicate<TaskEvent>() {
-	            @Override public boolean apply(TaskEvent evt) {
-	                return true;
-	            }
-	        };
-	
 	        // Register event listeners on all nodes to listen for task events.
-	        ignite.events().remoteListen(locLsnr, rmtLsnr, EVTS_TASK_EXECUTION);
+	        ignite.events().localListen(locLsnr, EVTS_TASK_EXECUTION);
 		
 			initialized = true;
 		}
