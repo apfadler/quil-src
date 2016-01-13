@@ -43,6 +43,7 @@ public class Task implements Serializable {
 		final static int ERROR = 3;
 	}
 	
+	
 	static Task fromString(String taskDescription) {
 		String taskName = UUID.randomUUID().toString();
 		
@@ -57,6 +58,10 @@ public class Task implements Serializable {
         tasks.put(taskName, new Task(taskName, taskDescription));
 		
 		return tasks.get(taskName);
+	}
+	
+	static Task fromJSONObject(JSONObject taskDescription) {
+		return fromString(taskDescription.toJSONString());
 	}
 	
 	public static Task get(String taskName) {

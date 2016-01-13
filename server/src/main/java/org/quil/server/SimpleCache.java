@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.cache.Cache.Entry;
+
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -106,6 +108,19 @@ public class SimpleCache extends Cache {
         IgniteCache<String, String>  cache = ignite.cache(_cacheName);
         
         return cache.get(key);
+	}
+	
+	public HashMap<String, String> all() {
+		Ignite ignite = Ignition.ignite();
+        IgniteCache<String,String> elements = ignite.cache(_cacheName);
+        
+        HashMap<String, String> all = new HashMap<String, String>();
+        
+        for (Entry<String, String> entry : elements) {
+        	all.put(entry.getKey(),entry.getValue());
+        }
+        
+		return all;
 	}
 	
 	

@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Iterator;
+
 import org.json.simple.JSONObject;
 import org.quil.interpreter.Templates.Controller;
+import org.quil.interpreter.Templates.Market;
 import org.quil.interpreter.Templates.Parameters;
 import org.quil.server.SimpleCache;
 import org.quil.server.TaskRunner;
@@ -56,7 +58,7 @@ public class XmlTemplateInterpreter implements Interpreter {
 		JSONObject tradeData = (JSONObject) _data.get("TradeData");
 		if (tradeData != null) {
 			
-			logger.info("Injecting parameters.");
+			logger.info("Injecting trade parameters.");
 			
 			Parameters P = (Parameters) context.getBean("P");
 			for(Iterator iterator = tradeData.keySet().iterator(); iterator.hasNext();) {
@@ -65,6 +67,28 @@ public class XmlTemplateInterpreter implements Interpreter {
 			    
 			    logger.info( key + " = " + (String)tradeData.get(key));
 			}
+		}
+		
+		JSONObject marketData = (JSONObject) _data.get("MarketData");
+		if (tradeData != null) {
+			
+			logger.info("Injecting market parameters.");
+			
+			String base =  (String) marketData.get("Base");
+			Market MD = (Market) context.getBean("MD");
+			
+			MD.setBase(base);
+			
+			JSONObject overrideMarketData = (JSONObject) marketData.get("Additional");
+			if (overrideMarketData != null) {
+				for(Iterator iterator = overrideMarketData.keySet().iterator(); iterator.hasNext();) {
+				    String key = (String) iterator.next();
+				    MD.set(key, (String)overrideMarketData.get(key));
+				    
+				    logger.info( "Market delta: " + key + " = " + (String)overrideMarketData.get(key));
+				}
+			}
+			
 		}
 
 		for (String id : context.getBeanNamesForType(Controller.class))
