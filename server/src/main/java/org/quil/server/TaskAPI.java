@@ -27,7 +27,7 @@ public class TaskAPI {
     public String submit(String taskDescriptorXML) {
         try
         {
-        	Task task = Task.fromXML(taskDescriptorXML);
+        	Task task = Task.fromString(taskDescriptorXML);
         	TaskRunner.runTask(task);
         }
         catch (Exception e)

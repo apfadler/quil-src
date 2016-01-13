@@ -28,7 +28,7 @@ public class Task implements Serializable {
 	protected String _taskName = "";
 	
 	@QuerySqlField
-	protected String _taskXML = "";
+	protected String _taskDescription = "";
 	
 	@QuerySqlField
 	protected String _taskResult = "";
@@ -43,7 +43,7 @@ public class Task implements Serializable {
 		final static int ERROR = 3;
 	}
 	
-	static Task fromXML(String taskXML) {
+	static Task fromString(String taskDescription) {
 		String taskName = UUID.randomUUID().toString();
 		
 		Ignite ignite = Ignition.ignite();
@@ -54,7 +54,7 @@ public class Task implements Serializable {
         cfg.setIndexedTypes(String.class, Task.class);
         
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);       
-        tasks.put(taskName, new Task(taskName, taskXML));
+        tasks.put(taskName, new Task(taskName, taskDescription));
 		
 		return tasks.get(taskName);
 	}
@@ -76,6 +76,14 @@ public class Task implements Serializable {
         tasks.put(taskName, task);
 	}
 	
+	public static void updateResult(String taskName, String result) {
+		Ignite ignite = Ignition.ignite();
+        IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
+        Task task = tasks.get(taskName); 
+        task.setResult(result);
+        tasks.put(taskName, task);
+	}
+	
 	public static HashMap<String, Task> allTasks() {
 		Ignite ignite = Ignition.ignite();
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
@@ -91,7 +99,7 @@ public class Task implements Serializable {
 	
 	public Task(String taskName, String taskXML) {
 		_taskStatus = Status.PENDING;
-		_taskXML = taskXML;
+		_taskDescription = taskXML;
 		_taskName = taskName;
 	}
 	
@@ -100,8 +108,12 @@ public class Task implements Serializable {
 		_taskStatus = status;
 	}
 	
-	public String getXML() {
-		return _taskXML;
+	public String getDescription() {
+		return _taskDescription;
+	}
+	
+	public void setResult(String result) {
+		 _taskResult = result;
 	}
 	
 	public String getResult() {
@@ -117,13 +129,7 @@ public class Task implements Serializable {
 	}
 	
 	public String toJSONString()  {
-	
-		JSONObject obj = new JSONObject();
-		obj.put("name", _taskName);
-		obj.put("status", _taskStatus);
-		obj.put("result", _taskResult);
-	
-		return obj.toJSONString();
+		return toJSONObj().toJSONString();
 	}
 	
 	public JSONObject toJSONObj()  {

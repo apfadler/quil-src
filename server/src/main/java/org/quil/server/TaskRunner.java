@@ -4,11 +4,17 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.events.TaskEvent;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.lang.IgnitePredicate;
 import org.apache.ignite.lang.IgniteRunnable;
+import org.apache.ignite.resources.LoggerResource;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.json.simple.JSONObject;
+import org.quil.interpreter.Interpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +41,17 @@ public class TaskRunner {
 
 	                if (evt.name().compareTo("TASK_FINISHED") == 0)
 	                {
-	                	Task.updateStatus(evt.taskName(),Task.Status.FINISHED);
+	                	if (Task.get(evt.taskName()).getStatus() != Task.Status.ERROR  ) {
+	                		Task.updateStatus(evt.taskName(),Task.Status.FINISHED);
+	                	}
+	                }
+	                if (evt.name().compareTo("TASK_STARTED") == 0)
+	                {
+	                	Task.updateStatus(evt.taskName(),Task.Status.RUNNING);
+	                }
+	                if (evt.name().compareTo("TASK_FAILED") == 0)
+	                {
+	                	Task.updateStatus(evt.taskName(),Task.Status.ERROR);
 	                }
 	                
 	                return true; // Return true to continue listening.
@@ -49,7 +65,7 @@ public class TaskRunner {
 		}
 	}
 
-	public static void runTask(Task task){
+	public static void runTask(final Task task) throws ParseException {
 		
 		logger.info("Running task " + task.getName());
 		
@@ -57,10 +73,32 @@ public class TaskRunner {
 		
 		Ignite ignite = Ignition.ignite();
 		
+		JSONParser parser = new JSONParser();
+		final JSONObject taskDescription = (JSONObject) parser.parse(task.getDescription());
+
         // Generate task events.
         ignite.compute().withName(task.getName()).run(new IgniteRunnable() {
+        	
+        	@LoggerResource
+            private IgniteLogger log;
+        	
             @Override public void run() {
-                System.out.println("Executing sample job.");
+                logger.info("Executing task " + task.getName());
+                
+                try {
+					
+                	Interpreter interpreter = (Interpreter) Class.forName((String) taskDescription.get("Interpreter")).newInstance();
+					interpreter.setData(taskDescription);
+					interpreter.interpret();
+					Task.updateResult(task.getName(),interpreter.getResult().toJSONString());
+					
+				} catch (Exception e) {
+					
+					e.printStackTrace();
+					logger.info("Interpretation failed.");
+					Task.updateStatus(task.getName(),Task.Status.ERROR);
+				}
+                           
             }
         });
 
