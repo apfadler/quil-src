@@ -25,12 +25,12 @@ public class QuilServer {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
  
-        int port = 8080;
+        int port = 8081;
         try {
         	port = Integer.parseInt(System.getenv("QUIL_PORT"));
         	logger.info("Using port " + port);
         } catch (Exception e) {
-        	logger.info("Defaulting to port 8080");
+        	logger.info("Defaulting to port 8081");
         }
         
         Server jettyServer = new Server(port);

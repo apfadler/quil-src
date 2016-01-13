@@ -22,7 +22,7 @@ public class TaskAPI {
  
     @POST
     @Path("task/submit")
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String submit(String taskDescriptorXML) {
         try
@@ -41,7 +41,7 @@ public class TaskAPI {
     @GET
     @Path("tasks")
     @Produces(MediaType.APPLICATION_JSON)
-    public String tasks(@PathParam("cacheid") String cacheid) {
+    public String tasks() {
         
     	HashMap<String, Task> tasks = Task.allTasks();
     	JSONArray jsonTasks = new JSONArray();
