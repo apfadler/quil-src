@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 
 public interface Interpreter {
 
-	public void interpret();
+	public void interpret() throws Exception;
 	public void setData(JSONObject data);
 	public JSONObject getResult();
 	

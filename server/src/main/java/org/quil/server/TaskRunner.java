@@ -77,7 +77,7 @@ public class TaskRunner {
 		final JSONObject taskDescription = (JSONObject) parser.parse(task.getDescription());
 
         // Generate task events.
-        ignite.compute().withName(task.getName()).run(new IgniteRunnable() {
+        ignite.compute().withName(task.getName()).withAsync().run(new IgniteRunnable() {
         	
         	@LoggerResource
             private IgniteLogger log;
