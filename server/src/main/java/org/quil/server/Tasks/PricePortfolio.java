@@ -15,7 +15,6 @@ import org.json.simple.parser.ParseException;
 import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
 import org.quil.server.DocumentCache;
-import org.quil.server.Task;
 
 public class PricePortfolio extends Task {
 

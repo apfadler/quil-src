@@ -12,6 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.json.simple.JSONArray;
+import org.quil.server.Tasks.Task;
+import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,7 @@ public class TaskAPI {
     	HashMap<String, Task> tasks = Task.allTasks();
     	JSONArray jsonTasks = new JSONArray();
     	for (Map.Entry<String, Task> entry : tasks.entrySet() ) {
-    		jsonTasks.add(entry.getValue());
+    		jsonTasks.add(entry.getValue().toJSONObj());
     	}
     	
         return jsonTasks.toJSONString();

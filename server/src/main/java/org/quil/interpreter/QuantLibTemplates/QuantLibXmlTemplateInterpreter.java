@@ -1,4 +1,4 @@
-package org.quil.interpreter;
+package org.quil.interpreter.QuantLibTemplates;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -6,16 +6,14 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.json.simple.JSONObject;
-import org.quil.interpreter.Templates.Controller;
-import org.quil.interpreter.Templates.Market;
-import org.quil.interpreter.Templates.Parameters;
+import org.quil.interpreter.Interpreter;
 import org.quil.server.SimpleCache;
-import org.quil.server.TaskRunner;
+import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-public class XmlTemplateInterpreter implements Interpreter {
+public class QuantLibXmlTemplateInterpreter implements Interpreter {
 	
 	static {
 		System.loadLibrary("QuantLibJNI");
@@ -26,7 +24,7 @@ public class XmlTemplateInterpreter implements Interpreter {
 	protected JSONObject _data = new JSONObject();
 	protected JSONObject _result = new JSONObject();
 	
-	public XmlTemplateInterpreter() {
+	public QuantLibXmlTemplateInterpreter() {
 	}
 	
 	@Override

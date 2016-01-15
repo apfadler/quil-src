@@ -12,7 +12,6 @@
     <ignite.version>1.4.0</ignite.version>
   </properties>
   
-  
   <dependencies>
    <dependency>
    	 	<groupId>org.apache.ignite</groupId>
@@ -69,4 +68,25 @@
 	<version>0.1-SNAPSHOT</version>
 </dependency>
   </dependencies>
+  <build>
+  <plugins>
+  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+			  <mainClass>org.quil.console.ScalaConsole</mainClass>
+			  <classpathPrefix>libs/</classpathPrefix>
+			  
+            </manifest>
+          </archive>
+          <outputDirectory>../dist/libs</outputDirectory>
+        </configuration>
+        
+      </plugin>
+      </plugins>
+      </build>
 </project>

@@ -21,22 +21,6 @@ import org.quil.JSON.Document;
 public class DocumentCacheAPI {
 
 	final Logger logger = LoggerFactory.getLogger(DocumentCacheAPI.class);
- 
-    @POST
-    @Path("{cacheid}/create")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String create(@PathParam("cacheid") String cacheid) {
-        try
-        {
-        	DocumentCache.getOrCreate(cacheid);
-        }
-        catch (Exception e)
-        {
-        	return error(e.toString());
-        }
-        
-        return success();
-    }
     
     @POST
     @Path("{cacheid}/createFromCSV")

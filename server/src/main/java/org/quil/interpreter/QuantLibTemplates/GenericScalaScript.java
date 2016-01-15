@@ -1,4 +1,4 @@
-package org.quil.interpreter.Templates;
+package org.quil.interpreter.QuantLibTemplates;
 
 import org.springframework.context.ApplicationContext;
 import org.apache.ignite.Ignite;

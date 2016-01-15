@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.quil.interpreter.Interpreter;
-import org.quil.server.Task;
 
 public class PriceTrade extends Task {
 

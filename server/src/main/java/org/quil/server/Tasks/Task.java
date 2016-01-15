@@ -1,4 +1,4 @@
-package org.quil.server;
+package org.quil.server.Tasks;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -19,8 +19,6 @@ import org.apache.ignite.resources.LoggerResource;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.quil.server.Tasks.PricePortfolio;
-import org.quil.server.Tasks.PriceTrade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +47,7 @@ public abstract class Task implements Serializable {
 	}
 	
 	
-	static Task fromString(String taskDescription) {
+	public static Task fromString(String taskDescription) {
 		String taskName = UUID.randomUUID().toString();
 		
 		Ignite ignite = Ignition.ignite();

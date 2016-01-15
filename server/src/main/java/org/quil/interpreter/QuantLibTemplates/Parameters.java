@@ -1,4 +1,4 @@
-package org.quil.interpreter.Templates;
+package org.quil.interpreter.QuantLibTemplates;
 
 import java.util.HashMap;
 

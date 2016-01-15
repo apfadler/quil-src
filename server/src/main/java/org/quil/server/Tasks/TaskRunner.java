@@ -1,4 +1,4 @@
-package org.quil.server;
+package org.quil.server.Tasks;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteLogger;
