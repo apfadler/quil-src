@@ -199,6 +199,7 @@
 			  <classpathPrefix>libs/</classpathPrefix>
             </manifest>
           </archive>
+          <outputDirectory>../dist/libs</outputDirectory>
         </configuration>
         
       </plugin>
@@ -212,7 +213,7 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>target/libs</outputDirectory>
+                  <outputDirectory>../dist/libs</outputDirectory>
                 </configuration>
               </execution>
             </executions>
