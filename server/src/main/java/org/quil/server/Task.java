@@ -1,6 +1,7 @@
 package org.quil.server;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,10 +17,14 @@ import org.apache.ignite.cache.query.annotations.QuerySqlField;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.resources.LoggerResource;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.quil.server.Tasks.PricePortfolio;
+import org.quil.server.Tasks.PriceTrade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Task implements Serializable {
+public abstract class Task implements Serializable {
 	
 	@LoggerResource
     private IgniteLogger logger;
@@ -52,11 +57,22 @@ public class Task implements Serializable {
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName("Tasks");
-        cfg.setIndexedTypes(String.class, Task.class);
+        cfg.setIndexedTypes(String.class, Task.class, String.class, PriceTrade.class, String.class, PricePortfolio.class);
         
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);       
-        tasks.put(taskName, new Task(taskName, taskDescription));
-		
+        IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
+        
+        try {
+			JSONObject taskObj = (JSONObject) (new JSONParser()).parse(taskDescription);
+			
+			Constructor c =  Class.forName("org.quil.server.Tasks." + (String) taskObj.get("Task")).getConstructor(String.class, String.class);
+			Task task = (Task) c.newInstance(taskName, taskDescription);
+			tasks.put(taskName,task);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
 		return tasks.get(taskName);
 	}
 	
@@ -146,4 +162,6 @@ public class Task implements Serializable {
 	
 		return obj;
 	}
+	
+	abstract public void run() throws Exception;
 }

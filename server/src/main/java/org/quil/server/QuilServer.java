@@ -75,7 +75,21 @@ public class QuilServer {
         	spi.setIpFinder(ipFinder);    	
         	IgniteConfiguration cfg = new IgniteConfiguration();
         	cfg.setDiscoverySpi(spi);
-        	cfg.setClientMode(true);
+        	
+        	boolean clientmode = true;
+            try {
+            	String env = System.getenv("QUIL_SERVER_STANDALONE");
+            	if (env.compareToIgnoreCase("yes") == 0 || env.compareToIgnoreCase("true") == 0 )
+            	{
+            		clientmode = false;
+            	}
+            	
+            } catch (Exception e) {
+            }
+            
+            logger.info("Client mode = " + clientmode);
+            
+        	cfg.setClientMode(clientmode);
         	cfg.setPeerClassLoadingEnabled(true);
         	cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
         	
