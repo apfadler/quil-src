@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Example Template for Vanilla Swap Pricing -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   
+   <bean id="CalTarget" class="org.quantlib.TARGET" lazy-init="true">
+   </bean>
+   
+   <bean id="todaysDate" class="org.quantlib.Date" lazy-init="true">
+		<constructor-arg index="0" type="int" value="23"/>
+		<constructor-arg index="1" type="Month" value="May"/>
+		<constructor-arg index="2" type ="int" value="2006"/>
+   </bean>
+   
+   <bean id="settlementDate" class="org.quantlib.Date" lazy-init="true">
+		<constructor-arg index="0" type="int" value="25"/>
+		<constructor-arg index="1" type="Month" value="May"/>
+		<constructor-arg index="2" type ="int" value="2006"/>
+   </bean>
+   
+   <bean id="fixingDate" class="org.quantlib.Date" lazy-init="true">
+		<constructor-arg index="0" type="int" value="19"/>
+		<constructor-arg index="1" type="Month" value="May"/>
+		<constructor-arg index="2" type ="int" value="2006"/>
+   </bean>
+   
+   <bean id="dayCounter" class="org.quantlib.Actual360" lazy-init="true">
+   </bean>
+   
+   <bean id="period_1D" class="org.quantlib.Period" lazy-init="true">
+	<constructor-arg index="0" value="1"/>
+	<constructor-arg index="1" type="org.quantlib.TimeUnit" value="Days"/>
+   </bean>
+   
+   <bean id="period_1Y" class="org.quantlib.Period" lazy-init="true">
+	<constructor-arg index="0" value="1"/>
+	<constructor-arg index="1" type="org.quantlib.TimeUnit" value="Years"/>
+   </bean>
+   
+   <bean id="QuoteMM_1D" class="org.quantlib.SimpleQuote" lazy-init="true">
+		<constructor-arg index="0" type="double" value="0.02"/>
+   </bean>
+   
+   <bean id="QuoteMM_1D_H" class="org.quantlib.QuoteHandle" lazy-init="true">
+		<constructor-arg index="0"  ref="QuoteMM_1D"/>
+   </bean>
+   
+
+   
+   <bean id="RateHelperMM_1D" class="org.quantlib.DepositRateHelper" lazy-init="true">
+		<constructor-arg index="0" type="org.quantlib.QuoteHandle" ref="QuoteMM_1D_H"/>
+		<constructor-arg index="1" type="org.quantlib.Period" ref="period_1D"/>
+		<constructor-arg index="2" type="long" value="1"/>
+		<constructor-arg index="3" type="org.quantlib.Calendar" ref="CalTarget"/>
+		<constructor-arg index="4" type="org.quantlib.BusinessDayConvention" value="ModifiedFollowing"/>
+		<constructor-arg index="5" type="boolean" value="true"/>
+		<constructor-arg index="6" type="org.quantlib.DayCounter" ref="dayCounter"/>
+   </bean>
+   
+   <bean id="QuoteSwap_1Y" class="org.quantlib.SimpleQuote" lazy-init="true">
+		<constructor-arg index="0" type="double" value="#{MD.get('EUR_Swap_1Y')}"/>
+   </bean>
+   
+       <bean id="QuoteSwap_1Y_H" class="org.quantlib.QuoteHandle" lazy-init="true">
+		<constructor-arg index="0"  ref="QuoteSwap_1Y"/>
+   </bean>
+        
+	<bean id="euribor6m_swap" class="org.quantlib.Euribor6M" lazy-init="true">
+
+   </bean>
+   
+   <bean id="RateHelperSwap_1Y" class="org.quantlib.SwapRateHelper" lazy-init="true">
+		<constructor-arg index="0" type="org.quantlib.QuoteHandle" ref="QuoteSwap_1Y_H"/>
+		<constructor-arg index="1" type="org.quantlib.Period" ref="period_1Y"/>
+		<constructor-arg index="2" type="org.quantlib.Calendar" ref="CalTarget"/>
+		<constructor-arg index="3" type="org.quantlib.Frequency" value="Annual"/>
+		<constructor-arg index="4" type="org.quantlib.BusinessDayConvention" value="Unadjusted"/>
+		<constructor-arg index="5" type="org.quantlib.DayCounter" ref="dayCounter"/>
+		<constructor-arg index="6" type="org.quantlib.IborIndex" ref="euribor6m_swap"/>
+   </bean>
+   
+	<bean id="rateHelpers" class="org.quil.interpreter.QuantLibTemplates.RateHelperVectorWrapper" lazy-init="true">
+		<constructor-arg index="0" type="org.quantlib.RateHelper[]">
+
+          <list>
+            <ref bean="RateHelperSwap_1Y"/>
+         </list>
+
+          </constructor-arg>
+
+	</bean>
+   
+    <bean id="maturityDate" class="org.quantlib.Date" lazy-init="true">
+		<constructor-arg index="0" type="int" value="23"/>
+		<constructor-arg index="1" type="Month" value="August"/>
+		<constructor-arg index="2" type ="int" value="2006"/>
+   </bean>
+        
+    <bean id="quoteHandleVector" class="org.quantlib.QuoteHandleVector" lazy-init="true"/>
+	
+    <bean id="dateVector" class="org.quantlib.DateVector"/>
+   
+   <bean id="piecewiseFlatForward" class="org.quantlib.PiecewiseFlatForward" lazy-init="true">
+		<constructor-arg index="0" ref="settlementDate"/>
+		<constructor-arg index="1" value="#{rateHelpers.get()}"/>
+		<constructor-arg index="2" ref="dayCounter"/>
+		<constructor-arg index="3" ref="quoteHandleVector"/>
+		<constructor-arg index="4" ref="dateVector"/>
+		<constructor-arg index="5" value="0.000000000001"/>
+   </bean>
+   
+   <bean id="termStructure" class="org.quantlib.YieldTermStructureHandle" lazy-init="true">
+		<constructor-arg index="0" ref="piecewiseFlatForward"/>
+   </bean>
+   
+   <bean id="euribor3m" class="org.quantlib.Euribor3M" lazy-init="true">
+		<constructor-arg index="0" ref="termStructure"/>
+   </bean>
+   
+   <bean id="positionType" class="org.quantlib.Position.Type" lazy-init="true">
+		<constructor-arg index="0" value="Long"/>
+   </bean>
+   
+				
+	<bean id="fixedSchedule" class="org.quantlib.Schedule" lazy-init="true">
+		<constructor-arg index="0" type="org.quantlib.Date" ref="settlementDate"/>
+		<constructor-arg index="1" type="org.quantlib.Date" ref="maturityDate"/>
+		<constructor-arg index="2" type="org.quantlib.Period" ref="period_1Y"/>
+		<constructor-arg index="3" type="org.quantlib.Calendar" ref="CalTarget"/>
+		<constructor-arg index="4" type="org.quantlib.BusinessDayConvention" value="Unadjusted"/>
+		<constructor-arg index="5" type="org.quantlib.BusinessDayConvention" value="Unadjusted"/>
+		<constructor-arg index="6" type="org.quantlib.DateGeneration$Rule" value="Forward"/>
+		<constructor-arg index="7"  value="false"/>
+	</bean>
+	
+	<bean id="floatSchedule" class="org.quantlib.Schedule" lazy-init="true">
+		<constructor-arg index="0" type="org.quantlib.Date" ref="settlementDate"/>
+		<constructor-arg index="1" type="org.quantlib.Date" ref="maturityDate"/>
+		<constructor-arg index="2" type="org.quantlib.Period" ref="period_1Y"/>
+		<constructor-arg index="3" type="org.quantlib.Calendar" ref="CalTarget"/>
+		<constructor-arg index="4" type="org.quantlib.BusinessDayConvention" value="Unadjusted"/>
+		<constructor-arg index="5" type="org.quantlib.BusinessDayConvention" value="Unadjusted"/>
+		<constructor-arg index="6" type="org.quantlib.DateGeneration$Rule" value="Forward"/>
+		<constructor-arg index="7"  value="false"/>
+	</bean>
+	
+	<bean id="swap" class="org.quantlib.VanillaSwap" lazy-init="true">
+		<constructor-arg index="0" type="org.quantlib._VanillaSwap$Type" value="Payer"/>
+		<constructor-arg index="1" value="#{P.get('Notional')}"/>
+		<constructor-arg index="2" ref="fixedSchedule"/>
+		<constructor-arg index="3" value="0.02"/>
+		<constructor-arg index="4" ref="dayCounter"/>
+		<constructor-arg index="5" ref="floatSchedule"/>
+		<constructor-arg index="6" ref="euribor3m"/>
+		<constructor-arg index="7" value="0.01"/>
+		<constructor-arg index="8" ref="dayCounter"/>
+		<property name="PricingEngine" ref="pricingEngine"/>
+	</bean>
+   
+   <bean id="pricingEngine" class="org.quantlib.DiscountingSwapEngine" lazy-init="true">
+	<constructor-arg index="0" ref="termStructure"/>
+   </bean>
+   
+   <bean id="P" class="org.quil.interpreter.QuantLibTemplates.Parameters" lazy-init="true">
+		<constructor-arg>  
+		<map>  
+            <entry key="Notional"  value="1234.0"></entry>
+		</map>  
+		</constructor-arg>
+   </bean>
+   
+	<bean id="aScript" class="org.quil.interpreter.QuantLibTemplates.ScriptedController" lazy-init="true">
+		<constructor-arg index="0">
+		<value>
+          <![CDATA[
+
+
+			import org.quantlib.{Array => QArray, _};
+			import org.springframework.context.ApplicationContext;
+	  		import java.util;
+			import org.apache.ignite.Ignite;
+			import org.quil.interpreter.QuantLibTemplates._;
+          
+			class Script extends GenericScalaScript {  
+
+				override def  main(ctx: ApplicationContext, ignite:Ignite)  = { 
+					
+					val settlementDate = new Date(23, Month.May, 2006);
+					Settings.instance().setEvaluationDate(settlementDate);
+
+					val Input = ctx.getBean("P").asInstanceOf[Parameters];
+					System.out.println("Notional = " + Input.get("Notional"));
+					System.out.println("InputObj = " + Input.toString());
+					System.out.println("ContextObj = " + ctx.toString());
+
+					val swap = ctx.getBean("swap").asInstanceOf[VanillaSwap];
+					val Output = ctx.getBean("O").asInstanceOf[Parameters];
+
+					
+					Output.set("PV", swap.NPV().toString());
+					
+				}
+
+			}
+			]]>
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="O" class="org.quil.interpreter.QuantLibTemplates.Parameters" lazy-init="true" />
+	<bean id="MD" class="org.quil.interpreter.QuantLibTemplates.Market" lazy-init="true" />
+
+</beans>

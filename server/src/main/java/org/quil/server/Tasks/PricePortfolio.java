@@ -59,6 +59,10 @@ public class PricePortfolio extends Task {
 					interpreter.setData(subTask);
 					interpreter.interpret();
 					
+					if (interpreter.getError()) {
+						Task.updateStatus(_taskName, Task.Status.ERROR);
+					}
+					
 					return interpreter.getResult();
 				}
 			});

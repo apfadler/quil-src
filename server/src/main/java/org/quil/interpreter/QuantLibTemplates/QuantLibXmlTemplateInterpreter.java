@@ -15,6 +15,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class QuantLibXmlTemplateInterpreter implements Interpreter {
 	
+	private boolean _error = false;
+	
 	static {
 		System.loadLibrary("QuantLibJNI");
 	}
@@ -96,7 +98,12 @@ public class QuantLibXmlTemplateInterpreter implements Interpreter {
 			Parameters p = executor.run();
 			
 			_result = p.toJSONObject();
+			
+			if (executor.getError())
+				_error = true;
 		}
+		
+		
 	}
 
 	@Override
@@ -107,6 +114,12 @@ public class QuantLibXmlTemplateInterpreter implements Interpreter {
 	@Override
 	public JSONObject getResult() {
 		return _result;
+	}
+
+	@Override
+	public boolean getError() {
+		// TODO Auto-generated method stub
+		return _error;
 	}
 
 }

@@ -1,0 +1,17 @@
+{
+	"Interpreter" : "org.quil.interpreter.QuantLibTemplates.QuantLibXmlTemplateInterpreter",
+	"Task"	: "PriceTrade",
+	"Template" : "Trade.Swap",
+	"Repository" : "Templates",
+	"MarketData" : { 
+		"Base" :"ExampleMarket",
+		"Additional" : {
+			"EUR_Swap_1Y" : "0.05"
+		}
+	}
+	"TradeData" : {
+		"ID" : "1",
+		"Notional" : "1000.0",
+		"Cpty" : "A"
+	}
+}

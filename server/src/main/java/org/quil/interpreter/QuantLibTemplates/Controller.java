@@ -13,6 +13,15 @@ public abstract class Controller implements ApplicationContextAware
 	final static Logger logger = LoggerFactory.getLogger(Controller.class);
 
     protected  ApplicationContext _context; 
+    protected boolean _error = false;
+    
+    public boolean getError() {
+    	return _error;
+    }
+    
+    public void setError(boolean error) {
+    	_error = error;
+    }
 
 	public Controller()
 	{

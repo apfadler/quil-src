@@ -30,6 +30,8 @@ public class PriceTrade extends Task {
 
 		Task.updateResult(_taskName,interpreter.getResult().toJSONString());
 
+		if (interpreter.getError())
+			throw new Exception("Error during interpretation in task PriceTrade.");
 	}
 
 }

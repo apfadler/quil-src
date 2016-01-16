@@ -90,6 +90,7 @@ public class ScriptedController extends Controller  {
 
 			Parameters O = new Parameters();
 			O.set("ERROR", e.toString());
+			_error = true;
 			return O;
 			
 		}
