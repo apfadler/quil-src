@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "$QUIL_HOME" ]; then
     echo "Defaulting QUIL_HOME to" `pwd`
