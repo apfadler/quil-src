@@ -1,0 +1,33 @@
+{
+    "name": "quil-webapp",
+    "version": "1.0.0",
+    "authors": [
+        "Andreas Pfadler <andreas.pfadler@gmail.com>"
+    ],
+    "description": "Quil web app",
+    "keywords": [
+        "java",
+        "maven",
+        "angularjs",
+        "seed"
+    ],
+    "license": "Apache 2.0",
+    "homepage": "",
+    "private": true,
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "src/main/webapp/vendor",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "angular": "1.3.0-beta.14",
+        "angular-loader": "1.3.0-beta.14",
+        "angular-mocks": "1.3.0-beta.14",
+        "angular-route": "1.3.0-beta.14",
+        "bootstrap": "3.2.0"
+    },
+    "main": "src/main/webapp/index.html"
+}
