@@ -28,6 +28,7 @@
         <configuration>
           <warSourceDirectory>src/main/webapp</warSourceDirectory>
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+		  <outputDirectory>dist/libs</outputDirectory>
         </configuration>
       </plugin>
       <plugin>

@@ -1,6 +1,8 @@
 package org.quil.server;
 
+
 import java.util.Arrays;
+
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -17,14 +19,16 @@ import static org.apache.ignite.events.EventType.EVTS_TASK_EXECUTION;
 public class QuilServer {
  
 	static final Logger logger = LoggerFactory.getLogger(QuilServer.class);
- 
+	
+	
     public static void main(String[] args) throws Exception {
-	
+    	
+    	
 		logger.info("Starting QuilServer...");
-	
+		
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
- 
+        
         int port = 8081;
         try {
         	port = Integer.parseInt(System.getenv("QUIL_PORT"));
@@ -35,7 +39,7 @@ public class QuilServer {
         
         Server jettyServer = new Server(port);
         jettyServer.setHandler(context);
- 
+       
         ServletHolder jerseyServletDocumentCacheAPI = context.addServlet(
              org.glassfish.jersey.servlet.ServletContainer.class, "/api/documentcache/*");
         
@@ -65,6 +69,22 @@ public class QuilServer {
         jerseyServletTaskAPI.setInitParameter(
               "jersey.config.server.provider.classnames",
               TaskAPI.class.getCanonicalName() );
+        
+        // Tells the Jersey Servlet which REST service/class to load.
+        jerseyServletTaskAPI.setInitParameter(
+              "jersey.config.server.provider.classnames",
+              TaskAPI.class.getCanonicalName() );
+        
+        ServletHolder jerseyServletSSE = context.addServlet(
+                org.glassfish.jersey.servlet.ServletContainer.class, "/log/*");
+        
+        jerseyServletSSE.setInitOrder(0);
+        jerseyServletSSE.setAsyncSupported(true);
+    
+           // Tells the Jersey Servlet which REST service/class to load.
+        jerseyServletSSE.setInitParameter(
+              "jersey.config.server.provider.classnames",
+              LogBroadcaster.class.getCanonicalName() );
         
         try {
         	
