@@ -1,0 +1,15 @@
+{
+	"Interpreter" : "org.quil.interpreter.MoCoTemplates.MoCoXmlTemplateInterpreter",
+	"Task"	: "PriceTrade",
+	"Template" : "MoCo.PlainVanillaSwaption",
+	"Repository" : "Templates",
+	"MarketData" : { 
+		"Repository" :"MoCoMarkets",
+		"Key" : "MarketData.Today"
+	}
+	"TradeData" : {
+		"ID" : "1",
+		"Notional" : "1000.0",
+		"Cpty" : "A"
+	}
+}
