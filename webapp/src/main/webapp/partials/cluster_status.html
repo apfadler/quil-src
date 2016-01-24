@@ -4,34 +4,33 @@
 	</div>
 	<!-- /.col-lg-12 -->
 	
-	<div class="row" >
-		<div class="col-lg-6" ng-repeat="node in clusterNodes">
-		
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					Node ID: {{node.id}}
-				</div>
-				<div class="panel-body">
-					<p>
-						Cores: {{node.nocores}} - Jobs: {{node.activejobs}}
-					</p>
-					<p>
-						Memory: {{node.mem}}
-					</p>
-				   
-					<timer start-time='start' end-time='end'">
-					   <div class="progress progress-striped active">
-						  <div
-								ng-class="{'progress-bar':1, 'progress-bar-success': node.cpu < 30.0 ,
-										   'progress-bar-warning': node.cpu >= 30.0 && node.cpu <= 60.0 ,
-										   'progress-bar-danger': node.cpu >= 60.0 ,
-										   'progress-bar-striped':1, 'active':1}"
-							   role="progressbar " aria-valuemin="0" aria-valuemax="100" style="width:{{node.cpu}}%;min-width: 2em;">  {{node.cpu}}% CPU Load
-						  </div>
-					   </div>
-					</timer>
 
-				</div>
+	<div class="col-lg-6" ng-repeat="node in clusterNodes">
+	
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Node ID: {{node.id}}
+			</div>
+			<div class="panel-body">
+				<p>
+					Cores: {{node.nocores}} - Jobs: {{node.activejobs}}
+				</p>
+				<p>
+					Memory: {{node.mem}}
+				</p>
+			   
+				<timer start-time='start' end-time='end'">
+				   <div class="progress progress-striped active">
+					  <div
+							ng-class="{'progress-bar':1, 'progress-bar-success': node.cpu < 30.0 ,
+									   'progress-bar-warning': node.cpu >= 30.0 && node.cpu <= 60.0 ,
+									   'progress-bar-danger': node.cpu >= 60.0 ,
+									   'progress-bar-striped':1, 'active':1}"
+						   role="progressbar " aria-valuemin="0" aria-valuemax="100" style="width:{{node.cpu}}%;min-width: 2em;">  {{node.cpu}}% CPU Load
+					  </div>
+				   </div>
+				</timer>
+
 			</div>
 		</div>
 	</div>

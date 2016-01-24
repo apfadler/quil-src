@@ -352,3 +352,25 @@ table.dataTable thead .sorting:after {
 .panel-yellow a:hover {
     color: #df8a13;
 }
+
+.tree-browser {
+
+  height: 68vh; 
+  overflow: scroll;
+}
+.file-viewer {
+  padding-left: 50px;
+  overflow: auto;
+}
+
+.ace_editor { height: 68vh; }
+
+
+.jstree-custom-folder{
+  background-image: url('../img/folder.png') !important;
+  background-position: 0 !important;
+}
+.jstree-custom-file {
+  background-image: url('../img/file.png') !important;
+  background-position: 0 !important;
+}
