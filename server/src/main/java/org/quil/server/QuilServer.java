@@ -1,13 +1,14 @@
 package org.quil.server;
 
-
+import java.io.File;
 import java.util.Arrays;
-
-
-
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ignite.Ignition;
@@ -22,7 +23,6 @@ public class QuilServer {
  
 	static final Logger logger = LoggerFactory.getLogger(QuilServer.class);
 	
-	
     public static void main(String[] args) throws Exception {
     	
     	
@@ -36,13 +36,12 @@ public class QuilServer {
         	
         } catch (Exception e) {
         }
-
-
+        
         logger.info("Starting QuilServer...");
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        contexts.setHandlers(new Handler[]{ setupApiContext(), setupWebAppContext()});
+        
         int port = 8081;
         try {
         	port = Integer.parseInt(System.getenv("QUIL_PORT"));
@@ -52,55 +51,8 @@ public class QuilServer {
         }
 
         Server jettyServer = new Server(port);
-        jettyServer.setHandler(context);
-
-        ServletHolder jerseyServletDocumentCacheAPI = context.addServlet(
-        		org.glassfish.jersey.servlet.ServletContainer.class, "/api/documentcache/*");
-
-        jerseyServletDocumentCacheAPI.setInitOrder(0);
-
-        // Tells the Jersey Servlet which REST service/class to load.
-        jerseyServletDocumentCacheAPI.setInitParameter(
-        		"jersey.config.server.provider.classnames",
-        		DocumentCacheAPI.class.getCanonicalName() );
-
-        ServletHolder jerseyServletSimpleCacheAPI = context.addServlet(
-        		org.glassfish.jersey.servlet.ServletContainer.class, "/api/simplecache/*");
-
-        jerseyServletSimpleCacheAPI.setInitOrder(0);
-
-        // Tells the Jersey Servlet which REST service/class to load.
-        jerseyServletSimpleCacheAPI.setInitParameter(
-        		"jersey.config.server.provider.classnames",
-        		SimpleCacheAPI.class.getCanonicalName() );
-
-        ServletHolder jerseyServletTaskAPI = context.addServlet(
-        		org.glassfish.jersey.servlet.ServletContainer.class, "/api/compute/*");
-
-        jerseyServletTaskAPI.setInitOrder(0);
-
-        // Tells the Jersey Servlet which REST service/class to load.
-        jerseyServletTaskAPI.setInitParameter(
-        		"jersey.config.server.provider.classnames",
-        		TaskAPI.class.getCanonicalName() );
-
-        // Tells the Jersey Servlet which REST service/class to load.
-        jerseyServletTaskAPI.setInitParameter(
-        		"jersey.config.server.provider.classnames",
-        		TaskAPI.class.getCanonicalName() );
-
-        ServletHolder jerseyServletSSE = context.addServlet(
-        		org.glassfish.jersey.servlet.ServletContainer.class, "/log/*");
-
-        jerseyServletSSE.setInitOrder(0);
-        jerseyServletSSE.setAsyncSupported(true);
-
-        // Tells the Jersey Servlet which REST service/class to load.
-        jerseyServletSSE.setInitParameter(
-        		"jersey.config.server.provider.classnames",
-        		LogBroadcaster.class.getCanonicalName() );
-
-        
+        jettyServer.setHandler(contexts);
+ 
         try {
         	
         	// TODO Make configurable
@@ -147,5 +99,85 @@ public class QuilServer {
         } finally {
             jettyServer.destroy();
         }
+    }
+    
+    private static WebAppContext setupWebAppContext() {
+
+    	String warPathEnv = "";
+    	warPathEnv = System.getenv("QUIL_WARPATH");
+    	if (warPathEnv == null) {
+    		System.out.println("QUIL_WARPATH is not set.");
+    		System.exit(8);
+    	}
+    	WebAppContext webApp = new WebAppContext();
+    	webApp.setContextPath("/frontend");
+    	File warPath = new File(warPathEnv);
+    	
+    	if (warPath.isDirectory()) {
+    		webApp.setResourceBase(warPath.getPath());
+    		webApp.setParentLoaderPriority(true);
+    	} else {
+    		webApp.setWar(warPath.getAbsolutePath());
+    	}
+    	
+    	webApp.addServlet(new ServletHolder(new DefaultServlet()), "/*");
+
+    	return webApp;
+    }
+    
+    private static ServletContextHandler setupApiContext() {
+
+    	ServletContextHandler apiContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
+    	apiContext.setContextPath("/api");
+    	ServletHolder jerseyServletDocumentCacheAPI = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/documentcache/*");
+    	jerseyServletDocumentCacheAPI.setInitOrder(0);
+
+
+    	jerseyServletDocumentCacheAPI.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			DocumentCacheAPI.class.getCanonicalName() );
+    	ServletHolder jerseyServletSimpleCacheAPI = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/simplecache/*");
+    	jerseyServletSimpleCacheAPI.setInitOrder(0);
+    	jerseyServletSimpleCacheAPI.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			SimpleCacheAPI.class.getCanonicalName() );
+
+    	ServletHolder jerseyServletTaskAPI = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/compute/*");
+    	jerseyServletTaskAPI.setInitOrder(0);
+    	jerseyServletTaskAPI.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			TaskAPI.class.getCanonicalName() );
+    	jerseyServletTaskAPI.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			TaskAPI.class.getCanonicalName() );
+
+    	ServletHolder jerseyServletSSE = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/log/*");
+    	jerseyServletSSE.setInitOrder(0);
+    	jerseyServletSSE.setAsyncSupported(true);
+    	jerseyServletSSE.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			LogBroadcaster.class.getCanonicalName() );
+    	
+    	ServletHolder jerseyServletCluster = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/cluster/*");
+    	jerseyServletCluster.setInitOrder(0);
+    	jerseyServletCluster.setAsyncSupported(true);
+    	jerseyServletCluster.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			ClusterAPI.class.getCanonicalName() );
+    	
+    	ServletHolder jerseyServletRepository = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/repository/*");
+    	jerseyServletRepository.setInitOrder(0);
+    	jerseyServletRepository.setAsyncSupported(true);
+    	jerseyServletRepository.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			RepositoryAPI.class.getCanonicalName() );
+
+    	return apiContext;
     }
 }
