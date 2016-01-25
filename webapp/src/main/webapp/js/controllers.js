@@ -12,14 +12,14 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 
 		$interval( function() {
 						$scope.clusterNodes = ClusterNodes(); 
-				   }, 1000);
+				   }, 100);
 				   
 		$interval( function() {
 						$scope.tasks = Tasks(); 
-				   }, 1000);
+				   }, 100);
 		$interval( function() {
 						$scope.dataServices = Caches(); 
-				   }, 1000);
+				   }, 100);
 	}
    
 ]);
@@ -36,11 +36,32 @@ controllers.controller("DataController", ['$scope', function ($scope) {
    
 }]);
 
-controllers.controller("TaskController", ['$scope', '$uibModal',  function ($scope, $uibModal) {
+controllers.controller("TaskController", ['$scope', '$http','$uibModal',  function ($scope, $http, $uibModal) {
 
-	$scope.templateID = ""
+	$scope.templateID = "/Template.Task.json"
+	$scope.taskID = "/Task.PriceSingleTradeMoCo.json"
+	
+	$scope.alerts = [];
 
-	$scope.taskFromFile = function() {
+	$scope.taskFromRepository = function() {
+		 $http.get('/api/repository/files'+$scope.taskID)
+					.success(function(data, status, headers, config) {
+						
+						
+						if ( data.hasOwnProperty("fileData")) {
+						
+							$scope.submitTask(data.fileData);
+						
+						 } else {
+						 
+							$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task submission failed: ' + data.Msg, type : 'danger'});
+							
+						}
+					})
+					.error(function(data, status, headers, config) {
+						 $scope.alerts.push({msg: 'Task submission failed: ' + status , type : 'danger'});
+					});
 	}
 
 	$scope.taskFromTemplate = function() {
@@ -52,7 +73,11 @@ controllers.controller("TaskController", ['$scope', '$uibModal',  function ($sco
 		  resolve: {
 			templateID: function () {
 			  return $scope.templateID;
-			}
+			},
+			
+			http: function() {
+				return $http;
+				}
 			
 		  }
 		});
@@ -66,6 +91,25 @@ controllers.controller("TaskController", ['$scope', '$uibModal',  function ($sco
 	}
 	
 	$scope.taskFromCachedTask = function() {
+	}
+	
+	$scope.submitTask = function(taskDescription) {
+		$http.post('/api/compute/task/submit', taskDescription)
+					.success(function(data, status, headers, config) {
+						console.log(data);
+						
+						 if (data.Status == "SUCCESS") {
+							$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task submitted!', type : 'success'});
+						 } else {
+							$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task submission failed: ' + Status.Msg, type : 'danger'});
+						 }
+					})
+					.error(function(data, status, headers, config) {
+						alert(status);
+						console.log("Failed to get file!");
+					});
 	}
 
 }]);
@@ -377,9 +421,40 @@ controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInst
 });
 
 
-controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalInstance, templateID) {
+controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalInstance, templateID, http) {
 
   $scope.templateID = templateID;
+  
+  $scope.obj = {data: {bla:"bla"}, options: { mode: 'tree' }};
+  
+   $scope.schema = {};
+  
+  http.get('/api/repository/files'+templateID)
+					.success(function(data, status, headers, config) {
+					
+						console.log(data);
+
+						$scope.schema = JSON.parse(data.fileData);
+					})
+					.error(function(data, status, headers, config) {
+						alert(status);
+						console.log("Failed to get file!");
+					});
+  
+ 
+
+  $scope.form = [
+    "*",
+    {
+      
+    }
+  ];
+
+  $scope.model = {};
+
+  $scope.btnClick = function() {
+    $scope.obj.options.mode = 'code'; //should switch you to code view
+  }
  
   $scope.ok = function () {
     $uibModalInstance.close('ok');

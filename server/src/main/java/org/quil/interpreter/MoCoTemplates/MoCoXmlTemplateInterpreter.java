@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -95,10 +96,20 @@ public class MoCoXmlTemplateInterpreter implements Interpreter {
 			Element defaultNode = getDirectChild((Element)nodes.item(i),"Default");
 			Element typeNode = getDirectChild((Element)nodes.item(i),"Type");
 			
-			inputParameter.put(nameNode.getFirstChild().getTextContent(), defaultNode);
+			NodeList defaultNodes = defaultNode.getChildNodes();
+			for (int j=0; j < defaultNodes.getLength(); j++) {
+				logger.info(defaultNodes.item(j).getNodeValue());
+				logger.info(defaultNodes.item(j).getTextContent());
+				if (defaultNodes.item(j).getNodeName().compareTo("Parameter") == 0 || defaultNodes.item(j).getNodeName().compareTo("v") == 0 ) {
+					
+					inputParameter.put(nameNode.getFirstChild().getTextContent(), defaultNodes.item(j));
+				}
+			}
+			
+			
 			inputTypes.put(nameNode.getFirstChild().getTextContent(), typeNode.getFirstChild().getTextContent());
 		
-			logger.info("Found Parameter:" + nameNode.getFirstChild().getTextContent() );
+			logger.info("Found " + typeNode.getFirstChild().getTextContent() + " Parameter:" + nameNode.getFirstChild().getTextContent() );
 		}
 		
 		JSONObject tradeData = (JSONObject) _data.get("TradeData");
@@ -107,59 +118,64 @@ public class MoCoXmlTemplateInterpreter implements Interpreter {
 			nodes = doc.getElementsByTagName("InjectParameter");
 			for (int i = 0; i < nodes.getLength(); i++) {
 	
-				for(Iterator iterator = tradeData.keySet().iterator(); iterator.hasNext();) {
-					String key = (String) iterator.next();
+				for(Map.Entry<String, Node> entry : inputParameter.entrySet()) {
+					String key = (String) entry.getKey();
+					
+					logger.info("Comparing with: " + key );
 					
 					if (key.compareTo(nodes.item(i).getTextContent()) == 0) {
 						logger.info("Found target: " + nodes.item(i).getTextContent() );
+						logger.info("Found type: " + inputTypes.get(nodes.item(i).getTextContent()));
 						
 						if (tradeData.get(key) == null ) {
+						
+							logger.info("Setting value to default: " + inputParameter.get(nodes.item(i).getTextContent()).getTextContent());
 							
-							logger.info("Setting value to default.");
-							nodes.item(i).getParentNode().replaceChild(inputParameter.get(nodes.item(i).getTextContent()), nodes.item(i));
+							nodes.item(i).getParentNode()
+								         .replaceChild(inputParameter.get(nodes.item(i).getTextContent()),
+								            		   nodes.item(i));
 						
 						} else {
 							
 							if (inputTypes.get(key).compareTo("Double") == 0)
 							{
 								logger.info("Setting value to double " + tradeData.get(key).toString());
-								nodes.item(i).getParentNode().replaceChild(JSONObjectToXMLDoubleParameter(doc, (Double) tradeData.get(key)), nodes.item(i) );
+								nodes.item(i).getParentNode()
+											 .replaceChild(JSONObjectToXMLDoubleParameter(doc, (Double) tradeData.get(key)), 
+													 	   nodes.item(i) );
 							}
 							
 							if (inputTypes.get(key).compareTo("Integer") == 0)
 							{
 								logger.info("Setting value to integer " + tradeData.get(key).toString());
-								nodes.item(i).getParentNode().replaceChild(JSONObjectToXMLIntegerParameter(doc, (Integer) tradeData.get(key)), nodes.item(i) );
+								nodes.item(i).getParentNode()
+								             .replaceChild(JSONObjectToXMLIntegerParameter(doc, (Integer) tradeData.get(key)),
+								            		       nodes.item(i) );
 							}
 							
 							if (inputTypes.get(key).compareTo("Boolean") == 0)
 							{
-								logger.info("Setting value to double " + tradeData.get(key).toString());
-								nodes.item(i).getParentNode().replaceChild(JSONObjectToXMLBooleanParameter(doc, (Boolean) tradeData.get(key)), nodes.item(i) );
+								logger.info("Setting value to bool " + tradeData.get(key).toString());
+								nodes.item(i).getParentNode()
+								           	 .replaceChild(JSONObjectToXMLBooleanParameter(doc, (Boolean) tradeData.get(key)), 
+								           			       nodes.item(i) );
 							}
 							
 							if (inputTypes.get(key).compareTo("String") == 0)
 							{
 								logger.info("Setting value to string " + tradeData.get(key).toString());
-								nodes.item(i).getParentNode().replaceChild(JSONObjectToXMLStringParameter(doc, (String) tradeData.get(key)), nodes.item(i) );
+								nodes.item(i).getParentNode()
+								             .replaceChild(JSONObjectToXMLStringParameter(doc, (String) tradeData.get(key)), 
+								            		       nodes.item(i) );
 							}
 							
 							if (inputTypes.get(key).compareTo("Matrix") == 0)
 							{
-								logger.info("Setting value to string " + tradeData.get(key).toString());
+								logger.info("Setting value to matrix " + tradeData.get(nodes.item(i).getTextContent()).toString());
 								
-								nodes.item(i).getParentNode().replaceChild(JSONObjectToXMLMatrixParameter(doc, (JSONArray) tradeData.get(key)), nodes.item(i) );
-								//ArrayList<Node> nodeList = JSONObjectToXMLMatrixParameter(doc, (JSONArray) tradeData.get(key));
-								
-								/*Node parentNode = nodes.item(i).getParentNode();
-								if (nodeList.size() > 0)
-									parentNode.replaceChild(nodeList.get(0), nodes.item(i) );
-								
-								for (int j=1; j < nodeList.size(); j++)
-								{
-									parentNode.appendChild(nodeList.get(j));
-								}*/
-								
+								nodes.item(i).getParentNode()
+								             .replaceChild(JSONObjectToXMLMatrixParameter(doc, (JSONArray) tradeData.get(nodes.item(i).getTextContent())), 
+								            		       nodes.item(i) );
 							}
 							
 						}
@@ -288,7 +304,7 @@ public class MoCoXmlTemplateInterpreter implements Interpreter {
 	{
 		Element v = doc.createElement("v");
 		v.appendChild(doc.createTextNode(val.toString()));
-		v.setAttribute("type", "string");
+		v.setAttribute("type", "double");
 
 		return v;
 	}

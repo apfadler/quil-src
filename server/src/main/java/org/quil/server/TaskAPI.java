@@ -90,11 +90,11 @@ public class TaskAPI {
     
     
     private String success() {
-    	return "{ Status : \"SUCCESS\" }";
+    	return "{ \"Status\" : \"SUCCESS\" }";
     }
     
     private String error(String msg) {
-    	return "{ Status : \"ERROR\", Msg : \""+msg+"\" }";
+    	return "{ \"Status\" : \"ERROR\", \"Msg\" : \""+msg+"\" }";
     }
     
     private String empty() {

@@ -135,7 +135,7 @@ public class RepositoryAPI {
     }
     
     private String error(String msg) {
-    	return "{ \"Status\" : \"ERROR\", Msg : \""+msg+"\" }";
+    	return "{ \"Status\" : \"ERROR\", \"Msg\" : \""+JSONObject.escape(msg)+"\" }";
     }
     
     private String empty() {

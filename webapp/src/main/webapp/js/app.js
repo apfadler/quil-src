@@ -5,7 +5,7 @@ var app = angular.module('app', [
    'ngRoute',
    'controllers',
    'jsTree.directive',
-   'ui.ace', 'ui.bootstrap'
+   'ui.ace', 'ui.bootstrap','ng.jsoneditor','schemaForm'
 ]);
 
 
@@ -64,7 +64,7 @@ app.service('TaskService', [
 			console.log(tasks);
 		};
 		
-		$interval(getTasks, 1000);
+		$interval(getTasks, 100);
 		
 		return function() {
 			return tasks;
@@ -137,7 +137,7 @@ app.service('TaskService', [
 			console.log(caches);
 		};
 		
-		$interval(getCaches, 1000);
+		$interval(getCaches, 10000);
 		
 		return function() {
 			return caches;
