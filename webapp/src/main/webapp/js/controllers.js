@@ -42,6 +42,10 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal',  functi
 	$scope.taskID = "/Task.PriceSingleTradeMoCo.json"
 	
 	$scope.alerts = [];
+	
+	$scope.closeAlert = function(index) {
+		$scope.alerts.splice(index, 1);
+	}
 
 	$scope.taskFromRepository = function() {
 		 $http.get('/api/repository/files'+$scope.taskID)
@@ -70,6 +74,7 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal',  functi
 		  templateUrl: "taskFromTemplateDialog.html",
 		  controller: 'taskFromTemplateDialogCtrl',
 		  size: 'sm',
+		  windowClass : 'task-template-modal-window',
 		  resolve: {
 			templateID: function () {
 			  return $scope.templateID;
@@ -128,6 +133,9 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	$scope.fileContent = "";
 	$scope.currentFile = "New File *";
 	
+	$scope.alerts = [];
+
+	
 	$scope.nodeSelected = function(e, eventData) {
 	
 	    if (eventData.node.original.type=="file") {
@@ -147,17 +155,28 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		
       };
 	  
+	$scope.closeAlert = function(index) {
+		$scope.alerts.splice(index, 1);
+	}
+	  
 	$scope.saveFile = function() {
 	
 	    $http.post("/api/repository/files"+ $scope.currentFile + "/put", $scope.fileContent).
 			success(function(data, status, headers, config) {
 				console.log('post success');
 				
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'File saved.', type : 'success'});
+				
 				$scope.loadRepository();
+				
+				
 
 			}).
 			error(function(data, status, headers, config) {
 				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Error saving file', type : 'danger'});
 			});
 		
       };
@@ -435,6 +454,7 @@ controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalI
 						console.log(data);
 
 						$scope.schema = JSON.parse(data.fileData);
+						$scope.obj.data = JSON.parse(data.fileData);
 					})
 					.error(function(data, status, headers, config) {
 						alert(status);

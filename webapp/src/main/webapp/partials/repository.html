@@ -1,6 +1,13 @@
 <div class="row">
+
+
+
 	<div class="col-lg-12">
 		<h1 class="page-header">Repository</h1> 
+	</div>
+	
+	<div class="col-lg-12">
+	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
 	</div>
 
 	<div class="col-lg-12">
@@ -112,6 +119,13 @@
 		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 	</div>
 </script>
+
+<script type="text/ng-template" id="alert_repository.html" >
+<div>
+    <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
+      <div ng-transclude></div>
+    </div>
+  </script>
 
 <script type="text/ng-template" id="uploadToCacheDialog.html">
 <div class="modal-header">

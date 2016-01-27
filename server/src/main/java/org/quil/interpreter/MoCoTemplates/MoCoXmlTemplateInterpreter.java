@@ -174,7 +174,7 @@ public class MoCoXmlTemplateInterpreter implements Interpreter {
 								logger.info("Setting value to matrix " + tradeData.get(nodes.item(i).getTextContent()).toString());
 								
 								nodes.item(i).getParentNode()
-								             .replaceChild(JSONObjectToXMLMatrixParameter(doc, (JSONArray) tradeData.get(nodes.item(i).getTextContent())), 
+								             .replaceChild(JSONObjectToXMLMatrixParameter(doc, (JSONArray) tradeData.get(key)), 
 								            		       nodes.item(i) );
 							}
 							

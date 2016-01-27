@@ -374,3 +374,30 @@ table.dataTable thead .sorting:after {
   background-image: url('../img/file.png') !important;
   background-position: 0 !important;
 }
+
+.task-template-modal-window .modal-dialog {
+  width: 70vh;
+}
+
+.animate-enter {
+  -webkit-animation: enter_sequence 1s linear; /* Safari/Chrome */
+  -moz-animation: enter_sequence 1s linear; /* Firefox */
+  -o-animation: enter_sequence 1s linear; /* Opera */
+  animation: enter_sequence 1s linear; /* IE10+ and Future Browsers */
+}
+@-webkit-keyframes enter_sequence {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@-moz-keyframes enter_sequence {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@-o-keyframes enter_sequence {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes enter_sequence {
+  from { opacity:0; }
+  to { opacity:1; }
+}

@@ -5,7 +5,7 @@
 	<!-- /.col-lg-12 -->
 	
 	<div class="col-lg-12">
-	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</uib-alert>
+	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
 	</div>
 	
 	<div class="col-lg-4">
@@ -117,7 +117,8 @@
 	
 </div>
 
-<script type="text/ng-template" id="alert.html">
+<script type="text/ng-template" id="alert_task.html">
+<div>
     <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
       <div ng-transclude></div>
     </div>
@@ -125,21 +126,22 @@
 
 
 <script type="text/ng-template" id="taskFromTemplateDialog.html">
-<div class="modal-header">
+
+	<div class="modal-header" style="width:70vh">
 		<h3 class="modal-title">Fill parameters...</h3>
 	</div>
-	<div class="modal-body">
+	<div class="modal-body" style="width:70vh">
 		<div class="form-group">
 			<label>{{templateID}}</label>
-			<!--<div ng-jsoneditor ng-model="obj.data" options="obj.options"></div>-->
-			<form sf-schema="schema" sf-form="form" sf-model="model"></form>
+			<div ng-jsoneditor ng-model="obj.data" options="obj.options"></div>
+			<!--<form sf-schema="schema" sf-form="form" sf-model="model"></form>-->
 		</div>
 	</div>
 
-	</div>
-	<div class="modal-footer">
+
+	<div class="modal-footer"style="width:70vh">
 		<button class="btn btn-primary" ng-click="ok()">Submit</button>
 		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 	</div>
-</div>
+
 </script>
