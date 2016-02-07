@@ -8,78 +8,6 @@
 	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
 	</div>
 	
-	<div class="col-lg-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Submit task from Repository
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			
-				<div class="row">
-					<div class="col-lg-6">
-					<form>
-					<div class="form-group">
-						<label>Task ID</label><input type="text" class="form-control" ng-model="taskID" style="width:300px">
-					</div>
-					<div class="form-group">
-						<button ng-click="taskFromRepository()" class="btn btn-default btn-sm">Submit...</button>
-					</div>
-					</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="col-lg-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Submit task from task template
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			
-				<div class="row">
-					<div class="col-lg-6">
-					<form>
-					<div class="form-group">
-						<label>Template ID</label><input type="text" class="form-control" ng-model="templateID" style="width:300px">
-					</div>
-					<div class="form-group">
-						<button ng-click="taskFromTemplate()" class="btn btn-default btn-sm">Submit...</button>
-					</div>
-					</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="col-lg-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Submit task from task cache
-			</div>
-			<div class="panel-body">
-		
-				<div class="row">
-			
-					<div class="col-lg-6">
-						<form>
-							<div class="form-group">
-								<label>Cache:Task ID</label><input type="text" class="form-control" ng-model="newCacheID" style="width:300px">
-							</div>
-							<div class="form-group">
-								<button ng-click="uploadFile()" class="btn btn-default btn-sm">Submit...</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -90,8 +18,8 @@
 				<p ng-show="!tasks.length">
 					No tasks have been submitted yet.
 				</p>
-				<div class="dataTable_wrapper" ng-show="tasks.length > 0">
-					<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+				<div class="dataTable_wrapper" ng-show="tasks.length > 0" style="height:150px; overflow-y:scroll">
+					<table class="table table-striped table-bordered table-hover" id="dataTables-example" >
 						<thead>
 							<tr>
 								<th>ID</th>
@@ -113,35 +41,8 @@
 	</div>
 	<!-- /.col-lg-12 -->
 	
-	
+	<div ui-view="task_forms">
+		<!--<div ng-include="partials/task_actions.html"></div>-->
+	</div>
 	
 </div>
-
-<script type="text/ng-template" id="alert_task.html">
-<div>
-    <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
-      <div ng-transclude></div>
-    </div>
-  </script>
-
-
-<script type="text/ng-template" id="taskFromTemplateDialog.html">
-
-	<div class="modal-header" style="width:70vh">
-		<h3 class="modal-title">Fill parameters...</h3>
-	</div>
-	<div class="modal-body" style="width:70vh">
-		<div class="form-group">
-			<label>{{templateID}}</label>
-			<!-- <div ng-jsoneditor ng-model="obj.data" options="obj.options"></div> -->
-			<form sf-schema="schema" sf-form="form" sf-model="model"></form>
-		</div>
-	</div>
-
-
-	<div class="modal-footer"style="width:70vh">
-		<button class="btn btn-primary" ng-click="ok()">Submit</button>
-		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-	</div>
-
-</script>

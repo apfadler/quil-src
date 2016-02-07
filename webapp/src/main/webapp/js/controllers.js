@@ -2,13 +2,14 @@
 
 var controllers = angular.module("controllers", []);
 
-controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches',
+controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches','DeployedObjects',
 	
-	function ($scope, $interval, ClusterNodes, Tasks, Caches) {
+	function ($scope, $interval, ClusterNodes, Tasks, Caches, DeployedObjects) {
 	
 		$scope.clusterNodes = [];
 		$scope.tasks = [];
 		$scope.dataServices = [];
+		$scope.deployedObjects = [];
 
 		$interval( function() {
 						$scope.clusterNodes = ClusterNodes(); 
@@ -19,6 +20,10 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 				   }, 100);
 		$interval( function() {
 						$scope.dataServices = Caches(); 
+				   }, 100);
+				   
+		$interval( function() {
+						$scope.deployedObjects = DeployedObjects(); 
 				   }, 100);
 	}
    
@@ -36,7 +41,11 @@ controllers.controller("DataController", ['$scope', function ($scope) {
    
 }]);
 
-controllers.controller("TaskController", ['$scope', '$http','$uibModal',  function ($scope, $http, $uibModal) {
+controllers.controller("DeploymentsController", ['$scope', function ($scope) {
+   
+}]);
+
+controllers.controller("TaskController", ['$scope', '$http','$uibModal', '$state',  function ($scope, $http, $uibModal, $state) {
 
 	$scope.templateID = "/Template.MoCo.PlainVanillaSwaption.xml"
 	$scope.taskID = "/Task.PriceSingleTradeMoCo.json"
@@ -46,84 +55,9 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal',  functi
 	$scope.closeAlert = function(index) {
 		$scope.alerts.splice(index, 1);
 	}
-
-	$scope.taskFromRepository = function() {
-		 $http.get('/api/repository/files'+$scope.taskID)
-					.success(function(data, status, headers, config) {
-						
-						
-						if ( data.hasOwnProperty("fileData")) {
-						
-							$scope.submitTask(data.fileData);
-						
-						 } else {
-						 
-							$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Task submission failed: ' + data.Msg, type : 'danger'});
-							
-						}
-					})
-					.error(function(data, status, headers, config) {
-						 $scope.alerts.push({msg: 'Task submission failed: ' + status , type : 'danger'});
-					});
-	}
-
-	$scope.taskFromTemplate = function() {
-		var modalInstance = $uibModal.open({
-		  animation: true,
-		  templateUrl: "taskFromTemplateDialog.html",
-		  controller: 'taskFromTemplateDialogCtrl',
-		  size: 'sm',
-		  windowClass : 'task-template-modal-window',
-		  resolve: {
-			templateID: function () {
-			  return $scope.templateID;
-			},
-			
-			http: function() {
-				return $http;
-				}
-			
-		  }
-		});
-		
-		modalInstance.result.then(function (selectedItem) {
-	
-			
-		}, function () {
-		 
-		});
-	}
-	
-	$scope.taskFromCachedTask = function() {
-	}
-	
-	$scope.submitTask = function(taskDescription) {
-		$http.post('/api/compute/task/submit', taskDescription)
-					.success(function(data, status, headers, config) {
-						console.log(data);
-						
-						 if (data.Status == "SUCCESS") {
-							$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Task submitted!', type : 'success'});
-						 } else {
-							$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Task submission failed: ' + Status.Msg, type : 'danger'});
-						 }
-					})
-					.error(function(data, status, headers, config) {
-						alert(status);
-						console.log("Failed to get file!");
-					});
-	}
-
 }]);
 
-controllers.controller("ClusterController", ['$scope',
-
-	
-
-	function ($scope) {
+controllers.controller("ClusterController", ['$scope',		function ($scope) {
 	
 		$scope.logTxt = "";
 		var logEvents = new EventSource('/api/log/stream');
@@ -132,21 +66,23 @@ controllers.controller("ClusterController", ['$scope',
 		  $scope.logTxt += event.data;
 		  
 		});
+		
+		
 	
 	
 		$scope.aceLoaded = function(_editor) {
 			// Options
 			_editor.setReadOnly(true);
+			
+			$scope.ace = _editor;
 		  };
 
 		  $scope.aceChanged = function(e) {
 			//
-			e.navigateFileEnd();
+			$scope.ace.navigateFileEnd();
 		  };
 	
-	}
-	
-]);
+	}]);
 
 controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal', function ($scope, $http, $uibModal) {
 
@@ -391,74 +327,154 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 
 
 
-controllers.controller('newFileDialogCtrl', function ($scope, $uibModalInstance, newFileName) {
+controllers.controller("TaskDefinitionController", ['$scope', '$state', '$http', function ($scope, $state, $http) {
+	
 
-  $scope.fileName = newFileName;
-
-  $scope.ok = function () {
-    $uibModalInstance.close($scope.fileName);
-  };
-
-  $scope.cancel = function () {
-    $uibModalInstance.dismiss('cancel');
-  };
-});
-
-
-controllers.controller('newFolderDialogCtrl', function ($scope, $uibModalInstance, newFolderName) {
-
-  $scope.folderName = newFolderName;
-
-  $scope.ok = function () {
-    $uibModalInstance.close($scope.folderName);
-  };
-
-  $scope.cancel = function () {
-    $uibModalInstance.dismiss('cancel');
-  };
-});
-
-
-controllers.controller('deleteFileDialogCtrl', function ($scope, $uibModalInstance, newFileName) {
-
-  $scope.ok = function () {
-    $uibModalInstance.close('ok');
-  };
-
-  $scope.cancel = function () {
-   $uibModalInstance.dismiss('cancel');
-  };
-});
-
-controllers.controller('uploadFileDialogCtrl',function ($scope, $uibModalInstance, newFileName,tree) {
-
-  $scope.theTree = tree;
- 
-  $scope.ok = function () {
-    $uibModalInstance.close('ok');
-  };
-
-  $scope.cancel = function () {
-   $uibModalInstance.dismiss('cancel');
-  };
+    $scope.schema = {};
+	$scope.model = { ID : "Task.New.json", Template : $scope.templateID, Interpreter : "MoCo", Task: "PriceTrade", Repository : "File_Repository"  };
   
+    $http.get('/api/repository/files'+$scope.templateID)
+					.success(function(data, status, headers, config) {
+					
+						console.log(data);
 
-});
-
-controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInstance, cacheKey) {
-
-  $scope.cacheKey = cacheKey;
- 
-  $scope.ok = function () {
-    $uibModalInstance.close('ok');
-  };
-
-  $scope.cancel = function () {
-   $uibModalInstance.dismiss('cancel');
-  };
+						$scope.generateForm(data);
+					})
+					.error(function(data, status, headers, config) {
+						alert(status);
+						console.log("Failed to get file!");
+					});
   
+  
+	$scope.generateForm = function(data) { 
+		var schema = {
+			type: "object",
+			properties : {
+			
+				ID : {type:"string"},
+			
+				Interpreter : { type : "string", enum : ["QuantLib", "MoCo"], default : "QuantLib"},
+				
+				Task : { type : "string", enum : ["PriceTrade", "PricePortfolio"], default : "PriceTrade"},
+				
+				Template : { type : "string" },
+				Repository : { type : "string" },
+				
+				MarketData : {
+				
+					type : "object",
+					properties : {
+					
+						Market_Data_Repository : { type : "string" },
+						Market_ID : { type : "string" }
+					}
+				
+				},
+				
+				TradeData : {
+				
+					type : "object",
+					properties : {
+					}
+				
+				}
 
-});
+			}
+		};
+		
+		var x2js = new X2JS();
+		var template = x2js.xml_str2json( data.fileData );
+		
+		for (var i=0; i < template.InputFile.InputParameter.length; i++)
+		{
+			schema.properties.TradeData.properties[template.InputFile.InputParameter[i].Name] = {type : "string"}; 
+		}
+		
+		$scope.schema = schema;//JSON.parse(data.fileData);
+	}
+
+}]);
+
+controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	function ($scope, $state, $http) {
+	
+	
+	$scope.taskFromRepository = function() {
+		 $http.get('/api/repository/files'+$scope.taskID)
+					.success(function(data, status, headers, config) {
+						
+						
+						if ( data.hasOwnProperty("fileData")) {
+						
+							$scope.submitTask(data.fileData);
+						
+						 } else {
+						 
+							$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task submission failed: ' + data.Msg, type : 'danger'});
+							
+						}
+					})
+					.error(function(data, status, headers, config) {
+						 $scope.alerts.push({msg: 'Task submission failed: ' + status , type : 'danger'});
+					});
+	}
+	
+	$scope.newTask = function() {
+			
+		$state.go('tasks.define'); 
+	}
+
+	$scope.taskFromTemplate = function() {
+		
+		var modalInstance = $uibModal.open({
+		  animation: true,
+		  templateUrl: "taskFromTemplateDialog.html",
+		  controller: 'taskFromTemplateDialogCtrl',
+		  size: 'sm',
+		  windowClass : 'task-template-modal-window',
+		  resolve: {
+			templateID: function () {
+			  return $scope.templateID;
+			},
+			
+			http: function() {
+				return $http;
+				}
+			
+		  }
+		});
+		
+		modalInstance.result.then(function (selectedItem) {
+	
+			
+		}, function () {
+		 
+		});
+	}
+	
+	$scope.taskFromCachedTask = function() {
+	}
+	
+	$scope.submitTask = function(taskDescription) {
+		$http.post('/api/compute/task/submit', taskDescription)
+					.success(function(data, status, headers, config) {
+						console.log(data);
+						
+						 if (data.Status == "SUCCESS") {
+							$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task submitted!', type : 'success'});
+						 } else {
+							$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task submission failed: ' + Status.Msg, type : 'danger'});
+						 }
+					})
+					.error(function(data, status, headers, config) {
+						alert(status);
+						console.log("Failed to get file!");
+					});
+	}
+		
+}]);
 
 
 controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalInstance, templateID, http) {
@@ -544,6 +560,73 @@ controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalI
   $scope.btnClick = function() {
     $scope.obj.options.mode = 'code'; //should switch you to code view
   }
+ 
+  $scope.ok = function () {
+    $uibModalInstance.close('ok');
+  };
+
+  $scope.cancel = function () {
+   $uibModalInstance.dismiss('cancel');
+  };
+  
+
+});
+
+controllers.controller('newFileDialogCtrl', function ($scope, $uibModalInstance, newFileName) {
+
+  $scope.fileName = newFileName;
+
+  $scope.ok = function () {
+    $uibModalInstance.close($scope.fileName);
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
+
+controllers.controller('newFolderDialogCtrl', function ($scope, $uibModalInstance, newFolderName) {
+
+  $scope.folderName = newFolderName;
+
+  $scope.ok = function () {
+    $uibModalInstance.close($scope.folderName);
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
+
+controllers.controller('deleteFileDialogCtrl', function ($scope, $uibModalInstance, newFileName) {
+
+  $scope.ok = function () {
+    $uibModalInstance.close('ok');
+  };
+
+  $scope.cancel = function () {
+   $uibModalInstance.dismiss('cancel');
+  };
+});
+
+controllers.controller('uploadFileDialogCtrl',function ($scope, $uibModalInstance, newFileName,tree) {
+
+  $scope.theTree = tree;
+ 
+  $scope.ok = function () {
+    $uibModalInstance.close('ok');
+  };
+
+  $scope.cancel = function () {
+   $uibModalInstance.dismiss('cancel');
+  };
+  
+
+});
+
+controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInstance, cacheKey) {
+
+  $scope.cacheKey = cacheKey;
  
   $scope.ok = function () {
     $uibModalInstance.close('ok');

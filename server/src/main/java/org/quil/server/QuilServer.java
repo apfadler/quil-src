@@ -1,7 +1,9 @@
 package org.quil.server;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Arrays;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -17,6 +19,7 @@ import org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 
+import scala.tools.nsc.interpreter.IMain;
 import static org.apache.ignite.events.EventType.EVTS_TASK_EXECUTION;
  
 public class QuilServer {
@@ -88,6 +91,8 @@ public class QuilServer {
         	cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
         	
         	Ignition.start(cfg);
+        	
+        	runQuilStartupScript();
         	
         	if (!workerNode)  {
         		jettyServer.start();
@@ -178,6 +183,34 @@ public class QuilServer {
     			"jersey.config.server.provider.classnames",
     			RepositoryAPI.class.getCanonicalName() );
 
+    	
+    	ServletHolder jerseyServletDeployments= apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/deployments/*");
+    	jerseyServletDeployments.setInitOrder(0);
+    	jerseyServletDeployments.setAsyncSupported(true);
+    	jerseyServletDeployments.setInitParameter(
+    			"jersey.config.server.provider.classnames",
+    			DeploymentsAPI.class.getCanonicalName() );
+    	
     	return apiContext;
+    }
+    
+    private static void runQuilStartupScript()
+    {
+    	logger.info("Running startup script");
+    	
+    	try {
+    		IMain main = new IMain();
+    		main.settings().usejavacp().tryToSetFromPropertyValue("true");
+    		main.setContextClassLoader();
+
+    		String scriptPath = System.getenv("QUIL_HOME") + "/config/quil-boot.scala";
+    		File file = new File(scriptPath);
+    		
+    		main.eval(new String(Files.readAllBytes(file.toPath())));
+
+    	} catch(Exception e) {
+    		logger.error("Failed to run start up script");
+    	}
     }
 }

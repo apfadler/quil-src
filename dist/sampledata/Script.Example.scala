@@ -12,7 +12,7 @@ var taskDescription  = """
 		"Additional" : {
 			"EUR_Swap_1Y" : "0.05"
 		}
-	}
+	},
 	"TradeData" : {
 		"ID" : "1",
 		"Notional" : "1000.0",

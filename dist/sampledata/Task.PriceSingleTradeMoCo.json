@@ -6,9 +6,10 @@
 	"MarketData" : { 
 		"Repository" :"MoCoMarkets",
 		"Key" : "MarketData.Today"
-	}
+	},
 	"TradeData" : {
-		"ID" : "1",
+		"LiborFixings" : [ [39465.0, 0.064798400000000006]],
+		"FixedLegCoupon" : 0.123123,
 		"Notional" : "1000.0",
 		"Cpty" : "A"
 	}

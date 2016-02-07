@@ -1,0 +1,76 @@
+<div class="col-lg-4">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			Submit existing task
+		</div>
+		<!-- /.panel-heading -->
+		<div class="panel-body">
+		
+			<div class="row">
+				<div class="col-lg-6">
+				<form>
+				<div class="form-group">
+					<label>Task ID</label><input type="text" class="form-control" ng-model="taskID" style="width:300px">
+				</div>
+				<div class="form-group">
+					<button ng-click="taskFromRepository()" class="btn btn-default btn-sm">Submit...</button>
+				</div>
+				</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-lg-4">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			Define new task
+		</div>
+		<!-- /.panel-heading -->
+		<div class="panel-body">
+		
+			<div class="row">
+				<div class="col-lg-6">
+				<form>
+				<div class="form-group">
+					<label>Pricing Template</label><input type="text" class="form-control" ng-model="templateID" style="width:300px">
+				</div>
+				<div class="form-group">
+					<button ng-click="newTask()" class="btn btn-default btn-sm">Go...</button>
+				</div>
+				</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<script type="text/ng-template" id="alert_task.html">
+	<div>
+		<div class="alert" style="background-color:#fa39c3;color:white" role="alert">
+		<div ng-transclude></div>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="taskFromTemplateDialog.html">
+
+	<div class="modal-header" style="width:70vh">
+		<h3 class="modal-title">Fill parameters...</h3>
+	</div>
+	<div class="modal-body" style="width:70vh">
+		<div class="form-group">
+			<label>{{templateID}}</label>
+			<!-- <div ng-jsoneditor ng-model="obj.data" options="obj.options"></div> -->
+			<form sf-schema="schema" sf-form="form" sf-model="model"></form>
+		</div>
+	</div>
+
+
+	<div class="modal-footer"style="width:70vh">
+		<button class="btn btn-primary" ng-click="ok()">Submit</button>
+		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+	</div>
+
+</script>

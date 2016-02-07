@@ -2,10 +2,10 @@
 
 
 var app = angular.module('app', [
-   'ngRoute',
+   'ui.router',
    'controllers',
    'jsTree.directive',
-   'ui.ace', 'ui.bootstrap','ng.jsoneditor','schemaForm'
+   'ui.ace', 'ui.bootstrap','ng.jsoneditor','schemaForm','ngTablescroll'
 ]);
 
 
@@ -141,5 +141,42 @@ app.service('TaskService', [
 		
 		return function() {
 			return caches;
+		}
+  }]);
+
+  
+  app.factory('DeployedObjects', ['$interval', '$http',
+  
+	function($interval,$http){
+	
+		var objects = {};
+    
+		function getDeployedObjects() 
+		{
+			$http.get('/api/deployments/all').
+				success(function(data, status, headers, config) {
+					// this callback will be called asynchronously
+					// when the response is available
+					
+					objects = data;
+					
+
+				}).
+				error(function(data, status, headers, config) {
+					// called asynchronously if an error occurs
+					// or server returns response with an error status.
+					
+					console.log("Failed to get tasks!");
+
+				}
+			);
+			
+			console.log(objects);
+		};
+		
+		$interval(getDeployedObjects, 10000);
+		
+		return function() {
+			return objects;
 		}
   }]);
