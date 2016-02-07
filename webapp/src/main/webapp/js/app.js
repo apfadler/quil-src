@@ -64,7 +64,7 @@ app.service('TaskService', [
 			console.log(tasks);
 		};
 		
-		$interval(getTasks, 100);
+		$interval(getTasks, 1000);
 		
 		return function() {
 			return tasks;

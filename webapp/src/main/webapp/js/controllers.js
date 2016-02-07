@@ -38,7 +38,7 @@ controllers.controller("DataController", ['$scope', function ($scope) {
 
 controllers.controller("TaskController", ['$scope', '$http','$uibModal',  function ($scope, $http, $uibModal) {
 
-	$scope.templateID = "/Template.Task.json"
+	$scope.templateID = "/Template.MoCo.PlainVanillaSwaption.xml"
 	$scope.taskID = "/Task.PriceSingleTradeMoCo.json"
 	
 	$scope.alerts = [];
@@ -121,7 +121,28 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal',  functi
 
 controllers.controller("ClusterController", ['$scope',
 
+	
+
 	function ($scope) {
+	
+		$scope.logTxt = "";
+		var logEvents = new EventSource('/api/log/stream');
+
+		logEvents.addEventListener("message", function(event) {
+		  $scope.logTxt += event.data;
+		  
+		});
+	
+	
+		$scope.aceLoaded = function(_editor) {
+			// Options
+			_editor.setReadOnly(true);
+		  };
+
+		  $scope.aceChanged = function(e) {
+			//
+			e.navigateFileEnd();
+		  };
 	
 	}
 	
@@ -453,14 +474,62 @@ controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalI
 					
 						console.log(data);
 
-						$scope.schema = JSON.parse(data.fileData);
-						$scope.obj.data = JSON.parse(data.fileData);
+						$scope.generateForm(data);
 					})
 					.error(function(data, status, headers, config) {
 						alert(status);
 						console.log("Failed to get file!");
 					});
   
+  
+  $scope.generateForm =function(data) {
+  
+	var schema = {
+			type: "object",
+			properties : {
+				Interpreter : { type : "string", enum : ["QuantLib", "MoCo"], default : "QuantLib"},
+				
+				Task : { type : "string", enum : ["PriceTrade", "PricePortfolio"], default : "PriceTrade"},
+				
+				Template : { type : "string" },
+				Repository : { type : "string" },
+				
+				MarketData : {
+				
+					type : "object",
+					properties : {
+					
+						Market_Data_Repository : { type : "string" },
+						Market_ID : { type : "string" }
+					}
+				
+				},
+				
+				TradeData : {
+				
+					type : "object",
+					properties : {
+					}
+				
+				}
+
+			}
+	};
+	
+	
+	var x2js = new X2JS();
+	var template = x2js.xml_str2json( data.fileData );
+	
+	for (var i=0; i < template.InputFile.InputParameter.length; i++)
+	{
+		schema.properties.TradeData.properties[template.InputFile.InputParameter[i].Name] = {type : "string"}; 
+	}
+	
+	$scope.schema = schema;//JSON.parse(data.fileData);
+	$scope.obj.data = schema // JSON.parse(data.fileData);
+	
+	
+  }
  
 
   $scope.form = [

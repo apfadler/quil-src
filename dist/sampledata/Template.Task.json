@@ -1,0 +1,35 @@
+{
+    "type": "object",
+    "properties": {
+        "Interpreter" : { "type" : "string", "enum" : ["QuantLib", "MoCo"], "default" : "QuantLib"},
+        
+        "Task" : { "type" : "string", "enum" : ["PriceTrade", "PricePortfolio"], "default" : "PriceTrade"},
+        
+        "Template" : { "type" : "string" },
+        "Repository" : { "type" : "string" },
+        
+        "MarketData" : {
+        
+            "type" : "object",
+            "properties" : {
+            
+                "Market Data Repository" : { "type" : "string" },
+                "Market ID" : { "type" : "string" }
+            }
+        
+        },
+        
+        "TradeData" : {
+        
+            "type" : "object",
+            "properties" : {
+            
+                "ID" : { "type" : "string" },
+                "Counterparty" : { "type" : "string" },
+                "Fixed Rate " : { "type" : "double" }
+            }
+        
+        }
+
+    }
+}

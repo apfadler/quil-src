@@ -1,0 +1,12 @@
+{
+	"Interpreter" : "org.quil.interpreter.MoCoTemplates.MoCoXmlTemplateInterpreter",
+	"Task"	: "PricePortfolio",
+	"Template" : "MoCo.PlainVanillaSwaption",
+	"Repository" : "Templates",
+	"Trades" : "ExampleTrades",
+	"Where" : " true "
+	"MarketData" : { 
+		"Repository" :"MoCoMarkets",
+		"Key" : "MarketData.Today"
+	}
+}
