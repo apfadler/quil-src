@@ -184,13 +184,13 @@ public class QuilServer {
     			RepositoryAPI.class.getCanonicalName() );
 
     	
-    	ServletHolder jerseyServletDeployments= apiContext.addServlet(
-    			org.glassfish.jersey.servlet.ServletContainer.class, "/deployments/*");
-    	jerseyServletDeployments.setInitOrder(0);
-    	jerseyServletDeployments.setAsyncSupported(true);
-    	jerseyServletDeployments.setInitParameter(
+    	ServletHolder jerseyServletObjectIndex = apiContext.addServlet(
+    			org.glassfish.jersey.servlet.ServletContainer.class, "/objects/*");
+    	jerseyServletObjectIndex.setInitOrder(0);
+    	jerseyServletObjectIndex.setAsyncSupported(true);
+    	jerseyServletObjectIndex.setInitParameter(
     			"jersey.config.server.provider.classnames",
-    			DeploymentsAPI.class.getCanonicalName() );
+    			ObjectIndexAPI.class.getCanonicalName() );
     	
     	return apiContext;
     }

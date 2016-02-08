@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.quil.JSON.Document;
 import org.quil.repository.FileSystemRepository;
 
-public class Deployments {
+public class ObjectIndex {
 	
 	public static HashMap<String, String> All = new HashMap<String,String>();
 	public static ArrayList<String> usedCaches = new ArrayList<String>();
@@ -20,7 +21,7 @@ public class Deployments {
 			SimpleCache cache = SimpleCache.getOrCreate(cacheID);
         	cache.put(fileID, repo.getFile(filePath));
         	
-        	All.put(cacheID, fileID);
+        	All.put(fileID,cacheID);
         	
         	if (!usedCaches.contains(cacheID)) {
         		usedCaches.add(cacheID);
@@ -28,7 +29,14 @@ public class Deployments {
 		}
 		
 		if (cacheType.compareTo("DocumentCache") == 0) {
-			
+			DocumentCache cache = DocumentCache.getOrCreate(cacheID);
+        	cache.put(fileID, (Document)((new org.quil.JSON.Parser()).parse(repo.getFile(filePath))));
+        	
+        	All.put(fileID,cacheID);
+        	
+        	if (!usedCaches.contains(cacheID)) {
+        		usedCaches.add(cacheID);
+        	}
 		}
 		
 	}

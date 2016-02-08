@@ -23,8 +23,6 @@ public class SimpleCache extends Cache {
 	
 	static final Logger logger = LoggerFactory.getLogger(SimpleCache.class);
 	
-	static private HashMap<String, SimpleCache> caches = new HashMap<String, SimpleCache>();
-	
 	private String _cacheName;
 	
 	static public SimpleCache getOrCreate(String cacheName)

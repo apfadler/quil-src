@@ -2,8 +2,11 @@ package org.quil.server;
 
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -13,25 +16,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("/")
-public class DeploymentsAPI {
+public class ObjectIndexAPI {
 
-	final Logger logger = LoggerFactory.getLogger(DeploymentsAPI.class);
+	final Logger logger = LoggerFactory.getLogger(ObjectIndexAPI.class);
  
     @GET
     @Path("all")
     @Produces(MediaType.APPLICATION_JSON)
-    public String deployments() {
+    public String objects() {
     	try
         {
 			JSONArray deployed = new JSONArray();
 			
 			int id = 0;
-			for ( Map.Entry<String, String> e : Deployments.All.entrySet() )
+			for ( Map.Entry<String, String> e : ObjectIndex.All.entrySet() )
 			{
 				JSONObject obj = new JSONObject();
 				
-				obj.put("cacheId", e.getKey());
-				obj.put("fileId", e.getValue());
+				obj.put("cacheId", e.getValue());
+				obj.put("fileId", e.getKey());
 				
 				deployed.add(obj);
 			}
@@ -53,7 +56,7 @@ public class DeploymentsAPI {
 			JSONArray used = new JSONArray();
 			
 			int id = 0;
-			for ( String e : Deployments.usedCaches)
+			for ( String e : ObjectIndex.usedCaches)
 			{
 				JSONObject obj = new JSONObject();
 				
@@ -68,6 +71,26 @@ public class DeploymentsAPI {
         {
         	return error(e.toString());
         }
+    }
+    
+    @POST
+    @Path("{cacheid}/put/{key}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String put(@PathParam("cacheid") String cacheid, @PathParam("key") String key, String data) {
+    	try
+        {
+        	SimpleCache cache = SimpleCache.getOrCreate(cacheid);
+        	cache.put(key, data);
+        	
+        	ObjectIndex.All.put(key, cacheid);
+        }
+        catch (Exception e)
+        {
+        	return error(e.toString());
+        }
+        
+        return success();
     }
      
     private String success() {

@@ -6,7 +6,9 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.json.simple.JSONObject;
+import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
+import org.quil.server.DocumentCache;
 import org.quil.server.SimpleCache;
 import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
@@ -57,6 +59,13 @@ public class QuantLibXmlTemplateInterpreter implements Interpreter {
 		
 		JSONObject tradeData = (JSONObject) _data.get("TradeData");
 		if (tradeData != null) {
+			
+			if (tradeData.containsKey("Repository") && tradeData.containsKey("Key"))
+			{
+				//TODO this is horrible...
+				Document tradeDataFromRepo = DocumentCache.getOrCreate((String)tradeData.get("Repository")).get((String)(tradeData.get("Key")));
+				tradeData = (JSONObject) (new org.json.simple.parser.JSONParser()).parse(tradeDataFromRepo.toString());
+			}
 			
 			logger.info("Injecting trade parameters.");
 			

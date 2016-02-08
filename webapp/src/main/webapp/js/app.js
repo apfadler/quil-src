@@ -137,7 +137,7 @@ app.service('TaskService', [
 			console.log(caches);
 		};
 		
-		$interval(getCaches, 10000);
+		$interval(getCaches, 1000);
 		
 		return function() {
 			return caches;
@@ -153,7 +153,7 @@ app.service('TaskService', [
     
 		function getDeployedObjects() 
 		{
-			$http.get('/api/deployments/all').
+			$http.get('/api/objects/all').
 				success(function(data, status, headers, config) {
 					// this callback will be called asynchronously
 					// when the response is available
@@ -174,7 +174,7 @@ app.service('TaskService', [
 			console.log(objects);
 		};
 		
-		$interval(getDeployedObjects, 10000);
+		$interval(getDeployedObjects, 1000);
 		
 		return function() {
 			return objects;

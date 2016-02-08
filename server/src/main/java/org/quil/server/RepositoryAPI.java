@@ -82,7 +82,7 @@ public class RepositoryAPI {
     @POST
     @Path("files/{path}/delete")
     @Produces(MediaType.APPLICATION_JSON)
-    public String delteFile(@PathParam("path") String path) {
+    public String deleteFile(@PathParam("path") String path) {
     	try
         {
 			(new FileSystemRepository()).deleteFile(path);

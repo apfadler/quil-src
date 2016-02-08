@@ -36,6 +36,7 @@ import org.eclipse.persistence.sessions.serializers.XMLSerializer;
 import org.json.simple.JSONObject;
 import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
+import org.quil.server.DocumentCache;
 import org.quil.server.SimpleCache;
 import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
@@ -114,6 +115,13 @@ public class MoCoXmlTemplateInterpreter implements Interpreter {
 		
 		JSONObject tradeData = (JSONObject) _data.get("TradeData");
 		if (tradeData != null) {
+			
+			if (tradeData.containsKey("Repository") && tradeData.containsKey("Key"))
+			{
+				//TODO this is horrible...
+				Document tradeDataFromRepo = DocumentCache.getOrCreate((String)tradeData.get("Repository")).get((String)(tradeData.get("Key")));
+				tradeData = (JSONObject) (new org.json.simple.parser.JSONParser()).parse(tradeDataFromRepo.toString());
+			}
 
 			nodes = doc.getElementsByTagName("InjectParameter");
 			for (int i = 0; i < nodes.getLength(); i++) {

@@ -30,6 +30,10 @@ public class TaskRunner {
 			IgnitePredicate<TaskEvent> locLsnr = new IgnitePredicate<TaskEvent>() {
 	            @Override public boolean apply(TaskEvent evt) {
 	                // Remote filter only accepts tasks whose name being with "good-task" prefix.
+	            	
+	            	if (evt.taskName().compareTo("org.apache.ignite.internal.processors.cache.GridCacheAdapter$SizeTask") ==0 )
+	            		return true;
+	            	
 	                logger.info("Received task event [evt=" + evt.name() + ", taskName=" + evt.taskName()+"]");
 
 	                if (Task.get(evt.taskName()) == null)

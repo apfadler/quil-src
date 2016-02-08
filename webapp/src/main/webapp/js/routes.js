@@ -110,13 +110,13 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
 			}
         })
 		
-		.state('deployments', {
-            url:'/deployments',
+		.state('objects', {
+            url:'/objects',
 			views  : {
 			
 				'content' : {		
 					templateUrl: 'partials/deployed_objects.html',
-					controller: 'DeploymentsController'
+					controller: 'ObjectsController'
 				}
 			}
         })
