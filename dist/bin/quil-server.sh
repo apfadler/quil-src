@@ -51,6 +51,6 @@ elif [ "$(expr substr $(uname -s) 1 4)" == "MING" ]; then
     addEachJarInDirWinCygwin "libs/"
 fi
 
-echo $QUIL_CLASSPATH
-java -cp "$QUIL_CLASSPATH" org.quil.server.QuilServer
+echo CLASSPATH=$QUIL_CLASSPATH
+java -Dlog4j.configuration=file:config/java.util.logging.properties -cp "$QUIL_CLASSPATH" org.quil.server.QuilServer
 

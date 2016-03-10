@@ -2,6 +2,12 @@ import org.quil.server.ObjectIndex
 import java.io.File
 import org.apache.commons.io.FilenameUtils;
 
+/*
+
+Add custom initialization here.
+
+Example:
+
 println("Loading Market Data...")
 ObjectIndex.add("SimpleCache", "Markets", "MarketData.Today", "/MoCo.MarketData.xml")
 
@@ -16,4 +22,6 @@ for (file <- new File(System.getenv("QUIL_HOME")+"/sampledata/Trades").listFiles
   ObjectIndex.add("DocumentCache", "Trades", filename, "/Trades/"+filename+".json")
 }
 println("done")
+
+*/
 
