@@ -1,0 +1,8 @@
+{
+	"Notional" : "7000",
+	"ID" : "7", 
+	"Counterparty" : "D",
+	"FixedLegCoupon" : 0.01,
+	
+	"/Trade/Notional" : 123456.0
+}

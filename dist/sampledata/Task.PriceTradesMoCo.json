@@ -3,10 +3,10 @@
 	"Task"	: "PricePortfolio",
 	"Template" : "MoCo.PlainVanillaSwaption",
 	"Repository" : "Templates",
-	"Trades" : "ExampleTrades",
+	"Trades" : "Trades",
 	"Where" : " true "
 	"MarketData" : { 
-		"Repository" :"MoCoMarkets",
+		"Repository" :"Markets",
 		"Key" : "MarketData.Today"
 	}
 }

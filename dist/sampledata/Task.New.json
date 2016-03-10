@@ -1,0 +1,1 @@
+{"Template":"Template.FromExcel","Interpreter":"org.quil.interpreter.MoCoTemplates.MoCoXmlTemplateInterpreter","Task":"PriceTrade","Repository":"Templates","MarketData":{"Repository":"Markets","Key":"MarketData.Today"},"TradeData":{"Repository":"Trades","Key":"Trade.1"}}
