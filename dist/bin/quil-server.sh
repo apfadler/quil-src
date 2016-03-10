@@ -52,5 +52,8 @@ elif [ "$(expr substr $(uname -s) 1 4)" == "MING" ]; then
 fi
 
 echo CLASSPATH=$QUIL_CLASSPATH
+
+export QUIL_WARPATH=$QUIL_HOME/libs/webapp-1.0-SNAPSHOT.war
+
 java -Dlog4j.configuration=file:config/java.util.logging.properties -cp "$QUIL_CLASSPATH" org.quil.server.QuilServer
 
