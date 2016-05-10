@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-lg-12">
-		<h1 class="page-header">Dashboard {{title}}</h1>
+		<h1 class="page-header">Overview</h1>
 	</div>
 	<!-- /.col-lg-12 -->
 	
@@ -12,7 +12,7 @@
 						<i class="fa fa-tasks fa-5x"></i>
 					</div>
 					<div class="col-xs-9 text-right">
-						<div class="huge">26</div>
+						<div class="huge">{{runningTasks.length}}</div>
 						<div>Running Tasks</div>
 					</div>
 				</div>
@@ -35,7 +35,7 @@
 						<i class="fa fa-tasks fa-5x"></i>
 					</div>
 					<div class="col-xs-9 text-right">
-						<div class="huge">26</div>
+						<div class="huge">{{failedTasks.length}}</div>
 						<div>Failed Tasks</div>
 					</div>
 				</div>
@@ -58,7 +58,7 @@
 						<i class="fa fa-table fa-5x"></i>
 					</div>
 					<div class="col-xs-9 text-right">
-						<div class="huge">4</div>
+						<div class="huge">{{dataServices.length}}</div>
 						<div>Active Caches</div>
 					</div>
 				</div>
@@ -81,7 +81,7 @@
 						<i class="fa fa-cogs fa-5x"></i>
 					</div>
 					<div class="col-xs-9 text-right">
-						<div class="huge">2</div>
+						<div class="huge">{{clusterNodes.length}}</div>
 						<div>Running Nodes</div>
 					</div>
 				</div>
@@ -96,47 +96,62 @@
 		</div>
 	</div>
 </div>
-
 <div class="row">
 	<div class="col-lg-12">
+		<h1 class="page-header">Cluster Status</h1>
+	</div>
+	<!-- /.col-lg-12 -->
+	
+
+	<div class="col-lg-6">
+		<div class="col-lg-12" ng-repeat="node in clusterNodes">
+		
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Node ID: {{node.id}}
+				</div>
+				<div class="panel-body">
+					<p>
+						Cores: {{node.nocores}} - Jobs: {{node.activejobs}}
+					</p>
+					<p>
+						Memory: {{node.mem}}
+					</p>
+				   
+					<timer start-time='start' end-time='end'">
+					   <div class="progress progress-striped active">
+						  <div
+								ng-class="{'progress-bar':1, 'progress-bar-success': node.cpu < 30.0 ,
+										   'progress-bar-warning': node.cpu >= 30.0 && node.cpu <= 60.0 ,
+										   'progress-bar-danger': node.cpu >= 60.0 ,
+										   'progress-bar-striped':1, 'active':1}"
+							   role="progressbar " aria-valuemin="0" aria-valuemax="100" style="width:{{node.cpu}}%;min-width: 2em;">  {{node.cpu}}% CPU Load
+						  </div>
+					   </div>
+					</timer>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-lg-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<i class="fa fa-bell fa-fw"></i> Notifications and Alerts
+					Cluster Log
 			</div>
-			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="list-group">
-				
-					<a href="#" class="list-group-item">
-						<i class="fa fa-comment fa-fw"></i> Failed Task "PriceTrade.12345X87F"
-						<span class="pull-right text-muted small"><em>4 minutes ago</em>
-						</span>
-					</a>
-					
-					<a href="#" class="list-group-item">
-						<i class="fa fa-comment fa-fw"></i> Failed Task "PricePortfolio.BOND_2"
-						<span class="pull-right text-muted small"><em>12 minutes ago</em>
-						</span>
-					</a>
-					
-					<a href="#" class="list-group-item">
-						<i class="fa fa-comment fa-fw"></i> Node #12 shut down
-						<span class="pull-right text-muted small"><em>23 minutes ago</em>
-						</span>
-					</a>
-					
-					<a href="#" class="list-group-item">
-						<i class="fa fa-comment fa-fw"></i> Feed "Reuters" unavailable
-						<span class="pull-right text-muted small"><em>46 minutes ago</em>
-						</span>
-					</a>
-					
+				<div ui-ace="{
+					  useWrapMode : true,
+					  showGutter: false,
+					  mode: 'xml',
+					  firstLineNumber: 1,
+					  onLoad: aceLoaded,
+					  onChange: aceChanged
+					}" ng-model="logTxt">
 				</div>
-				<!-- /.list-group -->
-				<a href="#" class="btn btn-default btn-block">View All ...</a>
 			</div>
-			<!-- /.panel-body -->
 		</div>
-					
-	 </div>
+	</div>
+	
 </div>

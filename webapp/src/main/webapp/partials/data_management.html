@@ -2,8 +2,13 @@
 	<div class="col-lg-12">
 		<h1 class="page-header">Data Management</h1>
 	</div>
+	
+	<div class="col-lg-12">
+	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
+	</div>
+	
 
-	<div class="col-lg-4">
+	<div class="col-lg-3">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				Upload single document
@@ -15,11 +20,11 @@
 					<div class="col-lg-6">
 					<form>
 					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newCacheID" style="width:300px">
-						<label>Trade File</label><input type="file" file-model="myFile" class="form-control" style="width:300px">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newDocumentCacheID" style="width:300px">
+						<label>JSON File</label><input type="file" fileread="jsonFile" class="form-control" style="width:300px">
 					</div>
 					<div class="form-group">
-						<button ng-click="uploadFile()" class="btn btn-default btn-sm">Upload</button>
+						<button ng-click="uploadJSONFile()" class="btn btn-default btn-sm">Upload</button>
 					</div>
 					</form>
 					</div>
@@ -28,7 +33,33 @@
 		</div>
 	</div>
 	
-	<div class="col-lg-4">
+	<div class="col-lg-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Upload file to Key/Value Store
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+			
+				<div class="row">
+					<div class="col-lg-6">
+					<form>
+					<div class="form-group">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newDocKeyValueCacheID" style="width:300px">
+						<label>Key</label><input type="text" class="form-control" ng-model="newDocKey" style="width:300px">
+						<label>File</label><input type="file" fileread="objectFile" class="form-control" style="width:300px">
+					</div>
+					<div class="form-group">
+						<button ng-click="uploadKeyValueObjectFile()" class="btn btn-default btn-sm">Upload</button>
+					</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-lg-3">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				Upload key value  data from CSV
@@ -40,11 +71,11 @@
 					<div class="col-lg-6">
 					<form>
 					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newCacheID" style="width:300px">
-						<label>Trade File</label><input type="file" file-model="myFile" class="form-control" style="width:300px">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newSimpleCacheID" style="width:300px">
+						<label>CSV File</label><input type="file" fileread="keyValueCSVFile" class="form-control" style="width:300px">
 					</div>
 					<div class="form-group">
-						<button ng-click="uploadFile()" class="btn btn-default btn-sm">Upload</button>
+						<button ng-click="uploadKeyValueCSVFile()" class="btn btn-default btn-sm">Upload</button>
 					</div>
 					</form>
 					</div>
@@ -53,7 +84,7 @@
 		</div>
 	</div>
 	
-	<div class="col-lg-4">
+	<div class="col-lg-3">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				Create general purpose cache from CSV file
@@ -65,11 +96,11 @@
 					<div class="col-lg-6">
 					<form>
 					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newCacheID" style="width:300px">
-						<label>CSV File</label><input type="file" file-model="myFile" class="form-control" style="width:300px">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newCSVCacheID" style="width:300px">
+						<label>CSV File</label><input type="file" fileread="genericCSVfileContent" class="form-control" style="width:300px">
 					</div>
 					<div class="form-group">
-						<button ng-click="uploadFile()" class="btn btn-default btn-sm">Upload</button>
+						<button ng-click="uploadGenericCSVFile()"class="btn btn-default btn-sm">Upload</button>
 					</div>
 					</form>
 					</div>
@@ -102,13 +133,13 @@
 						</thead>
 						<tbody>
 							<tr class="odd gradeX" ng-repeat="svc in dataServices">
-								<td>{{ svc.id }}</td>
+								<td>{{ svc.name }}</td>
 								<td>{{ svc.type }}</td>
 								<td>{{ svc.size }}</td>
 								<td class="center">
 									<div align="left"><div class="btn-group">
-									<button type="button" class="btn btn-default btn-sm" style="margin:0px">Remove</button>
-									<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="downloadCache(svc.id)">Download Data</button>
+									<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="removeCache(svc.name, svc.type)">Remove</button>
+									<!--  <button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="downloadCache(svc.id)">Download Data</button> -->
 									</div></div>
 								</td>
 							</tr>
@@ -121,4 +152,40 @@
 		</div>
 	</div>
 
+</div>
+
+<div class="row">
+	
+	<!-- /.col-lg-12 -->
+	
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Deployed Objects
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<p ng-show="!deployedObjects.length">
+					No objects have been deployed yet.
+				</p>
+				<div class="dataTable_wrapper" ng-show="deployedObjects.length > 0" style="height:300px; overflow-y:scroll">
+					<table class="table table-striped table-bordered table-hover" id="dataTables-example" >
+						<thead>
+							<tr>
+								<th>Cache ID</th>
+								<th>File ID</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="odd gradeX" ng-repeat="object in deployedObjects">
+								<td>{{ object.cacheId }}</td>
+								<td><a href="{{object.url}}">{{ object.fileId }}</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /.col-lg-12 -->	
 </div>

@@ -198,11 +198,11 @@ public class DocumentCacheAPI {
     }
     
     private String success() {
-    	return "{ Status : \"SUCCESS\" }";
+    	return "{ \"status\" : \"SUCCESS\" }";
     }
     
     private String error(String msg) {
-    	return "{ Status : \"ERROR\", Msg : \""+msg+"\" }";
+    	return "{ \"status\" : \"ERROR\", \"msg\" : \""+msg+"\" }";
     }
     
     private String empty() {

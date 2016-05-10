@@ -23,7 +23,6 @@ public class SimpleCache extends Cache {
 	
 	static final Logger logger = LoggerFactory.getLogger(SimpleCache.class);
 	
-	private String _cacheName;
 	
 	static public SimpleCache getOrCreate(String cacheName)
 	{
@@ -98,6 +97,8 @@ public class SimpleCache extends Cache {
         IgniteCache<String, String>  cache = ignite.getOrCreateCache(cfg);
         
         cache.put(key, value);
+        
+        ObjectIndex.All.put(key, _cacheName);
 	}
 	
 	public String get(String key)

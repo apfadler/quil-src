@@ -1,7 +1,7 @@
 <div class="col-lg-4">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			Submit existing task
+			Submit task
 		</div>
 		<!-- /.panel-heading -->
 		<div class="panel-body">
@@ -24,60 +24,6 @@
 	</div>
 </div>
 
-<div class="col-lg-4">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			Define new task
-		</div>
-		<!-- /.panel-heading -->
-		<div class="panel-body">
-		
-			<div class="row">
-				<div class="col-lg-6">
-				<form>
-				<div class="form-group">
-					<label>Type</label>
-					<select ng-model="taskType" class="form-control" style="width:40vh">
-						<option value="PriceTrade">Price Single Trade</option>
-						<option value="PricePortfolio">Price Trade Portfolio</option>
-						<option value="Script">Run Script</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<button ng-click="newTask()" class="btn btn-default btn-sm">Go...</button>
-				</div>
-				</form>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="col-lg-4">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			Edit existing task
-		</div>
-		<!-- /.panel-heading -->
-		<div class="panel-body">
-		
-			<div class="row">
-				<div class="col-lg-6">
-				<form>
-				<div class="form-group">
-					<label>Task ID</label><select ng-model="taskID" class="form-control" style="width:40vh">
-						<option ng-repeat="task in definedTasks" value="{{task.id}}">{{task.id}}</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<button class="btn btn-default btn-sm">Edit...</button>
-				</div>
-				</form>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
 	
 <script type="text/ng-template" id="alert_task.html">
 	<div>

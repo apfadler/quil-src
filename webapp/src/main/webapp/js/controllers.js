@@ -2,10 +2,31 @@
 
 var controllers = angular.module("controllers", []);
 
+controllers.directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    scope.$apply(function () {
+                        scope.fileread = loadEvent.target.result;
+                    });
+                }
+                reader.readAsText(changeEvent.target.files[0]);
+            });
+        }
+    }
+}]);
+
 controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches','DeployedObjects',function ($scope, $interval, ClusterNodes, Tasks, Caches, DeployedObjects) {
 	
 		$scope.clusterNodes = [];
 		$scope.tasks = [];
+		$scope.failedTasks = [];
+		$scope.runningTasks = [];
 		$scope.dataServices = [];
 		$scope.deployedObjects = [];
 
@@ -15,6 +36,29 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 				   
 		$interval( function() {
 						$scope.tasks = Tasks(); 
+						$scope.failedTasks = [];
+						$scope.runningTasks = [];
+						
+						
+						for (var i=0; i < $scope.tasks.length; i++)
+						{
+							if ($scope.tasks[i].status == 1) {
+								$scope.runningTasks.push($scope.tasks[i]);
+								$scope.tasks[i].status_text = "Running";
+							}
+							if ($scope.tasks[i].status == 2) {
+								$scope.runningTasks.push($scope.tasks[i]);
+								$scope.tasks[i].status_text = "Finished";
+							}
+							if ($scope.tasks[i].status == 3) {
+								$scope.failedTasks.push($scope.tasks[i]);
+								$scope.tasks[i].status_text = "Failed";
+							}
+							
+							
+							
+						}
+						
 				   }, 100);
 		$interval( function() {
 						$scope.dataServices = Caches(); 
@@ -22,6 +66,23 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 				   
 		$interval( function() {
 						$scope.deployedObjects = DeployedObjects(); 
+						
+						for (var i=0; i < $scope.deployedObjects.length; i++)
+						{
+							var cacheType = "simplecache";
+							
+							for (var j=0; j < $scope.dataServices.length; j++) {
+								if ($scope.dataServices[j].name == $scope.deployedObjects[i].cacheId ) {
+									if ($scope.dataServices[j].type.indexOf("Doc") != -1) {
+										cacheType ="documentcache";
+									}
+								}
+								
+							}
+							
+							$scope.deployedObjects[i].url = "/api/" + cacheType + "/"+$scope.deployedObjects[i].cacheId+"/get/" + $scope.deployedObjects[i].fileId;
+						};
+						
 				   }, 100);
 				   
 		$scope.logTxt = "";
@@ -35,11 +96,157 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 
 controllers.controller("DashboardController", ['$scope',function ($scope) {
 	
-	}]);
+	$scope.aceLoaded = function(_editor) {
+		_editor.setReadOnly(true);
 
-controllers.controller("DataController", ['$scope', function ($scope) {
+		$scope.ace = _editor;
+	};
+
+	$scope.aceChanged = function(e) {
+
+		$scope.ace.navigateFileEnd();
+	};
+	
+}]);
+
+controllers.controller("DataController", ['$scope', '$http', function ($scope, $http) {
+   
+   $scope.newDocumentCacheID = "";
+   $scope.newSimpleCacheID = "";
+   $scope.newCSVCacheID = "";
+   $scope.genericCSVfileContent = "";
+   
+   $scope.uploadGenericCSVFile = function() {
+	   
+	   var content = $scope.genericCSVfileContent;
+	   console.log(content);
+	   
+	   $http({method : "POST",
+		      url : "/api/documentcache/"+ $scope.newCSVCacheID + "/addFromCSV",
+		      data : content,
+		      headers : {'Content-Type' : 'text/plain'}
+	   }).
+		success(function(data, status, headers, config) {
+			console.log('post success');
+			
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
+
+		}).
+		error(function(data, status, headers, config) {
+			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
+		});
+   };
    
    
+   $scope.uploadJSONFile = function () {
+	   var content = $scope.jsonFile;
+	   console.log(content);
+	   
+	   $http({method : "POST",
+		      url : "/api/documentcache/"+ $scope.newDocumentCacheID + "/addJSONObject",
+		      data : content,
+		      headers : {'Content-Type' : 'text/plain'}
+	   }).
+		success(function(data, status, headers, config) {
+			console.log('post success');
+			
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
+
+		}).
+		error(function(data, status, headers, config) {
+			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
+		});
+   };
+   
+   $scope.uploadKeyValueCSVFile = function() {
+	   var content = $scope.keyValueCSVFile;
+	   console.log(content);
+	   
+	   $http({method : "POST",
+		      url : "/api/simplecache/"+ $scope.newSimpleCacheID + "/addFromCSV",
+		      data : content,
+		      headers : {'Content-Type' : 'text/plain'}
+	   }).
+		success(function(data, status, headers, config) {
+			console.log('post success');
+			
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
+
+		}).
+		error(function(data, status, headers, config) {
+			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
+		});
+	  
+   };
+   
+
+	$scope.uploadKeyValueObjectFile = function() {
+		   var content = $scope.objectFile;
+		   console.log(content);
+		   
+		   $http({method : "POST",
+			      url : "/api/simplecache/"+ $scope.newDocKeyValueCacheID + "/put/"+$scope.newDocKey,
+			      data : content,
+			      headers : {'Content-Type' : 'text/plain'}
+		   }).
+			success(function(data, status, headers, config) {
+				console.log('post success');
+				
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
+
+			}).
+			error(function(data, status, headers, config) {
+				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
+			});
+		  
+	   };
+   
+   $scope.removeCache = function (id,type) {
+	   var content = $scope.jsonFile;
+	   console.log(content);
+	   
+	   var typeurl = "";
+	   if (type.indexOf("Doc") != -1)
+		   typeurl ="documentcache";
+	   else
+		   typeurl ="simplecache";
+	   
+	   $http({method : "POST",
+		      url : "/api/"+typeurl+"/"+ id + "/removeAll",
+		      data : "",
+		      headers : {'Content-Type' : 'text/plain'}
+	   }).
+		success(function(data, status, headers, config) {
+			console.log('post success');
+			
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'Cache removed.', type : 'success'});
+
+		}).
+		error(function(data, status, headers, config) {
+			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'Error removing cache.', type : 'danger'});
+		});
+   };
+
+   $scope.alerts = [];
+
+   $scope.closeAlert = function(index) {
+	   $scope.alerts.splice(index, 1);
+   }
    
 }]);
 
@@ -57,22 +264,6 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal', '$state
 		$scope.alerts.splice(index, 1);
 	}
 }]);
-
-controllers.controller("ClusterController", ['$scope',		function ($scope) {
-	
-		$scope.aceLoaded = function(_editor) {
-			// Options
-			_editor.setReadOnly(true);
-			
-			$scope.ace = _editor;
-		  };
-
-		  $scope.aceChanged = function(e) {
-			//
-			$scope.ace.navigateFileEnd();
-		  };
-	
-	}]);
 
 controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal', function ($scope, $http, $uibModal) {
 
@@ -467,8 +658,10 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 		$state.go('tasks.define'); 
 	}
 	
-	$scope.submitTask = function(taskDescription) {
-		$http.post('/api/compute/task/submit', taskDescription)
+	$scope.submitTask = function(taskDescription,type) {
+		
+		
+		$http.post('/api/compute/task/submit'+type, taskDescription)
 					.success(function(data, status, headers, config) {
 						console.log(data);
 						
@@ -490,10 +683,13 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 		 $http.get('/api/repository/files'+$scope.taskID)
 					.success(function(data, status, headers, config) {
 						
+						var type="";
+						if ($scope.taskID.indexOf("scala") != -1)
+							type="Script";
 						
 						if ( data.hasOwnProperty("fileData")) {
 						
-							$scope.submitTask(data.fileData);
+							$scope.submitTask(data.fileData, type);
 						
 						 } else {
 						 
@@ -515,7 +711,7 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 					
 					for (var i=0; i < data.children.length; i++) {
 					
-						if (data.children[i].id.indexOf("Task.") != -1)
+						if (data.children[i].id.indexOf("Task.") != -1 || data.children[i].id.indexOf(".scala") != -1)
 							$scope.definedTasks.push(data.children[i]);
 					
 					}
@@ -542,7 +738,7 @@ controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalI
   
   $scope.obj = {data: {bla:"bla"}, options: { mode: 'tree' }};
   
-   $scope.schema = {};
+  $scope.schema = {};
   
   http.get('/api/repository/files'+templateID)
 					.success(function(data, status, headers, config) {

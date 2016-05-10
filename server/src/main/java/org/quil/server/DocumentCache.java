@@ -99,6 +99,8 @@ public class DocumentCache extends Cache {
         IgniteCache<String, Document>  cache = ignite.getOrCreateCache(cfg);
         
         cache.put(key, (Document)doc);
+        
+        ObjectIndex.All.put(key, _cacheName);
 	}
 	
 	public Document get(String key)

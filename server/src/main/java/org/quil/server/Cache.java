@@ -34,8 +34,10 @@ public class Cache {
 	public void removeAll()
 	{
 		try {
+			logger.info("Clearing cache " + _cacheName);
 			Ignite ignite = Ignition.ignite();
 			ignite.cache(_cacheName).removeAll();
+			caches.remove(_cacheName);
 		}
 		catch(Exception e) {
 			logger.error("Failed to clear cache "+_cacheName+": "+e.toString());
@@ -44,6 +46,7 @@ public class Cache {
 	
 	public int size() {
 		try {
+			
 			Ignite ignite = Ignition.ignite();
 			return ignite.cache(_cacheName).size(CachePeekMode.ALL);
 		}

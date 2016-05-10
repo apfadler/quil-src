@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public abstract class Task implements Serializable {
 	
 	@LoggerResource
-    private IgniteLogger logger;
+    private static IgniteLogger logger;
 
 	@QuerySqlField(index=true)
 	protected String _taskName = "";
@@ -55,7 +55,7 @@ public abstract class Task implements Serializable {
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName("Tasks");
-        cfg.setIndexedTypes(String.class, Task.class, String.class, PriceTrade.class, String.class, PricePortfolio.class);
+        cfg.setIndexedTypes(String.class, Task.class, String.class, PriceTrade.class, String.class, PricePortfolio.class, String.class, ScriptedTask.class);
         
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
         
@@ -100,12 +100,19 @@ public abstract class Task implements Serializable {
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
         Task task = tasks.get(taskName); 
         task.setResult(result);
+        
         tasks.put(taskName, task);
 	}
 	
 	public static HashMap<String, Task> allTasks() {
 		Ignite ignite = Ignition.ignite();
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
+		CacheConfiguration<String, Task> cfg = new CacheConfiguration<String, Task>();
+		
+        cfg.setCacheMode(CacheMode.REPLICATED);
+        cfg.setName("Tasks");
+        cfg.setIndexedTypes(String.class, Task.class, String.class, PriceTrade.class, String.class, PricePortfolio.class, String.class, ScriptedTask.class);
+        
+        IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
         
         HashMap<String, Task> all = new HashMap<String, Task>();
         

@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.quil.server.Tasks.Task;
 import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
@@ -39,6 +40,31 @@ public class TaskAPI {
         
         return success();
     }
+    
+    @POST
+    @Path("task/submitScript")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String submitScript(String script) {
+        try
+        {
+        	JSONObject scriptTask = new JSONObject();
+        	
+        	scriptTask.put("Interpreter", "org.quil.interpreter.ScalaScripts.ScalaScriptInterpreter");
+        	scriptTask.put("Script", script);
+        	scriptTask.put("Task", "ScriptedTask");
+        	
+        	Task task = Task.fromString(scriptTask.toJSONString());
+        	TaskRunner.runTask(task);
+        }
+        catch (Exception e)
+        {
+        	return error(e.toString());
+        }
+        
+        return success();
+    }
+    
     
     @GET
     @Path("tasks")
