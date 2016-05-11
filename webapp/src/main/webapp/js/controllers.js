@@ -144,7 +144,7 @@ controllers.controller("DashboardController", ['$scope',function ($scope) {
 	
 }]);
 
-controllers.controller("DataController", ['$scope', '$http', function ($scope, $http) {
+controllers.controller("DataController", ['$scope', '$http', '$uibModal', function ($scope, $http, $uibModal) {
    
    $scope.newDocumentCacheID = "";
    $scope.newSimpleCacheID = "";
@@ -277,6 +277,22 @@ controllers.controller("DataController", ['$scope', '$http', function ($scope, $
 		});
    };
 
+   
+   $scope.inspectObject = function (object) {
+		var modalInstance = $uibModal.open({
+		  animation: true,
+		  templateUrl: "inspectObject.html",
+		  controller: 'inspectObjectCtrl',
+		  size: 'sm',
+		  resolve: {
+			obj: function () {
+			  return object;
+			}
+			
+		  }
+		});
+	};
+   
    $scope.alerts = [];
 
    $scope.closeAlert = function(index) {
@@ -707,3 +723,28 @@ controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInst
   
 
 });
+
+controllers.controller('inspectObjectCtrl',['$scope', '$uibModalInstance','$http','obj', function ($scope, $uibModalInstance, $http, obj) {
+
+	  $scope.objectData = {};
+	  $scope.objIndex = obj;
+	  
+	  $http.get(obj.url)
+		.success(function(data, status, headers, config) {
+			$scope.objectData = data;
+		})
+		.error(function(data, status, headers, config) {
+		
+			console.log("Failed to get data!");
+		});
+	 
+	  $scope.ok = function () {
+	    $uibModalInstance.close('ok');
+	  };
+
+	  $scope.cancel = function () {
+	   $uibModalInstance.dismiss('cancel');
+	  };
+	  
+
+	}]);

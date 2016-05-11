@@ -100,4 +100,38 @@ public class TaskRunner {
 
 	}
 	
+public static void runTaskAndWait(final Task task) throws ParseException {
+		
+		logger.info("Running task " + task.getName());
+		
+		init();
+		
+		Ignite ignite = Ignition.ignite();
+		
+        // Generate task events.
+        ignite.compute().withName(task.getName()).run(new IgniteRunnable() {
+        	
+        	@LoggerResource
+            private IgniteLogger log;
+        	
+            @Override public void run() {
+                logger.info("Executing task " + task.getName());
+                
+                try {
+					
+                	task.run();
+					
+				} catch (Exception e) {
+					
+					e.printStackTrace();
+					logger.info("Interpretation failed.");
+					Task.updateStatus(task.getName(),Task.Status.ERROR);
+				}
+                           
+            }
+        });
+
+
+	}
+	
 }

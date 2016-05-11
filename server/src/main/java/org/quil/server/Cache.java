@@ -1,6 +1,8 @@
 package org.quil.server;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
@@ -31,13 +33,21 @@ public class Cache {
 		return caches.get(cacheName);
 	}
 	
-	public void removeAll()
+	public synchronized void removeAll()
 	{
 		try {
 			logger.info("Clearing cache " + _cacheName);
 			Ignite ignite = Ignition.ignite();
 			ignite.cache(_cacheName).removeAll();
 			caches.remove(_cacheName);
+			
+			Iterator<Map.Entry<String,String>> it = ObjectIndex.All.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry<String,String> e = it.next();
+				if (e.getValue() == _cacheName) {
+					it.remove();
+				}
+			}
 		}
 		catch(Exception e) {
 			logger.error("Failed to clear cache "+_cacheName+": "+e.toString());

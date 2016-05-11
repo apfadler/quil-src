@@ -179,7 +179,7 @@
 						<tbody>
 							<tr class="odd gradeX" ng-repeat="object in deployedObjects">
 								<td>{{ object.cacheId }}</td>
-								<td><a href="{{object.url}}">{{ object.fileId }}</a></td>
+								<td><a ng-click="inspectObject(object)">{{ object.fileId }}</a></td>
 							</tr>
 						</tbody>
 					</table>
@@ -189,3 +189,27 @@
 	</div>
 	<!-- /.col-lg-12 -->	
 </div>
+
+<script type="text/ng-template" id="inspectObject.html">
+<div class="modal-header">
+		<h3 class="modal-title">Inspect Object</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form-group">
+			<label>Cache: {{objIndex.cacheId}}</label>
+		</div>
+		<div class="form-group">
+			<label>UUID:  {{objIndex.fileId}}</label>	
+		</div>
+		<div class="form-group">
+			<json-formatter json="objectData" open="1"></json-formatter>	
+		</div>
+	</div>
+
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">Close</button>
+	</div>
+
+</div>
+</script>
