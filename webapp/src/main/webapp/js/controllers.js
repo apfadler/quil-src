@@ -22,77 +22,78 @@ controllers.directive("fileread", [function () {
 }]);
 
 controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches','DeployedObjects',function ($scope, $interval, ClusterNodes, Tasks, Caches, DeployedObjects) {
-	
-		$scope.clusterNodes = [];
-		$scope.tasks = [];
+
+	$scope.clusterNodes = [];
+	$scope.tasks = [];
+	$scope.failedTasks = [];
+	$scope.runningTasks = [];
+	$scope.dataServices = [];
+	$scope.deployedObjects = [];
+
+	$interval( function() {
+		$scope.clusterNodes = ClusterNodes(); 
+	}, 100);
+
+	$interval( function() {
+		$scope.tasks = Tasks(); 
 		$scope.failedTasks = [];
 		$scope.runningTasks = [];
-		$scope.dataServices = [];
-		$scope.deployedObjects = [];
 
-		$interval( function() {
-						$scope.clusterNodes = ClusterNodes(); 
-				   }, 100);
-				   
-		$interval( function() {
-						$scope.tasks = Tasks(); 
-						$scope.failedTasks = [];
-						$scope.runningTasks = [];
-						
-						
-						for (var i=0; i < $scope.tasks.length; i++)
-						{
-							if ($scope.tasks[i].status == 1) {
-								$scope.runningTasks.push($scope.tasks[i]);
-								$scope.tasks[i].status_text = "Running";
-							}
-							if ($scope.tasks[i].status == 2) {
-								$scope.runningTasks.push($scope.tasks[i]);
-								$scope.tasks[i].status_text = "Finished";
-							}
-							if ($scope.tasks[i].status == 3) {
-								$scope.failedTasks.push($scope.tasks[i]);
-								$scope.tasks[i].status_text = "Failed";
-							}
-							
-							
-							
-						}
-						
-				   }, 100);
-		$interval( function() {
-						$scope.dataServices = Caches(); 
-				   }, 100);
-				   
-		$interval( function() {
-						$scope.deployedObjects = DeployedObjects(); 
-						
-						for (var i=0; i < $scope.deployedObjects.length; i++)
-						{
-							var cacheType = "simplecache";
-							
-							for (var j=0; j < $scope.dataServices.length; j++) {
-								if ($scope.dataServices[j].name == $scope.deployedObjects[i].cacheId ) {
-									if ($scope.dataServices[j].type.indexOf("Doc") != -1) {
-										cacheType ="documentcache";
-									}
-								}
-								
-							}
-							
-							$scope.deployedObjects[i].url = "/api/" + cacheType + "/"+$scope.deployedObjects[i].cacheId+"/get/" + $scope.deployedObjects[i].fileId;
-						};
-						
-				   }, 100);
-				   
-		$scope.logTxt = "";
-		var logEvents = new EventSource('/api/log/stream');
 
-		logEvents.addEventListener("message", function(event) {
-		  $scope.logTxt += event.data;
-		  
-		});
-	}]);
+		for (var i=0; i < $scope.tasks.length; i++)
+		{
+			if ($scope.tasks[i].status == 1) {
+				$scope.runningTasks.push($scope.tasks[i]);
+				$scope.tasks[i].status_text = "Running";
+			}
+			if ($scope.tasks[i].status == 2) {
+				$scope.runningTasks.push($scope.tasks[i]);
+				$scope.tasks[i].status_text = "Finished";
+			}
+			if ($scope.tasks[i].status == 3) {
+				$scope.failedTasks.push($scope.tasks[i]);
+				$scope.tasks[i].status_text = "Failed";
+			}
+
+
+
+		}
+
+	}, 100);
+	
+	$interval( function() {
+		$scope.dataServices = Caches(); 
+	}, 100);
+
+	$interval( function() {
+		$scope.deployedObjects = DeployedObjects(); 
+
+		for (var i=0; i < $scope.deployedObjects.length; i++)
+		{
+			var cacheType = "simplecache";
+
+			for (var j=0; j < $scope.dataServices.length; j++) {
+				if ($scope.dataServices[j].name == $scope.deployedObjects[i].cacheId ) {
+					if ($scope.dataServices[j].type.indexOf("Doc") != -1) {
+						cacheType ="documentcache";
+					}
+				}
+
+			}
+
+			$scope.deployedObjects[i].url = "/api/" + cacheType + "/"+$scope.deployedObjects[i].cacheId+"/get/" + $scope.deployedObjects[i].fileId;
+		};
+
+	}, 100);
+
+	$scope.logTxt = "";
+	var logEvents = new EventSource('/api/log/stream');
+
+	logEvents.addEventListener("message", function(event) {
+		$scope.logTxt += event.data;
+
+	});
+}]);
 
 controllers.controller("DashboardController", ['$scope',function ($scope) {
 	
@@ -248,9 +249,6 @@ controllers.controller("DataController", ['$scope', '$http', function ($scope, $
 	   $scope.alerts.splice(index, 1);
    }
    
-}]);
-
-controllers.controller("ObjectsController", ['$scope', function ($scope) {
 }]);
 
 controllers.controller("TaskController", ['$scope', '$http','$uibModal', '$state',  function ($scope, $http, $uibModal, $state) {
@@ -416,9 +414,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		});
 		
 		modalInstance.result.then(function (selectedItem) {
-	
-		 
-			
+		
 		}, function () {
 		
 		});
