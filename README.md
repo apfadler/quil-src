@@ -39,9 +39,12 @@ For more info see http://quantlib.org/slides/qlum15/pfadler.pdf.
 Starting one ignite server node with QUIL webapp and rest interface running on localhost:8081/frontend
 
 1.) cd dist/
+
 2.) bin/quil-server-standalone.sh
+
 3.) Goto localhost:8081/frontend for web interface
-4.) Try bin/quil-run-examples.sh to upload example data and price basic example trades
+
+4.) Try bin/quil-run-examples.sh to upload example data and price basic example trades (uses curl to upload data and start pricing)
 
 Starting quil-server.sh will only start an ignite client node which will try to connect to an ignite grid and then serve the webapp and rest api.
 
