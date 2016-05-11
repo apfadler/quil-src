@@ -21,23 +21,24 @@
 					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="newFileWindow('newXMLFileDialog.html', 'NewFile.xml', '')">New File...</button>
 					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="uploadFileWindow()" >File upload...</button>
 					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="saveFile()" >Save File</button>
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="deleteFileWindow()">Delete File...</button>
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="newFileWindow('newFolderDialog.html', 'NewFolder', '')">Create Folder...</button>
+					<!--   <button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="deleteFileWindow()">Delete File...</button>
+					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="newFolderWindow('newFolderDialog.html', 'NewFolder', '')">Create Folder...</button> -->
 					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="uploadToCacheWindow()">Test...</button>
 					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="uploadToCacheWindow()">Deploy...</button>
 				</div>
 			</div>
 		</div>
 		<div class="panel-body" style="padding: 0px">
-			<div class="col-md-2 tree-browser">
-				<js-tree tree-events="select_node:nodeSelected" tree-data="scope" tree-model="treeModel"></js-tree>
+			<div class="col-md-3 tree-browser">
+				<js-tree tree-plugins="contextmenu" tree-contextmenu="contextMenu" tree-contextmenuaction="actions" tree-events="select_node:nodeSelected" tree-data="scope" tree-model="treeModel" tree="treeInstance" tree-config="treeConfig"></js-tree>
 			</div>
 			
-			<div class="col-md-10">
+			<div class="col-md-9">
 			  <div ui-ace="{
 					  useWrapMode : true,
 					  showGutter: true,
 					  mode: 'xml',
+					  showPrintMargin : false,
 					  firstLineNumber: 1,
 					  onLoad: aceLoaded,
 					  onChange: aceChanged
@@ -52,6 +53,25 @@
 <script type="text/ng-template" id="newFileDialog.html">
 <div class="modal-header">
 		<h3 class="modal-title">New File...</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form-group">
+			<label>Filename</label>
+			<input type="text" ng-model="fileName" class="form-control">
+		</div>
+	</div>
+
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">OK</button>
+		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="newFolderDialog.html">
+<div class="modal-header">
+		<h3 class="modal-title">New Folder...</h3>
 	</div>
 	<div class="modal-body">
 		<div class="form-group">

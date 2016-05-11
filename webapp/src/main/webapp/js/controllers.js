@@ -2,6 +2,7 @@
 
 var controllers = angular.module("controllers", []);
 
+//for file upload
 controllers.directive("fileread", [function () {
     return {
         scope: {
@@ -34,12 +35,9 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 		$scope.clusterNodes = ClusterNodes(); 
 	}, 100);
 
-	$interval( function() {
-		$scope.tasks = Tasks(); 
-		$scope.failedTasks = [];
-		$scope.runningTasks = [];
-
-
+	
+	$scope.updateTasks = function() {
+		
 		for (var i=0; i < $scope.tasks.length; i++)
 		{
 			if ($scope.tasks[i].status == 1) {
@@ -47,17 +45,48 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 				$scope.tasks[i].status_text = "Running";
 			}
 			if ($scope.tasks[i].status == 2) {
-				$scope.runningTasks.push($scope.tasks[i]);
 				$scope.tasks[i].status_text = "Finished";
+				var found = false;
+				for (var j=0; j < $scope.finishedTasks.length; j++) {
+					if ($scope.tasks[i].name == $scope.finishedTasks[j].name )
+						found = true;
+				}
+				if (!found)
+					$scope.finishedTasks.push($scope.tasks[i]);
 			}
 			if ($scope.tasks[i].status == 3) {
 				$scope.failedTasks.push($scope.tasks[i]);
 				$scope.tasks[i].status_text = "Failed";
+				
+				var found = false;
+				for (var j=0; j < $scope.finishedTasks.length; j++) {
+					if ($scope.tasks[i].name == $scope.finishedTasks[j].name )
+						found = true;
+				}
+				if (!found)
+					$scope.finishedTasks.push($scope.tasks[i]);
 			}
 
-
+			if ($scope.tasks[i].result == "")
+				$scope.tasks[i].result = "{}";
+			
+			try {
+				$scope.tasks[i].result = JSON.parse($scope.tasks[i].result);
+			}
+			catch(e) {
+				//$scope.tasks[i].result = {};
+			}
 
 		}
+	};
+	
+	$interval( function() {
+		$scope.tasks = Tasks(); 
+		$scope.failedTasks = [];
+		$scope.runningTasks = [];
+
+
+		$scope.updateTasks();
 
 	}, 100);
 	
@@ -93,6 +122,11 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 		$scope.logTxt += event.data;
 
 	});
+	
+	$scope.tasks = Tasks(); 
+	$scope.finishedTasks = [];
+	$scope.updateTasks();
+	
 }]);
 
 controllers.controller("DashboardController", ['$scope',function ($scope) {
@@ -261,6 +295,14 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal', '$state
 	$scope.closeAlert = function(index) {
 		$scope.alerts.splice(index, 1);
 	}
+	
+	$scope.pretty = function (obj) {
+        return angular.toJson(JSON.parse(obj), true);
+    }
+	
+	$scope.parse = function (obj) {
+        return JSON.parse(obj);
+    }
 }]);
 
 controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal', function ($scope, $http, $uibModal) {
@@ -290,6 +332,10 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
         }
 		
       };
+      
+    $scope.contextMenu = function(e, eventData) {
+    	alert("rightclick");
+    };
 	  
 	$scope.closeAlert = function(index) {
 		$scope.alerts.splice(index, 1);
@@ -420,18 +466,18 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		});
 	};
 	
-	$scope.newFolderWindow = function (template) {
+	$scope.newFolderWindow = function (template, fileName, base) {
 
 		if (base == "Repository") base = "/";
 	
 		var modalInstance = $uibModal.open({
 		  animation: true,
-		  templateUrl: "taskFromTemplateDialog.html",
-		  controller: 'taskFromTemplateDialogCtrl',
+		  templateUrl: "newFolderDialog.html",
+		  controller: 'newFileDialogCtrl',
 		  size: 'sm',
 		  resolve: {
-			templateID: function () {
-			  return folderName;
+			newFileName: function () {
+			  return fileName;
 			}
 			
 		  }
@@ -480,168 +526,51 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 						
 	$scope.loadRepository = function() { $http.get('/api/repository/content').
 				success(function(data, status, headers, config) {
-					// this callback will be called asynchronously
-					// when the response is available
-					
-					$scope.treeModel  = data.children;
-					
-
+					$scope.treeModel  = data;
 				}).
 				error(function(data, status, headers, config) {
-					// called asynchronously if an error occurs
-					// or server returns response with an error status.
-					
 					console.log("Failed to get repo!");
-
 				}
 			);
 	}
 	
 	
-	$scope.loadRepository();
-}]);
-
-controllers.controller("TaskDefinitionController", ['$scope', '$state', '$http', function ($scope, $state, $http) {
-	
-	
-    $scope.schema = {};
-	$scope.model = { FileName : "/Task.New.json", Template : $scope.templateID, Interpreter : "MoCo", Task: "PriceTrade" };
-  
-    $http.get('/api/repository/files'+$scope.templateID)
-					.success(function(data, status, headers, config) {
-					
-						console.log(data);
-
-						$scope.generateForm(data);
-					})
-					.error(function(data, status, headers, config) {
-						alert(status);
-						console.log("Failed to get file!");
-					});
-  
-  
-	$scope.generateForm = function(data) { 
-	
-		var deployedTemplates = [];
-		var deployedMarkets = [];
-		var deployedTrades = [];
-		
-		for (var i=0; i < $scope.deployedObjects.length; i++)
-		{
-			if ($scope.deployedObjects[i].cacheId == "Markets") {
-				deployedMarkets.push($scope.deployedObjects[i].cacheId+":"+$scope.deployedObjects[i].fileId);
-			}
-			
-			if ($scope.deployedObjects[i].cacheId == "Templates") {
-				deployedTemplates.push($scope.deployedObjects[i].cacheId+":"+$scope.deployedObjects[i].fileId);
-			}
-			
-			if ($scope.deployedObjects[i].cacheId == "Trades") {
-				deployedTrades.push($scope.deployedObjects[i].cacheId+":"+$scope.deployedObjects[i].fileId);
+	$scope.actions = function(e){
+		console.log('context menu ' + e.parent);
+		console.log(e);
+		if (e.icon.indexOf("folder") != -1) {
+			return { 
+				"NewFolder": {
+					"label" : "New Folder...",
+					"action" : function(obj) { 
+						
+					}
+				},
+				"NewFile": {
+					"label" : "New file...",
+					"action" : function(obj) { 
+						
+					}
+				},
+				"DeleteFolder": {
+					"label" : "Delete",
+					"action" : function(obj) { 
+						
+					}
+				}
 			}
 		}
-		
-		deployedMarkets.push("");
-		deployedTemplates.push("");
-		deployedTrades.push("");
-	
-		var schema = {
-			type: "object",
-			properties : {
-			
-				FileName : {type:"string"},
-			
-				Interpreter : { type : "string", enum : ["QuantLib", "MoCo"], default : "QuantLib"},
-				
-				Task : { type : "string", enum : ["PriceTrade", "PricePortfolio"], default : "PriceTrade"},
-				
-				Template : { type : "string", enum:deployedTemplates },
-				
-				Market : { type : "string", enum:deployedMarkets }, 
-				
-				Trade :{ type:"string" , enum:deployedTrades}
-				
-				
-
+		return { 
+			"DeleteFile": {
+				"label" : "DeleteFile",
+				"action" : function(obj) { 
+					alert('child')
+				}
 			}
-		};
-		
-		if (deployedTemplates.length >0)
-			$scope.model.Template = deployedTemplates[0];
-			
-		if (deployedMarkets.length >0)
-			$scope.model.Market = deployedMarkets[0];
-			
-		if (deployedTemplates.length >0)
-			$scope.model.Trade = deployedTrades[0];
-		
-		
-		/*var x2js = new X2JS();
-		var template = x2js.xml_str2json( data.fileData );
-		
-		$scope.model.TradeData = {};
-		for (var i=0; i < template.InputFile.InputParameter.length; i++)
-		{
-			schema.properties.TradeData.properties[template.InputFile.InputParameter[i].Name] = {type : "string"}; 
-			
-			//$scope.model.TradeData[template.InputFile.InputParameter[i].Name] = "1";
-		} */
-		
-		
-		
-		
-		$scope.schema = schema;//JSON.parse(data.fileData);
-	}
+		}
+	};
 	
-	$scope.saveTask = function() {
-	
-		var model = $scope.model;
-		var fileName = model.FileName;
-		delete model.FileName;
-		
-		var parts = model.Template.split(":");
-		var templateRepo = parts[0];
-		var template = parts[1];
-		
-		parts = model.Market.split(":");
-		var marketRepo = parts[0];
-		var market = parts[1];
-		
-		parts = model.Trade.split(":");
-		var tradeRepo = parts[0];
-		var trade = parts[1];
-		
-		model.Template = template;
-		model.Repository = templateRepo;
-		model.MarketData = { Repository : marketRepo, Key : market};
-		
-		model.TradeData = { Repository : tradeRepo, Key : trade};
-		
-		delete model.Trade;delete model.Market;
-		
-		if (model.Interpreter == "MoCo")
-			model.Interpreter = "org.quil.interpreter.MoCoTemplates.MoCoXmlTemplateInterpreter";
-	
-		 $http.post("/api/repository/files"+ fileName + "/put", model).
-			success(function(data, status, headers, config) {
-				console.log('post success');
-				
-				$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Task saved.', type : 'success'});
-				
-				$state.go('tasks.main');
-				
-
-			}).
-			error(function(data, status, headers, config) {
-				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
-				$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Error saving file', type : 'danger'});
-			
-			});
-	
-	}
-
+	$scope.loadRepository();
 }]);
 
 controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	function ($scope, $state, $http) {
@@ -649,13 +578,7 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 	$scope.taskType = "PriceTrade";
 	$scope.definedTasks = [];
 	
-	$scope.newTask = function() {
-			
-		$state.go('tasks.define'); 
-	}
-	
 	$scope.submitTask = function(taskDescription,type) {
-		
 		
 		$http.post('/api/compute/task/submit'+type, taskDescription)
 					.success(function(data, status, headers, config) {
@@ -701,127 +624,22 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 	
 	$scope.loadDefinedTasks = function() { $http.get('/api/repository/content').
 				success(function(data, status, headers, config) {
-					// this callback will be called asynchronously
-					// when the response is available
-					
-					
 					for (var i=0; i < data.children.length; i++) {
 					
 						if (data.children[i].id.indexOf("Task.") != -1 || data.children[i].id.indexOf(".scala") != -1)
 							$scope.definedTasks.push(data.children[i]);
-					
 					}
-					
 				}).
 				error(function(data, status, headers, config) {
-					// called asynchronously if an error occurs
-					// or server returns response with an error status.
-					
 					console.log("Failed to get repo!");
-
 				}
 			);
 	}
-	
 	
 	$scope.loadDefinedTasks();
 		
 }]);
 
-controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalInstance, templateID, http) {
-
-  $scope.templateID = templateID;
-  
-  $scope.obj = {data: {bla:"bla"}, options: { mode: 'tree' }};
-  
-  $scope.schema = {};
-  
-  http.get('/api/repository/files'+templateID)
-					.success(function(data, status, headers, config) {
-					
-						console.log(data);
-
-						$scope.generateForm(data);
-					})
-					.error(function(data, status, headers, config) {
-						alert(status);
-						console.log("Failed to get file!");
-					});
-  
-  
-  $scope.generateForm =function(data) {
-  
-	var schema = {
-			type: "object",
-			properties : {
-				Interpreter : { type : "string", enum : ["QuantLib", "MoCo"], default : "QuantLib"},
-				
-				Task : { type : "string", enum : ["PriceTrade", "PricePortfolio"], default : "PriceTrade"},
-				
-				Template : { type : "string" },
-				Repository : { type : "string" },
-				
-				MarketData : {
-				
-					type : "object",
-					properties : {
-					
-						Market_Data_Repository : { type : "string" },
-						Market_ID : { type : "string" }
-					}
-				
-				},
-				
-				TradeData : {
-				
-					type : "object",
-					properties : {
-					}
-				
-				}
-
-			}
-	};
-	
-	
-	var x2js = new X2JS();
-	var template = x2js.xml_str2json( data.fileData );
-	
-	for (var i=0; i < template.InputFile.InputParameter.length; i++)
-	{
-		schema.properties.TradeData.properties[template.InputFile.InputParameter[i].Name] = {type : "string"}; 
-	}
-	
-	$scope.schema = schema;//JSON.parse(data.fileData);
-	$scope.obj.data = schema // JSON.parse(data.fileData);
-	
-	
-  }
- 
-
-  $scope.form = [
-    "*",
-    {
-      
-    }
-  ];
-
-  $scope.model = {};
-
-  $scope.btnClick = function() {
-    $scope.obj.options.mode = 'code'; //should switch you to code view
-  }
- 
-  $scope.ok = function () {
-    $uibModalInstance.close('ok');
-  };
-
-  $scope.cancel = function () {
-   $uibModalInstance.dismiss('cancel');
-  };
-  
-
-});
 
 controllers.controller('newFileDialogCtrl', function ($scope, $uibModalInstance, newFileName) {
 
@@ -889,62 +707,3 @@ controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInst
   
 
 });
-
-
-/*
-$scope.taskFromRepository = function() {
-		 $http.get('/api/repository/files'+$scope.taskID)
-					.success(function(data, status, headers, config) {
-						
-						
-						if ( data.hasOwnProperty("fileData")) {
-						
-							$scope.submitTask(data.fileData);
-						
-						 } else {
-						 
-							$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Task submission failed: ' + data.Msg, type : 'danger'});
-							
-						}
-					})
-					.error(function(data, status, headers, config) {
-						 $scope.alerts.push({msg: 'Task submission failed: ' + status , type : 'danger'});
-					});
-	}
-	
-	$scope.newTask = function() {
-			
-		$state.go('tasks.define'); 
-	}
-
-	$scope.taskFromTemplate = function() {
-		
-		var modalInstance = $uibModal.open({
-		  animation: true,
-		  templateUrl: "taskFromTemplateDialog.html",
-		  controller: 'taskFromTemplateDialogCtrl',
-		  size: 'sm',
-		  windowClass : 'task-template-modal-window',
-		  resolve: {
-			templateID: function () {
-			  return $scope.templateID;
-			},
-			
-			http: function() {
-				return $http;
-				}
-			
-		  }
-		});
-		
-		modalInstance.result.then(function (selectedItem) {
-	
-			
-		}, function () {
-		 
-		});
-	}
-	
-	$scope.taskFromCachedTask = function() {
-	}*/

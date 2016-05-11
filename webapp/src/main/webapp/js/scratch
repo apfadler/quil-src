@@ -1,0 +1,239 @@
+
+controllers.controller("TaskDefinitionController", ['$scope', '$state', '$http', function ($scope, $state, $http) {
+	
+	
+    $scope.schema = {};
+	$scope.model = { FileName : "/Task.New.json", Template : $scope.templateID, Interpreter : "MoCo", Task: "PriceTrade" };
+  
+    $http.get('/api/repository/files'+$scope.templateID)
+					.success(function(data, status, headers, config) {
+					
+						console.log(data);
+
+						$scope.generateForm(data);
+					})
+					.error(function(data, status, headers, config) {
+						alert(status);
+						console.log("Failed to get file!");
+					});
+  
+  
+	$scope.generateForm = function(data) { 
+	
+		var deployedTemplates = [];
+		var deployedMarkets = [];
+		var deployedTrades = [];
+		
+		for (var i=0; i < $scope.deployedObjects.length; i++)
+		{
+			if ($scope.deployedObjects[i].cacheId == "Markets") {
+				deployedMarkets.push($scope.deployedObjects[i].cacheId+":"+$scope.deployedObjects[i].fileId);
+			}
+			
+			if ($scope.deployedObjects[i].cacheId == "Templates") {
+				deployedTemplates.push($scope.deployedObjects[i].cacheId+":"+$scope.deployedObjects[i].fileId);
+			}
+			
+			if ($scope.deployedObjects[i].cacheId == "Trades") {
+				deployedTrades.push($scope.deployedObjects[i].cacheId+":"+$scope.deployedObjects[i].fileId);
+			}
+		}
+		
+		deployedMarkets.push("");
+		deployedTemplates.push("");
+		deployedTrades.push("");
+	
+		var schema = {
+			type: "object",
+			properties : {
+			
+				FileName : {type:"string"},
+			
+				Interpreter : { type : "string", enum : ["QuantLib", "MoCo"], default : "QuantLib"},
+				
+				Task : { type : "string", enum : ["PriceTrade", "PricePortfolio"], default : "PriceTrade"},
+				
+				Template : { type : "string", enum:deployedTemplates },
+				
+				Market : { type : "string", enum:deployedMarkets }, 
+				
+				Trade :{ type:"string" , enum:deployedTrades}
+				
+				
+
+			}
+		};
+		
+		if (deployedTemplates.length >0)
+			$scope.model.Template = deployedTemplates[0];
+			
+		if (deployedMarkets.length >0)
+			$scope.model.Market = deployedMarkets[0];
+			
+		if (deployedTemplates.length >0)
+			$scope.model.Trade = deployedTrades[0];
+		
+		
+		/*var x2js = new X2JS();
+		var template = x2js.xml_str2json( data.fileData );
+		
+		$scope.model.TradeData = {};
+		for (var i=0; i < template.InputFile.InputParameter.length; i++)
+		{
+			schema.properties.TradeData.properties[template.InputFile.InputParameter[i].Name] = {type : "string"}; 
+			
+			//$scope.model.TradeData[template.InputFile.InputParameter[i].Name] = "1";
+		} */
+		
+		
+		
+		
+		$scope.schema = schema;//JSON.parse(data.fileData);
+	}
+	
+	$scope.saveTask = function() {
+	
+		var model = $scope.model;
+		var fileName = model.FileName;
+		delete model.FileName;
+		
+		var parts = model.Template.split(":");
+		var templateRepo = parts[0];
+		var template = parts[1];
+		
+		parts = model.Market.split(":");
+		var marketRepo = parts[0];
+		var market = parts[1];
+		
+		parts = model.Trade.split(":");
+		var tradeRepo = parts[0];
+		var trade = parts[1];
+		
+		model.Template = template;
+		model.Repository = templateRepo;
+		model.MarketData = { Repository : marketRepo, Key : market};
+		
+		model.TradeData = { Repository : tradeRepo, Key : trade};
+		
+		delete model.Trade;delete model.Market;
+		
+		if (model.Interpreter == "MoCo")
+			model.Interpreter = "org.quil.interpreter.MoCoTemplates.MoCoXmlTemplateInterpreter";
+	
+		 $http.post("/api/repository/files"+ fileName + "/put", model).
+			success(function(data, status, headers, config) {
+				console.log('post success');
+				
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Task saved.', type : 'success'});
+				
+				$state.go('tasks.main');
+				
+
+			}).
+			error(function(data, status, headers, config) {
+				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Error saving file', type : 'danger'});
+			
+			});
+	
+	}
+
+}]);
+
+
+controllers.controller('taskFromTemplateDialogCtrl',function ($scope, $uibModalInstance, templateID, http) {
+
+  $scope.templateID = templateID;
+  
+  $scope.obj = {data: {bla:"bla"}, options: { mode: 'tree' }};
+  
+  $scope.schema = {};
+  
+  http.get('/api/repository/files'+templateID)
+					.success(function(data, status, headers, config) {
+					
+						console.log(data);
+
+						$scope.generateForm(data);
+					})
+					.error(function(data, status, headers, config) {
+						alert(status);
+						console.log("Failed to get file!");
+					});
+  
+  
+  $scope.generateForm =function(data) {
+  
+	var schema = {
+			type: "object",
+			properties : {
+				Interpreter : { type : "string", enum : ["QuantLib", "MoCo"], default : "QuantLib"},
+				
+				Task : { type : "string", enum : ["PriceTrade", "PricePortfolio"], default : "PriceTrade"},
+				
+				Template : { type : "string" },
+				Repository : { type : "string" },
+				
+				MarketData : {
+				
+					type : "object",
+					properties : {
+					
+						Market_Data_Repository : { type : "string" },
+						Market_ID : { type : "string" }
+					}
+				
+				},
+				
+				TradeData : {
+				
+					type : "object",
+					properties : {
+					}
+				
+				}
+
+			}
+	};
+	
+	
+	var x2js = new X2JS();
+	var template = x2js.xml_str2json( data.fileData );
+	
+	for (var i=0; i < template.InputFile.InputParameter.length; i++)
+	{
+		schema.properties.TradeData.properties[template.InputFile.InputParameter[i].Name] = {type : "string"}; 
+	}
+	
+	$scope.schema = schema;//JSON.parse(data.fileData);
+	$scope.obj.data = schema // JSON.parse(data.fileData);
+	
+	
+  }
+ 
+
+  $scope.form = [
+    "*",
+    {
+      
+    }
+  ];
+
+  $scope.model = {};
+
+  $scope.btnClick = function() {
+    $scope.obj.options.mode = 'code'; //should switch you to code view
+  }
+ 
+  $scope.ok = function () {
+    $uibModalInstance.close('ok');
+  };
+
+  $scope.cancel = function () {
+   $uibModalInstance.dismiss('cancel');
+  };
+  
+
+});
