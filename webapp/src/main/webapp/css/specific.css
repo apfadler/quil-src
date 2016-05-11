@@ -401,3 +401,12 @@ table.dataTable thead .sorting:after {
   from { opacity:0; }
   to { opacity:1; }
 }
+
+/*
+.repo_editor {
+		height:100%;
+} */
+
+.repo_output {
+		height:10vh;
+}

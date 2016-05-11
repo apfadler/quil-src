@@ -1,40 +1,50 @@
 <div class="row">
 
-
-
 	<div class="col-lg-12">
-		<h1 class="page-header">Repository</h1> 
-	</div>
-	
-	<div class="col-lg-12">
-	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
+		<h1 class="page-header">Repository</h1>
 	</div>
 
 	<div class="col-lg-12">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<div align="left" style="float:left">
-				File: {{currentFile}}
-			</div>
-			<div align="right">
-				<div class="btn-group">
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="newFileWindow('newXMLFileDialog.html', 'NewFile.xml', '')">New File...</button>
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="uploadFileWindow()" >File upload...</button>
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="saveFile()" >Save File</button>
-					<!--   <button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="deleteFileWindow()">Delete File...</button>
+		<uib-alert ng-repeat="alert in alerts" type="{{alert.type}}"
+			close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
+	</div>
+
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div align="left" style="float: left">File: {{currentFile}}</div>
+				<div align="right">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default btn-sm"
+							style="margin: 0px"
+							ng-click="newFileWindow('newXMLFileDialog.html', 'NewFile.xml', '')">New
+							File...</button>
+						<button type="button" class="btn btn-default btn-sm"
+							style="margin: 0px" ng-click="uploadFileWindow()">File
+							upload...</button>
+						<button type="button" class="btn btn-default btn-sm"
+							style="margin: 0px" ng-click="saveFile()">Save File</button>
+						<!--   <button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="deleteFileWindow()">Delete File...</button>
 					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="newFolderWindow('newFolderDialog.html', 'NewFolder', '')">Create Folder...</button> -->
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="uploadToCacheWindow()">Test...</button>
-					<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="uploadToCacheWindow()">Deploy...</button>
+						<!--  <button type="button" class="btn btn-default btn-sm"
+							style="margin: 0px" ng-click="uploadToCacheWindow()">Test...</button> -->
+						<button type="button" class="btn btn-default btn-sm"
+							style="margin: 0px" ng-click="uploadToCacheWindow()">Upload to Cache...</button>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="panel-body" style="padding: 0px">
-			<div class="col-md-3 tree-browser">
-				<js-tree tree-plugins="contextmenu" tree-contextmenu="contextMenu" tree-contextmenuaction="actions" tree-events="select_node:nodeSelected" tree-data="scope" tree-model="treeModel" tree="treeInstance" tree-config="treeConfig"></js-tree>
-			</div>
-			
-			<div class="col-md-9">
-			  <div ui-ace="{
+			<div class="panel-body" style="padding: 0px">
+				<div class="col-md-3 tree-browser repo_editor">
+					<js-tree tree-plugins="contextmenu" tree-contextmenu="contextMenu"
+						tree-contextmenuaction="actions"
+						tree-events="select_node:nodeSelected" tree-data="scope"
+						tree-model="treeModel" tree="treeInstance"
+						tree-config="treeConfig"></js-tree>
+				</div>
+
+				<div class="col-md-9">
+					<div class="repo_editor"
+						ui-ace="{
 					  useWrapMode : true,
 					  showGutter: true,
 					  mode: 'xml',
@@ -42,13 +52,47 @@
 					  firstLineNumber: 1,
 					  onLoad: aceLoaded,
 					  onChange: aceChanged
-					}" ng-model="fileContent">
+					}"
+						ng-model="fileContent"></div>
+				</div>
+			</div>
+			<div></div>
+		</div>
+	</div>
+</div>
+
+<!-- <div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div align="left" style="float:left">
+					Output
+				</div>
+				<div align="right">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default btn-sm"
+							style="margin: 0px">Clear</button>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body" style="padding: 0px">
+				<div class="col-md-12">
+				  <div ui-ace="{
+						 useWrapMode : true,
+					  showGutter: false,
+					  showPrintMargin : false,
+					  mode: 'xml',
+					  firstLineNumber: 1,
+					  onLoad: aceLoaded,
+					  onChange: aceChanged
+					
+						}" ng-model="fileContent" class="repo_output" >
+					</div>
 				</div>
 			</div>
 		</div>
-	<div>
 	</div>
-</div>
+</div> -->
 
 <script type="text/ng-template" id="newFileDialog.html">
 <div class="modal-header">
@@ -129,7 +173,9 @@
 		<div class="form-group">
 			<label>Choose Target Folder</label><br/>
 				<js-tree tree-events="select_node:nodeSelected" tree-data="scope" tree-model="theTree"></js-tree>
-			<label>File</label><input type="file" class="form-control">
+        </div>
+        <div class="form-group">
+			<label>Choose File</label><input type="file" class="form-control">
 		</div>
 		</form>
 		</div>
@@ -150,14 +196,32 @@
 
 <script type="text/ng-template" id="uploadToCacheDialog.html">
 <div class="modal-header">
-		<h3 class="modal-title">Deploy...</h3>
+		<h3 class="modal-title">Upload this data to a cache...</h3>
 	</div>
 	<div class="modal-body">
 		<div class="form-group">
 			<label>Cache ID</label>
 			<input type="text" ng-model="cacheID" class="form-control">
-			<label>File ID</label>
-			<input type="text" ng-model="cacheKey" class="form-control">
+
+        </div>
+		<div class="form-group">
+			<label>Interpret data as</label>
+			<div class="radio">
+			  <label><input type="radio" name="optradio">Multiple Key/Values from CSV</label>
+			</div>
+			<div class="radio">
+  				<label><input type="radio" name="optradio">Single Key/Value Pair</label>
+			</div>
+			<div class="radio">
+  				<label><input type="radio" name="optradio">Tabular Data from CSV</label>
+			</div>
+			<div class="radio">
+  				<label><input type="radio" name="optradio">Single JSON Document</label>
+			</div>
+	    </div>
+		<div class="form-group">
+			<label>Key</label>
+			<input type="text" ng-model="" class="form-control">
 		</div>
 	</div>
 
