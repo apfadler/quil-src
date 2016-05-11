@@ -3,6 +3,9 @@ This is the source code for QUIL: a proof of concept for a distributed pricing a
 
 For more info see http://quantlib.org/slides/qlum15/pfadler.pdf.
 
+# Quickstart using Docker
+
+Follow the instructions at https://github.com/apfadler/quil-docker
 
 # Build Instructions
 
