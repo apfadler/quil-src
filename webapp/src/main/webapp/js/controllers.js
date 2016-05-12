@@ -783,6 +783,7 @@ controllers.controller('uploadFileDialogCtrl',function ($scope, $uibModalInstanc
   
   $scope.ok = function () {
 	 
+	  $scope.error = undefined;
 	  
 	  if ($scope.selectedFolder == undefined)
 		  $scope.error = "Please select a target folder";
@@ -811,6 +812,8 @@ controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInst
  
   $scope.ok = function () {
 	
+	  $scope.error = undefined;
+	  
 	  if ($scope.cacheId == undefined)
 		  $scope.error = "Please enter a Cache ID";
 	  
