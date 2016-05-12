@@ -6,7 +6,8 @@ var controllers = angular.module("controllers", []);
 controllers.directive("fileread", [function () {
     return {
         scope: {
-            fileread: "="
+            fileread: "=",
+            filename: "="
         },
         link: function (scope, element, attributes) {
             element.bind("change", function (changeEvent) {
@@ -16,11 +17,16 @@ controllers.directive("fileread", [function () {
                         scope.fileread = loadEvent.target.result;
                     });
                 }
+                var files = event.target.files;
+                var file = files[0];
+                scope.filename = file ? file.name : undefined;
+                scope.$apply();
                 reader.readAsText(changeEvent.target.files[0]);
             });
         }
     }
 }]);
+
 
 controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches','DeployedObjects',function ($scope, $interval, ClusterNodes, Tasks, Caches, DeployedObjects) {
 
@@ -110,7 +116,9 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 
 			}
 
-			$scope.deployedObjects[i].url = "/api/" + cacheType + "/"+$scope.deployedObjects[i].cacheId+"/get/" + $scope.deployedObjects[i].fileId;
+			$scope.deployedObjects[i].url = "/api/" + cacheType +
+											"/"+$scope.deployedObjects[i].cacheId+"/get/" 
+											+ $scope.deployedObjects[i].fileId;
 		};
 
 	}, 100);
@@ -302,10 +310,6 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 }]);
 
 controllers.controller("TaskController", ['$scope', '$http','$uibModal', '$state',  function ($scope, $http, $uibModal, $state) {
-
-	$scope.templateID = "/Template.MoCo.PlainVanillaSwaption.xml"
-	$scope.taskID = "/Task.PriceSingleTradeMoCo.json"
-	
 	$scope.alerts = [];
 	
 	$scope.closeAlert = function(index) {
@@ -326,10 +330,8 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
     $scope.treeModel = [];
 	$scope.fileContent = "";
 	$scope.currentFile = "New File *";
-	
 	$scope.alerts = [];
 
-	
 	$scope.nodeSelected = function(e, eventData) {
 	
 	    if (eventData.node.original.type=="file") {
@@ -345,6 +347,8 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 					
 						console.log("Failed to get file!");
 					});
+        } else {
+        	$scope.currentFolder = eventData.node.id;
         }
 		
       };
@@ -359,7 +363,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	  
 	$scope.saveFile = function() {
 	
-	    $http.post("/api/repository/files"+ $scope.currentFile + "/put", $scope.fileContent).
+	    $http.post("/api/repository/files"+ $scope.currentFile, $scope.fileContent).
 			success(function(data, status, headers, config) {
 				console.log('post success');
 				
@@ -367,8 +371,6 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 							$scope.alerts.push({msg: 'File saved.', type : 'success'});
 				
 				$scope.loadRepository();
-				
-				
 
 			}).
 			error(function(data, status, headers, config) {
@@ -381,8 +383,6 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	  
 	$scope.newFileWindow = function (template, fileName, base) {
 
-		if (base == "Repository") base = "/";
-	
 		var modalInstance = $uibModal.open({
 		  animation: true,
 		  templateUrl: "newFileDialog.html",
@@ -398,7 +398,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		
 		modalInstance.result.then(function (selectedItem) {
 	
-		  $http.post("/api/repository/files/"+ base + selectedItem + "/put").
+		  $http.post("/api/repository/files/"+ base + "/" + selectedItem).
 			success(function(data, status, headers, config) {
 				console.log('post success');
 				
@@ -416,8 +416,6 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	
 	$scope.deleteFileWindow = function (template, fileName, base) {
 
-		if (base == "Repository") base = "/";
-	
 		var modalInstance = $uibModal.open({
 		  animation: true,
 		  templateUrl: "deleteFileDialog.html",
@@ -432,15 +430,50 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  }
 		});
 		
-		modalInstance.result.then(function (selectedItem) {
+		modalInstance.result.then(function () {
 	
-		  $http.post("/api/repository/files"+ $scope.currentFile + "/delete").
+		  $http.post("/api/repository/files"+ fileName + "/delete").
 			success(function(data, status, headers, config) {
 				console.log('post success');
 				
 				$scope.loadRepository();
 				$scope.fileContent = "";
 				$scope.currentFile = "New File *";
+				
+
+			}).
+			error(function(data, status, headers, config) {
+				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+			});
+			
+		}, function () {
+		
+		});
+	};
+	
+	$scope.deleteFolderWindow = function (template, fileName, base) {
+
+		var modalInstance = $uibModal.open({
+		  animation: true,
+		  templateUrl: "deleteFolderDialog.html",
+		  controller: 'deleteFileDialogCtrl',
+		  size: 'sm',
+		  resolve: {
+			newFileName: function () {
+			  return fileName;
+			}
+			
+			
+		  }
+		});
+		
+		modalInstance.result.then(function () {
+	
+		  $http.post("/api/repository/folders"+ fileName + "/delete").
+			success(function(data, status, headers, config) {
+				console.log('post success');
+				
+				$scope.loadRepository();
 				
 
 			}).
@@ -464,19 +497,33 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 			newFileName: function () {
 			  return "asd";
 			},
-			
 			tree: function () {
-			
 			  return $scope.treeModel;
 			}
-			
-			
-			
 		  }
 		});
 		
-		modalInstance.result.then(function (selectedItem) {
+		modalInstance.result.then(function (fileInfo) {
 		
+			$http({method : "POST",
+			      url : "/api/repository/files"+ fileInfo.fileName ,
+			      data : fileInfo.fileData,
+			      headers : {'Content-Type' : 'text/plain'}
+		   }).
+			success(function(data, status, headers, config) {
+				console.log('post success');
+				
+				$scope.alerts.splice(0, 1);
+				$scope.alerts.push({msg: 'File upload successful.', type : 'success'});
+
+				$scope.loadRepository();
+			}).
+			error(function(data, status, headers, config) {
+				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Error uploading file.', type : 'danger'});
+			});
+			
 		}, function () {
 		
 		});
@@ -484,8 +531,6 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	
 	$scope.newFolderWindow = function (template, fileName, base) {
 
-		if (base == "Repository") base = "/";
-	
 		var modalInstance = $uibModal.open({
 		  animation: true,
 		  templateUrl: "newFolderDialog.html",
@@ -501,7 +546,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		
 		modalInstance.result.then(function (selectedItem) {
 	
-		  $http.post("/api/repository/folders/"+ base + selectedItem + "/put").
+		  $http.post("/api/repository/folders/"+ base + "/" + selectedItem).
 			success(function(data, status, headers, config) {
 				console.log('post success');
 				
@@ -532,8 +577,39 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  }
 		});
 		
-		modalInstance.result.then(function (selectedItem) {
+		modalInstance.result.then(function (data) {
 	
+			var url="";
+			if (data.cacheType == "documentcache")
+				url = "/api/documentcache/"+ data.cacheId + "/addFromCSV";
+			
+			if (data.cacheType == "documentcachesingle")
+				url = "/api/documentcache/"+ data.cacheId + "/put/"+ data.cacheKey;
+			
+			if (data.cacheType == "simplecache")
+				url = "/api/simplecache/"+ data.cacheId + "/addFromCSV";
+			
+			if (data.cacheType == "simplecachesingle")
+				url = "/api/simplecache/"+ data.cacheId + "/put/"+ data.cacheKey;
+			
+			
+			   $http({method : "POST",
+				      url : url,
+				      data : $scope.fileContent,
+				      headers : {'Content-Type' : 'text/plain'}
+			   }).
+				success(function(data, status, headers, config) {
+					console.log('post success');
+					
+					$scope.alerts.splice(0, 1);
+								$scope.alerts.push({msg: 'Data uploaded.', type : 'success'});
+
+				}).
+				error(function(data, status, headers, config) {
+					console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+					$scope.alerts.splice(0, 1);
+								$scope.alerts.push({msg: 'Error uploading data', type : 'danger'});
+				});
 			
 		}, function () {
 		 
@@ -553,25 +629,25 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	
 	$scope.actions = function(e){
 		console.log('context menu ' + e.parent);
-		console.log(e);
+		
 		if (e.icon.indexOf("folder") != -1) {
 			return { 
 				"NewFolder": {
 					"label" : "New Folder...",
 					"action" : function(obj) { 
-						
+						$scope.newFolderWindow("", "NewFile" , $scope.currentFolder);
 					}
 				},
 				"NewFile": {
 					"label" : "New file...",
 					"action" : function(obj) { 
-						
+						$scope.newFileWindow("", "NewFile" , $scope.currentFolder);
 					}
 				},
 				"DeleteFolder": {
 					"label" : "Delete",
 					"action" : function(obj) { 
-						
+						$scope.deleteFolderWindow("", $scope.currentFolder ,"");
 					}
 				}
 			}
@@ -580,7 +656,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 			"DeleteFile": {
 				"label" : "DeleteFile",
 				"action" : function(obj) { 
-					alert('child')
+					$scope.deleteFileWindow("", $scope.currentFile ,"");
 				}
 			}
 		}
@@ -698,8 +774,28 @@ controllers.controller('uploadFileDialogCtrl',function ($scope, $uibModalInstanc
 
   $scope.theTree = tree;
  
+  $scope.nodeSelected = function(e, eventData) {
+		
+	    if (eventData.node.original.type=="dir") {
+		  $scope.selectedFolder = eventData.node.id;
+	    }
+    };
+  
   $scope.ok = function () {
-    $uibModalInstance.close('ok');
+	 
+	  
+	  if ($scope.selectedFolder == undefined)
+		  $scope.error = "Please select a target folder";
+	  
+	  if ($scope.file == undefined)
+		  $scope.error = "Please select a file";
+	  
+	  if (!$scope.error) {
+		  if ($scope.selectedFolder != "/")
+			  $uibModalInstance.close({fileName : $scope.selectedFolder + "/" + $scope.file, fileData : $scope.fileData});
+		  else
+			  $uibModalInstance.close({fileName : "/" + $scope.file, fileData : $scope.fileData});
+	  }
   };
 
   $scope.cancel = function () {
@@ -714,7 +810,19 @@ controllers.controller('uploadToCacheDialogCtrl',function ($scope, $uibModalInst
   $scope.cacheKey = cacheKey;
  
   $scope.ok = function () {
-    $uibModalInstance.close('ok');
+	
+	  if ($scope.cacheId == undefined)
+		  $scope.error = "Please enter a Cache ID";
+	  
+	  if ($scope.cacheType == undefined)
+		  $scope.error = "Please choose a cache type";
+	  
+	  if ($scope.cacheType.indexOf("single") != -1 && $scope.cacheKey == undefined)
+		  $scope.error = "Please enter a key.";
+
+	  
+	  if (!$scope.error) 
+		  $uibModalInstance.close({cacheId : $scope.cacheId, cacheKey : $scope.cacheKey, cacheType : $scope.cacheType});
   };
 
   $scope.cancel = function () {

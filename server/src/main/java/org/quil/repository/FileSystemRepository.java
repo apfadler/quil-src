@@ -59,13 +59,21 @@ public class FileSystemRepository {
 		
 		// TODO Too Specific for js UI
 
-		if ( node == null)
+	
+		if ( node == null) {
 			node = new File(_baseFolder);
-
+			obj.put("id", "/" );
+			obj.put("path", path + "/"  );
+			obj.put("text", "Root");
+		}
+		else {
+			obj.put("id", path + "/" + node.getName()  );
+			obj.put("path", path + "/" + node.getName()  );
+			obj.put("text", node.getName());
+		}
 		
-		obj.put("id", path + "/" + node.getName()  );
-		obj.put("path", path + "/" + node.getName()  );
-		obj.put("text", node.getName());
+		
+		
 		
  
 		if(node.isDirectory()){

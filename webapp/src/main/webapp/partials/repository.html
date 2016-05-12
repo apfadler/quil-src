@@ -146,6 +146,23 @@
 		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 	</div>
 </script>
+
+<script type="text/ng-template" id="deleteFolderDialog.html">
+	<div class="modal-header">
+		<h3 class="modal-title">Are you sure?</h3>
+	</div>
+	<div class="modal-body">
+		
+	</div>
+
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">OK</button>
+		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+	</div>
+</script>
+
+
 <script type="text/ng-template" id="createFolderDialog.html">
 	<div class="modal-header">
 		<h3 class="modal-title">New Folder...</h3>
@@ -170,12 +187,15 @@
 	<div class="modal-body">
 
 		<form>
+		<div class="form-group" ng-show="error">
+			<label style="color: red">{{error}}</label>
+        </div>
 		<div class="form-group">
 			<label>Choose Target Folder</label><br/>
 				<js-tree tree-events="select_node:nodeSelected" tree-data="scope" tree-model="theTree"></js-tree>
         </div>
         <div class="form-group">
-			<label>Choose File</label><input type="file" class="form-control">
+			<label>Choose File</label><input type="file" filename="file" fileread="fileData" class="form-control">
 		</div>
 		</form>
 		</div>
@@ -199,29 +219,32 @@
 		<h3 class="modal-title">Upload this data to a cache...</h3>
 	</div>
 	<div class="modal-body">
+		<div class="form-group" ng-show="error">
+			<label style="color: red">{{error}}</label>
+        </div>
 		<div class="form-group">
 			<label>Cache ID</label>
-			<input type="text" ng-model="cacheID" class="form-control">
+			<input type="text" ng-model="cacheId" class="form-control">
 
         </div>
 		<div class="form-group">
 			<label>Interpret data as</label>
 			<div class="radio">
-			  <label><input type="radio" name="optradio">Multiple Key/Values from CSV</label>
+			  <label><input type="radio" name="optradio" ng-model="cacheType" value="simplecache">Multiple Key/Values from CSV</label>
 			</div>
 			<div class="radio">
-  				<label><input type="radio" name="optradio">Single Key/Value Pair</label>
+  				<label><input type="radio" name="optradio" ng-model="cacheType" value="simplecachesingle">Single Key/Value Pair</label>
 			</div>
 			<div class="radio">
-  				<label><input type="radio" name="optradio">Tabular Data from CSV</label>
+  				<label><input type="radio" name="optradio" ng-model="cacheType" value="documentcache">Tabular Data from CSV</label>
 			</div>
 			<div class="radio">
-  				<label><input type="radio" name="optradio">Single JSON Document</label>
+  				<label><input type="radio" name="optradio" ng-model="cacheType" value="documentcachesingle">Single JSON Document</label>
 			</div>
 	    </div>
 		<div class="form-group">
 			<label>Key</label>
-			<input type="text" ng-model="" class="form-control">
+			<input type="text" ng-model="cacheKey" class="form-control">
 		</div>
 	</div>
 

@@ -47,7 +47,7 @@ public class RepositoryAPI {
     }
     
     @GET
-    @Path("files/{path}")
+    @Path("files/{path : .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public String getFile(@PathParam("path") String path) {
     	try
@@ -63,7 +63,7 @@ public class RepositoryAPI {
     }
     
     @POST
-    @Path("files/{path}/put")
+    @Path("files/{path : .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public String putFile(@PathParam("path") String path, String content) {
     	try
@@ -80,7 +80,7 @@ public class RepositoryAPI {
     }
     
     @POST
-    @Path("files/{path}/delete")
+    @Path("files/{path : .+}/delete")
     @Produces(MediaType.APPLICATION_JSON)
     public String deleteFile(@PathParam("path") String path) {
     	try
@@ -97,7 +97,7 @@ public class RepositoryAPI {
     }
     
     @POST
-    @Path("folders/{path}/put")
+    @Path("folders/{path : .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public String createFolder(@PathParam("path") String path) {
     	try
@@ -114,7 +114,7 @@ public class RepositoryAPI {
     }
     
     @POST
-    @Path("folders/{path}/delete")
+    @Path("folders/{path : .+}/delete")
     @Produces(MediaType.APPLICATION_JSON)
     public String deleteFolder(@PathParam("path") String path) {
     	try
