@@ -416,3 +416,11 @@ input[type="text"] {
     box-sizing: border-box;
 	width : 100%;
 }
+
+.app-modal-window .modal-dialog {
+  width: 50vh;
+}
+
+.app-modal-window-inspect .modal-dialog {
+  width: 70%;
+}

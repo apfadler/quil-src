@@ -291,6 +291,7 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		  animation: true,
 		  templateUrl: "inspectObject.html",
 		  controller: 'inspectObjectCtrl',
+		  windowClass: 'app-modal-window-inspect',
 		  size: 'sm',
 		  resolve: {
 			obj: function () {
@@ -387,6 +388,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  animation: true,
 		  templateUrl: "newFileDialog.html",
 		  controller: 'newFileDialogCtrl',
+		  windowClass: 'app-modal-window',
 		  size: 'sm',
 		  resolve: {
 			newFileName: function () {
@@ -420,6 +422,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  animation: true,
 		  templateUrl: "deleteFileDialog.html",
 		  controller: 'deleteFileDialogCtrl',
+		  windowClass: 'app-modal-window',
 		  size: 'sm',
 		  resolve: {
 			newFileName: function () {
@@ -457,6 +460,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  animation: true,
 		  templateUrl: "deleteFolderDialog.html",
 		  controller: 'deleteFileDialogCtrl',
+		  windowClass: 'app-modal-window',
 		  size: 'sm',
 		  resolve: {
 			newFileName: function () {
@@ -492,6 +496,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  animation: true,
 		  templateUrl: "uploadFileDialog.html",
 		  controller: 'uploadFileDialogCtrl',
+		  windowClass: 'app-modal-window',
 		  size: 'sm',
 		  resolve: {
 			newFileName: function () {
@@ -535,6 +540,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  animation: true,
 		  templateUrl: "newFolderDialog.html",
 		  controller: 'newFileDialogCtrl',
+		  windowClass: 'app-modal-window',
 		  size: 'sm',
 		  resolve: {
 			newFileName: function () {
@@ -568,6 +574,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  animation: true,
 		  templateUrl: "uploadToCacheDialog.html",
 		  controller: 'uploadToCacheDialogCtrl',
+		  windowClass: 'app-modal-window',
 		  size: 'sm',
 		  resolve: {
 			cacheKey: function () {
