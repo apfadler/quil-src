@@ -410,3 +410,9 @@ table.dataTable thead .sorting:after {
 .repo_output {
 		height:10vh;
 }
+
+// Block level inputs
+input[type="text"] {
+    box-sizing: border-box;
+	width : 100%;
+}
