@@ -29,7 +29,7 @@ public class ResultsCache extends Cache {
         
         IgniteCache<String, ResultItem> results = ignite.getOrCreateCache(cfg);
         
-        results.put(r.getTaskName(), r);
+        results.put(r.getTaskName()+"_"+_index+"_"+_key, r);
 	}
 	
 }

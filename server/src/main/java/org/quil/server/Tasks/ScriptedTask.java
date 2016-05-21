@@ -30,9 +30,22 @@ public class ScriptedTask extends Task {
 
 		Task.updateResult(_taskName,interpreter.getResult().toJSONString());
 		
-		ResultsCache.add(_taskName,  _taskTag, 0,
-				 "PV", interpreter.getResult().toJSONString(),
-				  0,	0);
+		for (Object r : interpreter.getResult().keySet()) {
+			
+			String key = (String)r;
+			double doubleVal = 0.0;
+			int intVal = 0;
+			String strVal = "";
+			try {
+				doubleVal = Double.parseDouble((String)interpreter.getResult().get(key));
+				intVal = Integer.parseInt((String)interpreter.getResult().get(key));
+				strVal = (String)interpreter.getResult().get(key);
+			}catch(Exception e) {
+			}
+			
+			ResultsCache.add(_taskName,  _taskTag, 0,
+							  key, strVal,doubleVal,intVal);
+		}
 
 		if (interpreter.getError())
 			throw new Exception("Error during interpretation in task PriceTrade.");

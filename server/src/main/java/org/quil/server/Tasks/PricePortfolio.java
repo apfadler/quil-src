@@ -77,9 +77,23 @@ public class PricePortfolio extends Task {
         for (JSONObject r : results) {
         	resultsStr.add(r.toJSONString());
         	
-        	ResultsCache.add(_taskName,  _taskTag, idx,
-   				 "PV", (String)r.get("PV"),
-   				  Double.parseDouble((String)r.get("PV")),	0);
+        	for (Object rr : r.keySet()) {
+    			
+    			String key = (String)rr;
+    			double doubleVal = 0.0;
+    			int intVal = 0;
+    			String strVal = "";
+    			try {
+    				doubleVal = Double.parseDouble((String)r.get(key));
+    				intVal = Integer.parseInt((String)r.get(key));
+    				strVal = (String)r.get(key);
+    			}catch(Exception e) {
+    				
+    			}
+    			
+    			ResultsCache.add(_taskName,  _taskTag, 0,
+    							  key, strVal,doubleVal,intVal);
+    		}
         	
         	idx++;
         }
