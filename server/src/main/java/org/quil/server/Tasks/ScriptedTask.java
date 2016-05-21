@@ -37,9 +37,9 @@ public class ScriptedTask extends Task {
 			int intVal = 0;
 			String strVal = "";
 			try {
+				strVal = (String)interpreter.getResult().get(key);
 				doubleVal = Double.parseDouble((String)interpreter.getResult().get(key));
 				intVal = Integer.parseInt((String)interpreter.getResult().get(key));
-				strVal = (String)interpreter.getResult().get(key);
 			}catch(Exception e) {
 			}
 			

@@ -84,14 +84,14 @@ public class PricePortfolio extends Task {
     			int intVal = 0;
     			String strVal = "";
     			try {
+    				strVal = (String)r.get(key);
     				doubleVal = Double.parseDouble((String)r.get(key));
     				intVal = Integer.parseInt((String)r.get(key));
-    				strVal = (String)r.get(key);
     			}catch(Exception e) {
     				
     			}
     			
-    			ResultsCache.add(_taskName,  _taskTag, 0,
+    			ResultsCache.add(_taskName,  _taskTag, idx,
     							  key, strVal,doubleVal,intVal);
     		}
         	
