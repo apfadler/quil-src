@@ -37,6 +37,9 @@ public abstract class Task implements Serializable {
 	protected String _taskResult = "";
 	
 	@QuerySqlField
+	protected String _taskTag = "";
+	
+	@QuerySqlField
 	protected int _taskStatus = 0;
 	
 	static class Status {
@@ -55,7 +58,10 @@ public abstract class Task implements Serializable {
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName("Tasks");
-        cfg.setIndexedTypes(String.class, Task.class, String.class, PriceTrade.class, String.class, PricePortfolio.class, String.class, ScriptedTask.class);
+        cfg.setIndexedTypes(String.class, Task.class,
+        				    String.class, PriceTrade.class,
+        				    String.class, PricePortfolio.class, 
+        				    String.class, ScriptedTask.class);
         
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
         
@@ -127,6 +133,19 @@ public abstract class Task implements Serializable {
 		_taskStatus = Status.PENDING;
 		_taskDescription = taskXML;
 		_taskName = taskName;
+		
+		JSONParser parser = new JSONParser();
+
+		try {
+			final JSONObject taskDescription = (JSONObject) parser.parse(_taskDescription);
+			
+			if (taskDescription.containsKey("Tag"))
+				_taskTag = (String)taskDescription.get("Tag");
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -164,6 +183,7 @@ public abstract class Task implements Serializable {
 		obj.put("name", _taskName);
 		obj.put("status", _taskStatus);
 		obj.put("result", _taskResult);
+		obj.put("tag", _taskTag);
 	
 		return obj;
 	}

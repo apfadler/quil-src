@@ -3,6 +3,7 @@ package org.quil.server.Tasks;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.quil.interpreter.Interpreter;
+import org.quil.server.ResultsCache;
 
 public class ScriptedTask extends Task {
 
@@ -28,6 +29,10 @@ public class ScriptedTask extends Task {
 		interpreter.interpret();
 
 		Task.updateResult(_taskName,interpreter.getResult().toJSONString());
+		
+		ResultsCache.add(_taskName,  _taskTag, 0,
+				 "PV", interpreter.getResult().toJSONString(),
+				  0,	0);
 
 		if (interpreter.getError())
 			throw new Exception("Error during interpretation in task PriceTrade.");

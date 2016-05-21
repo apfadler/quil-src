@@ -29,7 +29,7 @@ public class ObjectIndexAPI {
 			JSONArray deployed = new JSONArray();
 			
 			int id = 0;
-			for ( Map.Entry<String, String> e : ObjectIndex.All.entrySet() )
+			for ( Map.Entry<String, String> e : ObjectIndex.all().entrySet() )
 			{
 				JSONObject obj = new JSONObject();
 				
@@ -80,10 +80,7 @@ public class ObjectIndexAPI {
     public String put(@PathParam("cacheid") String cacheid, @PathParam("key") String key, String data) {
     	try
         {
-        	SimpleCache cache = SimpleCache.getOrCreate(cacheid);
-        	cache.put(key, data);
-        	
-        	ObjectIndex.All.put(key, cacheid);
+        	ObjectIndex.addToIndex(key, cacheid);
         }
         catch (Exception e)
         {
@@ -94,11 +91,11 @@ public class ObjectIndexAPI {
     }
      
     private String success() {
-    	return "{ Status : \"SUCCESS\" }";
+    	return "{ \"Status\" : \"SUCCESS\" }";
     }
     
     private String error(String msg) {
-    	return "{ Status : \"ERROR\", Msg : \""+msg+"\" }";
+    	return "{ \"Status\" : \"ERROR\", \"Msg\" : \""+msg+"\" }";
     }
     
     private String empty() {

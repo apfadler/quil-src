@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.quil.interpreter.Interpreter;
+import org.quil.server.ResultsCache;
 
 public class PriceTrade extends Task {
 
@@ -29,6 +30,10 @@ public class PriceTrade extends Task {
 		interpreter.interpret();
 
 		Task.updateResult(_taskName,interpreter.getResult().toJSONString());
+		
+		ResultsCache.add(_taskName,  _taskTag, 0,
+						 "PV", (String)interpreter.getResult().get("PV"),
+						  Double.parseDouble((String)interpreter.getResult().get("PV")),	0);
 
 		if (interpreter.getError())
 			throw new Exception("Error during interpretation in task PriceTrade.");

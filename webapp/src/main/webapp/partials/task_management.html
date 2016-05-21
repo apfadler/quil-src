@@ -31,12 +31,14 @@
 						<thead>
 							<tr>
 								<th>ID</th>
+								<th>Tag</th>
 								<th>State</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr class="odd gradeX" ng-repeat="task in runningTasks">
 								<td>{{ task.name }}</td>
+								<td>{{ task.tag }}</td>
 								<td>{{ task.status_text }}</td>
 							</tr>
 						</tbody>
@@ -62,6 +64,7 @@
 						<thead>
 							<tr>
 								<th>ID</th>
+								<th>Tag</th>
 								<th>State</th>
 								<th>Result</th>
 							</tr>
@@ -69,6 +72,7 @@
 						<tbody>
 							<tr class="odd gradeX" ng-repeat="task in finishedTasks">
 								<td>{{ task.name }}</td>
+								<td>{{ task.tag }}</td>
 								<td>{{ task.status_text }}</td>
 								<td><json-formatter json="task.result" open="1"></json-formatter></td>
 							</tr>

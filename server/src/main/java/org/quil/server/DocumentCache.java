@@ -100,7 +100,7 @@ public class DocumentCache extends Cache {
         
         cache.put(key, (Document)doc);
         
-        ObjectIndex.All.put(key, _cacheName);
+        ObjectIndex.addToIndex(key, _cacheName);
 	}
 	
 	public Document get(String key)

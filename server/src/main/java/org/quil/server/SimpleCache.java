@@ -98,7 +98,7 @@ public class SimpleCache extends Cache {
         
         cache.put(key, value);
         
-        ObjectIndex.All.put(key, _cacheName);
+        ObjectIndex.addToIndex(key, _cacheName);
 	}
 	
 	public String get(String key)

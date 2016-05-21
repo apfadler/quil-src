@@ -41,11 +41,11 @@ public class Cache {
 			ignite.cache(_cacheName).removeAll();
 			caches.remove(_cacheName);
 			
-			Iterator<Map.Entry<String,String>> it = ObjectIndex.All.entrySet().iterator();
+			Iterator<Map.Entry<String,String>> it = ObjectIndex.all().entrySet().iterator();
 			while(it.hasNext()){
 				Map.Entry<String,String> e = it.next();
-				if (e.getValue() == _cacheName) {
-					it.remove();
+				if (e.getValue().compareTo(_cacheName) == 0) {
+					ObjectIndex.removeFromIndex(e.getKey(), e.getValue());
 				}
 			}
 		}

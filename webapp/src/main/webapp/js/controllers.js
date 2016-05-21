@@ -679,6 +679,15 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 	
 	$scope.submitTask = function(taskDescription,type) {
 		
+		console.log(taskDescription);
+		
+		if (type != "Script") {
+			//add a tag
+			var taskObj = JSON.parse(taskDescription);
+			taskObj["Tag"] = $scope.taskTag;
+			taskDescription = JSON.stringify(taskObj);
+		}
+		
 		$http.post('/api/compute/task/submit'+type, taskDescription)
 					.success(function(data, status, headers, config) {
 						console.log(data);

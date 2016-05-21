@@ -15,6 +15,7 @@ import org.json.simple.parser.ParseException;
 import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
 import org.quil.server.DocumentCache;
+import org.quil.server.ResultsCache;
 
 public class PricePortfolio extends Task {
 
@@ -71,9 +72,16 @@ public class PricePortfolio extends Task {
 		Ignite ignite = Ignition.ignite();
         Collection<JSONObject> results = ignite.compute().call(jobs);
         
+        int idx=1;
         Vector<String> resultsStr = new Vector<String>();
         for (JSONObject r : results) {
         	resultsStr.add(r.toJSONString());
+        	
+        	ResultsCache.add(_taskName,  _taskTag, idx,
+   				 "PV", (String)r.get("PV"),
+   				  Double.parseDouble((String)r.get("PV")),	0);
+        	
+        	idx++;
         }
 
 		Task.updateResult(_taskName, "[" + org.springframework.util.StringUtils.collectionToDelimitedString(results, ",") + "]");

@@ -74,7 +74,7 @@ public class TaskRunner {
 		
 		Ignite ignite = Ignition.ignite();
 		
-        // Generate task events.
+        // submit task async
         ignite.compute().withName(task.getName()).withAsync().run(new IgniteRunnable() {
         	
         	@LoggerResource
@@ -108,7 +108,7 @@ public static void runTaskAndWait(final Task task) throws ParseException {
 		
 		Ignite ignite = Ignition.ignite();
 		
-        // Generate task events.
+        // submit task sync
         ignite.compute().withName(task.getName()).run(new IgniteRunnable() {
         	
         	@LoggerResource
