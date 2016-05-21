@@ -1,7 +1,9 @@
 package org.quil.server.Tasks;
+import java.io.Serializable;
+
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
-public class ResultItem {
+public class ResultItem implements Serializable{
 		
 		
 		public ResultItem(String _taskName, String _taskTag, int _index,
