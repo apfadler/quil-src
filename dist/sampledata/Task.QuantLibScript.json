@@ -1,0 +1,13 @@
+{
+	"Interpreter" : "org.quil.interpreter.QuantLibScript.QuantLibScriptInterpreter",
+	"Task"	: "PriceTrade",
+	"PricerScript" : "Pricer.Swap",
+	"Repository" : "Pricers",
+	"MarketData" : { 
+		"Base" :"ExampleMarket",
+		"Additional" : {
+			"EUR_Swap_1Y" : "0.05"
+		}
+	},
+	"TradeData" :{}
+}

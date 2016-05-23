@@ -50,8 +50,11 @@ public class PricePortfolio extends Task {
 				public JSONObject call() throws Exception {
 					Interpreter interpreter = (Interpreter) Class.forName((String) taskDescription.get("Interpreter")).newInstance();
 
+					
+					//TODO copy everything
 					JSONObject subTask = new JSONObject();
 					subTask.put("Template", (String)taskDescription.get("Template"));
+					subTask.put("PricerScript", (String)taskDescription.get("PricerScript"));
 					subTask.put("Repository", (String)taskDescription.get("Repository"));
 					subTask.put("MarketData", taskDescription.get("MarketData"));
 					JSONObject tradeData = (JSONObject) (new JSONParser()).parse(trade.toString());

@@ -51,9 +51,13 @@
 					  showPrintMargin : false,
 					  firstLineNumber: 1,
 					  onLoad: aceLoaded,
-					  onChange: aceChanged
-					}"
-						ng-model="fileContent"></div>
+					  onChange: aceChanged,
+					  require: ['ace/ext/language_tools'],
+				   	  advanced: {
+				      	enableSnippets: true,
+				      	enableBasicAutocompletion: true,
+				      	enableLiveAutocompletion: true
+				  	   }}"  ng-model="fileContent"></div>
 				</div>
 			</div>
 			<div></div>

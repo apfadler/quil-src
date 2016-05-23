@@ -333,6 +333,14 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	$scope.currentFile = "New File *";
 	$scope.alerts = [];
 
+	$scope.aceLoaded = function(_editor) {
+		$scope.ace = _editor;
+	};
+
+	$scope.aceChanged = function(e) {
+	};
+	
+	
 	$scope.nodeSelected = function(e, eventData) {
 	
 	    if (eventData.node.original.type=="file") {
@@ -343,6 +351,16 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 		  $http.get('/api/repository/files'+eventData.node.id)
 					.success(function(data, status, headers, config) {
 						$scope.fileContent = data.fileData;
+						
+						if ($scope.currentFile.indexOf("scala") != -1)
+							$scope.ace.getSession().setMode("ace/mode/scala");
+						else if ($scope.currentFile.indexOf("xml") != -1)
+							$scope.ace.getSession().setMode("ace/mode/xml");
+						else if ($scope.currentFile.indexOf("json") != -1)
+							$scope.ace.getSession().setMode("ace/mode/json");
+						else
+							$scope.ace.getSession().setMode("ace/mode/plain_text");
+			
 					})
 					.error(function(data, status, headers, config) {
 					
