@@ -6,157 +6,112 @@
 	<div class="col-lg-12">
 	  <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="2000">{{alert.msg}}</uib-alert>
 	</div>
-	
-
-	<div class="col-lg-3">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Upload single document
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			
-				<div class="row">
-					<div class="col-lg-12">
-					<form>
-					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newDocumentCacheID">
-						<label>JSON File</label><input type="file" fileread="jsonFile" class="form-control">
-					</div>
-					<div class="form-group">
-						<button ng-click="uploadJSONFile()" class="btn btn-default btn-sm">Upload</button>
-					</div>
-					</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="col-lg-3">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Upload file to Key/Value Store
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			
-				<div class="row">
-					<div class="col-lg-12">
-					<form>
-					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newDocKeyValueCacheID">
-						<label>Key</label><input type="text" class="form-control" ng-model="newDocKey">
-						<label>File</label><input type="file" fileread="objectFile" class="form-control">
-					</div>
-					<div class="form-group">
-						<button ng-click="uploadKeyValueObjectFile()" class="btn btn-default btn-sm">Upload</button>
-					</div>
-					</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="col-lg-3">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Upload key value  data from CSV
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			
-				<div class="row">
-					<div class="col-lg-12">
-					<form>
-					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newSimpleCacheID">
-						<label>CSV File</label><input type="file" fileread="keyValueCSVFile" class="form-control">
-					</div>
-					<div class="form-group">
-						<button ng-click="uploadKeyValueCSVFile()" class="btn btn-default btn-sm">Upload</button>
-					</div>
-					</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="col-lg-3">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Create general purpose cache from CSV file
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			
-				<div class="row">
-					<div class="col-lg-12">
-					<form>
-					<div class="form-group">
-						<label>Cache ID</label><input type="text" class="form-control" ng-model="newCSVCacheID">
-						<label>CSV File</label><input type="file" fileread="genericCSVfileContent" class="form-control">
-					</div>
-					<div class="form-group">
-						<button ng-click="uploadGenericCSVFile()" class="btn btn-default btn-sm">Upload</button>
-					</div>
-					</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	
-
-	<div class="col-lg-12">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				Active Caches
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-				<p ng-show="!dataServices.length">
-						No DataServices active.
-				</p>
-				<div class="dataTable_wrapper"  ng-show="dataServices.length > 0">
-					<table class="table table-striped table-bordered table-hover" id="dataTables-example">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>Type</th>
-								<th>Size</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr class="odd gradeX" ng-repeat="svc in dataServices">
-								<td>{{ svc.name }}</td>
-								<td>{{ svc.type }}</td>
-								<td>{{ svc.size }}</td>
-								<td class="center">
-									<div align="left"><div class="btn-group">
-									<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="removeCache(svc.name, svc.type)">Remove</button>
-									<!--  <button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="downloadCache(svc.id)">Download Data</button> -->
-									</div></div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			   
-			</div>
-			<!-- /.panel-body -->
-		</div>
-	</div>
-
 </div>
 
 <div class="row">
+
+	<div class="col-lg-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Upload
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="form-group" ng-show="error">
+					<label style="color: red">{{error}}</label>
+		        </div>
+				<div class="form-group">
+					<label>Cache ID</label>
+					<input type="text" ng-model="cacheId" class="form-control">
+		        </div>
+		        <div class="form-group">
+					<label>File</label>
+					<input type="file" fileread="uploadFile" class="form-control">
+		        </div>
+				<div class="form-group">
+					<label>Interpret data as</label>
+					<div class="radio">
+					  <label><input type="radio" name="optradio" ng-model="cacheType" value="simplecache">Multiple Key/Values from CSV</label>
+					</div>
+					<div class="radio">
+		  				<label><input type="radio" name="optradio" ng-model="cacheType" value="simplecachesingle">Single Key/Value Pair</label>
+					</div>
+					<div class="radio">
+		  				<label><input type="radio" name="optradio" ng-model="cacheType" value="documentcache">Tabular Data from CSV</label>
+					</div>
+					<div class="radio">
+		  				<label><input type="radio" name="optradio" ng-model="cacheType" value="documentcachesingle">Single JSON Document</label>
+					</div>
+			    </div>
+				<div class="form-group">
+					<label>Key (for Single Key/Value Pair)</label>
+					<input type="text" ng-model="cacheKey" class="form-control">
+				</div>
+				<div class="form-group" align="right">
+					<button  ng-click="upload()" class="btn btn-default btn-sm">Upload</button>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9" >
 	
-	<!-- /.col-lg-12 -->
+		<div class="row">
+	
+			<div class="panel panel-default" style="overflow-y:scroll">
+				<div class="panel-heading">
+					Active Caches
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<p ng-show="!dataServices.length">
+							No DataServices active.
+					</p>
+					<div class="dataTable_wrapper"  ng-show="dataServices.length > 0">
+						<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Type</th>
+									<th>Size</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" ng-repeat="svc in dataServices">
+									<td>{{ svc.name }}</td>
+									<td>{{ svc.type }}</td>
+									<td>{{ svc.size }}</td>
+									<td class="center">
+										<div align="left"><div class="btn-group">
+										<button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="removeCache(svc.name, svc.type)">Remove</button>
+										<!--  <button type="button" class="btn btn-default btn-sm" style="margin:0px" ng-click="downloadCache(svc.id)">Download Data</button> -->
+										</div></div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				   
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Guidance
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					Info / Help Text here.
+				</div>
+				<!-- /.panel-body -->
+			</div>
+		</div>	
+	</div>
+</div>
+
+<div class="row">
+	<!-- /.col-lg-6 -->
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -174,18 +129,18 @@
 					  firstLineNumber: 1,
 					  onLoad: aceLoaded,
 					  onChange: aceChanged
-					}" ng-model="queryString" style="height:10vh;border-style: solid; border-width : 1px">
+					}" ng-model="queryString" style="height:5vh;border-style: solid; border-width : 1px">
 				</div>
 				<p>&nbsp;</p>
 				<button ng-click="query()" class="btn btn-default btn-sm">Execute Query</button>
 				<p>&nbsp;</p>
-				<div ng-show="!showQueryResult" style="height:10vh">
+				<div ng-show="!showQueryResult">
 				<p>
 					No query submitted yet.
 				</p></div>
 				
-				<div class="dataTable_wrapper" ng-show="showQueryResult" style="overflow-y:scroll">
-					<table  class="table table-striped table-bordered table-hover" id="dataTables-query" >
+				<div class="dataTable_wrapper" ng-show="showQueryResult" style="overflow-y:scroll;height:50vh">
+					<table  datatable="ng" class="table table-striped table-bordered table-hover" id="dataTables-query" >
 						<thead>
 							<tr>
 								<th ng-repeat="name in lastQuery[0]">{{ name }}</th>
@@ -207,7 +162,12 @@
 		</div>
 	</div>
 	<!-- /.col-lg-12 -->	
+
+	
+
 </div>
+
+
 
 <script type="text/ng-template" id="inspectObject.html">
 <div class="modal-header">

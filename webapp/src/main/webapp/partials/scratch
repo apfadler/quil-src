@@ -1,0 +1,100 @@
+<div class="col-lg-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Upload single document
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+			
+				<div class="row">
+					<div class="col-lg-12">
+					<form>
+					<div class="form-group">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newDocumentCacheID">
+						<label>JSON File</label><input type="file" fileread="jsonFile" class="form-control">
+					</div>
+					<div class="form-group">
+						<button ng-click="uploadJSONFile()" class="btn btn-default btn-sm">Upload</button>
+					</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-lg-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Upload file to Key/Value Store
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+			
+				<div class="row">
+					<div class="col-lg-12">
+					<form>
+					<div class="form-group">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newDocKeyValueCacheID">
+						<label>Key</label><input type="text" class="form-control" ng-model="newDocKey">
+						<label>File</label><input type="file" fileread="objectFile" class="form-control">
+					</div>
+					<div class="form-group">
+						<button ng-click="uploadKeyValueObjectFile()" class="btn btn-default btn-sm">Upload</button>
+					</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-lg-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Upload key value  data from CSV
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+			
+				<div class="row">
+					<div class="col-lg-12">
+					<form>
+					<div class="form-group">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newSimpleCacheID">
+						<label>CSV File</label><input type="file" fileread="keyValueCSVFile" class="form-control">
+					</div>
+					<div class="form-group">
+						<button ng-click="uploadKeyValueCSVFile()" class="btn btn-default btn-sm">Upload</button>
+					</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-lg-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Create general purpose cache from CSV file
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+			
+				<div class="row">
+					<div class="col-lg-12">
+					<form>
+					<div class="form-group">
+						<label>Cache ID</label><input type="text" class="form-control" ng-model="newCSVCacheID">
+						<label>CSV File</label><input type="file" fileread="genericCSVfileContent" class="form-control">
+					</div>
+					<div class="form-group">
+						<button ng-click="uploadGenericCSVFile()" class="btn btn-default btn-sm">Upload</button>
+					</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

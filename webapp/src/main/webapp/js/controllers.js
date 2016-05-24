@@ -159,103 +159,6 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
    $scope.newCSVCacheID = "";
    $scope.genericCSVfileContent = "";
    
-   $scope.uploadGenericCSVFile = function() {
-	   
-	   var content = $scope.genericCSVfileContent;
-	   console.log(content);
-	   
-	   $http({method : "POST",
-		      url : "/api/documentcache/"+ $scope.newCSVCacheID + "/addFromCSV",
-		      data : content,
-		      headers : {'Content-Type' : 'text/plain'}
-	   }).
-		success(function(data, status, headers, config) {
-			console.log('post success');
-			
-			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
-
-		}).
-		error(function(data, status, headers, config) {
-			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
-			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
-		});
-   };
-   
-   
-   $scope.uploadJSONFile = function () {
-	   var content = $scope.jsonFile;
-	   console.log(content);
-	   
-	   $http({method : "POST",
-		      url : "/api/documentcache/"+ $scope.newDocumentCacheID + "/addJSONObject",
-		      data : content,
-		      headers : {'Content-Type' : 'text/plain'}
-	   }).
-		success(function(data, status, headers, config) {
-			console.log('post success');
-			
-			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
-
-		}).
-		error(function(data, status, headers, config) {
-			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
-			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
-		});
-   };
-   
-   $scope.uploadKeyValueCSVFile = function() {
-	   var content = $scope.keyValueCSVFile;
-	   console.log(content);
-	   
-	   $http({method : "POST",
-		      url : "/api/simplecache/"+ $scope.newSimpleCacheID + "/addFromCSV",
-		      data : content,
-		      headers : {'Content-Type' : 'text/plain'}
-	   }).
-		success(function(data, status, headers, config) {
-			console.log('post success');
-			
-			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
-
-		}).
-		error(function(data, status, headers, config) {
-			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
-			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
-		});
-	  
-   };
-   
-
-	$scope.uploadKeyValueObjectFile = function() {
-		   var content = $scope.objectFile;
-		   console.log(content);
-		   
-		   $http({method : "POST",
-			      url : "/api/simplecache/"+ $scope.newDocKeyValueCacheID + "/put/"+$scope.newDocKey,
-			      data : content,
-			      headers : {'Content-Type' : 'text/plain'}
-		   }).
-			success(function(data, status, headers, config) {
-				console.log('post success');
-				
-				$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'File uploaded.', type : 'success'});
-
-			}).
-			error(function(data, status, headers, config) {
-				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
-				$scope.alerts.splice(0, 1);
-							$scope.alerts.push({msg: 'Error uploading file', type : 'danger'});
-			});
-		  
-	   };
-   
    $scope.removeCache = function (id,type) {
 	   var content = $scope.jsonFile;
 	   console.log(content);
@@ -331,6 +234,40 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 						$scope.alerts.push({msg: 'Error removing cache.', type : 'danger'});
 		});
 	   
+   }
+   
+   $scope.upload = function() {
+	   var url="";
+		if ($scope.cacheType == "documentcache")
+			url = "/api/documentcache/"+ $scope.cacheId + "/addFromCSV";
+		
+		if ($scope.cacheType == "documentcachesingle")
+			url = "/api/documentcache/"+ $scope.cacheId + "/put/"+ $scope.cacheKey;
+		
+		if ($scope.cacheType == "simplecache")
+			url = "/api/simplecache/"+ $scope.cacheId + "/addFromCSV";
+		
+		if ($scope.cacheType == "simplecachesingle")
+			url = "/api/simplecache/"+ $scope.cacheId + "/put/"+ $scope.cacheKey;
+		
+		
+		   $http({method : "POST",
+			      url : url,
+			      data : $scope.uploadFile,
+			      headers : {'Content-Type' : 'text/plain'}
+		   }).
+			success(function(data, status, headers, config) {
+				console.log('post success');
+				
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Data uploaded.', type : 'success'});
+
+			}).
+			error(function(data, status, headers, config) {
+				console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+				$scope.alerts.splice(0, 1);
+							$scope.alerts.push({msg: 'Error uploading data', type : 'danger'});
+			});
    }
    
    $scope.queryString = "SELECT * FROM \"ExampleMarket\".String ";
