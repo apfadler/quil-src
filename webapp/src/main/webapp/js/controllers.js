@@ -301,11 +301,49 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		  }
 		});
 	};
+	
+   $scope.query = function() {
+	   
+	   $http({method : "POST",
+		      url : "/api/objects/query",
+		      data : $scope.queryString,
+		      headers : {'Content-Type' : 'text/plain'}
+	   }).
+		success(function(data, status, headers, config) {
+			console.log('post success');
+			 $scope.showQueryResult = true;
+			$scope.lastQuery = data;
+			
+
+		}).
+		error(function(data, status, headers, config) {
+			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+			$scope.alerts.splice(0, 1);
+						$scope.alerts.push({msg: 'Error removing cache.', type : 'danger'});
+		});
+	   
+   }
+   
+   $scope.queryString = "SELECT * FROM \"ExampleMarket\".String ";
+   $scope.lastQuery = [["as","asd"],["as", "asdsad"]];
+   $scope.showQueryResult = false;
    
    $scope.alerts = [];
 
    $scope.closeAlert = function(index) {
 	   $scope.alerts.splice(index, 1);
+   }
+   
+   $scope.parsed = function(str) { 
+	   var res=""; 
+	   try {
+		   res=JSON.parse(str); 
+		   if (res == undefined) return str; else return res;
+	   }
+	   catch(Exception) {
+		   return str;
+	   } 
+	   return res;
    }
    
 }]);
@@ -892,4 +930,15 @@ controllers.controller('inspectObjectCtrl',['$scope', '$uibModalInstance','$http
 	  };
 	  
 
-	}]);
+	}])
+	
+.filter('parse', function() {
+  return function(input, uppercase) {
+   return JSON.stringify(input);
+  };
+})
+.filter('parse', function() {
+  return function(input, uppercase) {
+   return JSON.parse(input);
+  };
+});

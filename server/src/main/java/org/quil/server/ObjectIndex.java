@@ -114,7 +114,7 @@ public class ObjectIndex {
 		if (cacheType.compareTo("DocumentCache") == 0) {
 			DocumentCache cache = DocumentCache.getOrCreate(cacheID);
         	cache.put(fileID, (Document)((new org.quil.JSON.Parser()).parse(repo.getFile(filePath))));
-        	
+   
         	addToIndex(fileID,cacheID);
         	
         	if (!usedCaches.contains(cacheID)) {
