@@ -194,7 +194,7 @@
 						<tbody>
 							<tr class="odd gradeX" ng-repeat="row in lastQuery track by $index" ng-if="$index > 0">								
 								<td ng-repeat="val in row track by $index">
-									<span ng-if="val[0] == '{' || val[0] == '[' "><json-formatter json="parsed(val)" open="1"></json-formatter></span>
+									<span ng-if="val[0] == '{' || val[0] == '[' "><json-formatter json="parsed(val)" open="0"></json-formatter></span>
 									<span ng-if="val[0] != '{' && val[0] != '[' ">{{val}}</span>
 								</td>
 								

@@ -100,7 +100,7 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 		$scope.dataServices = Caches(); 
 	}, 100);
 
-	$interval( function() {
+	/*$interval( function() {
 		$scope.deployedObjects = DeployedObjects(); 
 
 		for (var i=0; i < $scope.deployedObjects.length; i++)
@@ -121,7 +121,7 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 											+ $scope.deployedObjects[i].fileId;
 		};
 
-	}, 100);
+	}, 100);*/
 
 	$scope.logTxt = "";
 	var logEvents = new EventSource('/api/log/stream');
