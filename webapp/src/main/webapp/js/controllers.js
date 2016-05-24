@@ -312,7 +312,16 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		success(function(data, status, headers, config) {
 			console.log('post success');
 			 $scope.showQueryResult = true;
-			$scope.lastQuery = data;
+			
+			 for (var i=0; i < data.length;i++) {
+				 for (var j=0; j < data[i].length;j++) {
+					 if (data[i][j][0] == "[" || data[i][j][0] == "{") {
+						 data[i][j] = { "data" : JSON.parse(data[i][j])  };
+					 }
+				 }
+			 }
+			 
+			 $scope.lastQuery = data;
 			
 
 		}).
