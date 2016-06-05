@@ -9,6 +9,8 @@
   <url>http://maven.apache.org</url>
   
    <modules>
+       <module>scala-macros</module>
+       <module>objects</module>
     <module>server</module>
     <module>scala-console</module>
     <module>webapp</module>
