@@ -16,9 +16,7 @@ import org.apache.ignite.lang.IgniteBiPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quil.JSON.Document;
-import org.quil.interpreter.QuantLibTemplates.GenericScalaScript;
-import org.quil.interpreter.QuantLibTemplates.Parameters;
-import org.quil.server.Cache;
+
 
 import scala.tools.nsc.Interpreter;
 

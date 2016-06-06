@@ -12,6 +12,19 @@
 		<ignite.version>1.5.0.final</ignite.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>scala-tools.org</id>
+			<name>Scala-tools Maven2 Repository</name>
+			<url>http://scala-tools.org/repo-releases</url>
+		</repository>
+		<repository>
+			<id>quil-dev</id>
+			<name>Quil Maven Repository</name>
+			<url>https://github.com/apfadler/quil-maven/raw/master/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ignite</groupId>
@@ -58,19 +71,24 @@
 		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-compiler</artifactId>
-			<version>2.11.0</version>
+			<version>2.11.7</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-parser-combinators</artifactId>
 			<version>2.11.0-M4</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.quil</groupId>
 			<artifactId>server</artifactId>
 			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quil</groupId>
+			<artifactId>quantlib</artifactId>
+			<version>1.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

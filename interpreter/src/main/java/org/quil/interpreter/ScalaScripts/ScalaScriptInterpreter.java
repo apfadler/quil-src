@@ -1,20 +1,13 @@
 package org.quil.interpreter.ScalaScripts;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
-import java.awt.List;
 
 import org.json.simple.JSONObject;
 import org.quil.server.DocumentCache;
 import org.quil.server.SimpleCache;
-import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +28,7 @@ private boolean _error = false;
 		System.loadLibrary("QuantLibJNI");
 	}
 	
-	final static Logger logger = LoggerFactory.getLogger(TaskRunner.class);
+	final static Logger logger = LoggerFactory.getLogger(ScalaScriptInterpreter.class);
 	
 	protected String _script = "";
 	protected JSONObject _data = new JSONObject();

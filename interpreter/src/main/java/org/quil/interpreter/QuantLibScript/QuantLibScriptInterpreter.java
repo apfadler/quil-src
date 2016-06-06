@@ -1,8 +1,5 @@
 package org.quil.interpreter.QuantLibScript;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
@@ -10,13 +7,9 @@ import java.util.UUID;
 import org.json.simple.JSONObject;
 import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
-import org.quil.interpreter.QuantLibTemplates.Controller;
-import org.quil.interpreter.QuantLibTemplates.GenericScalaScript;
 import org.quil.interpreter.QuantLibTemplates.Market;
-import org.quil.interpreter.QuantLibTemplates.Parameters;
 import org.quil.server.DocumentCache;
 import org.quil.server.SimpleCache;
-import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;

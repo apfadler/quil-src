@@ -9,5 +9,9 @@
 			"EUR_Swap_1Y" : "0.05"
 		}
 	},
-	"TradeData" :{}
+	"TradeData" :{
+	    "Notional": "10000.00",
+	    "Cpty" : "A",
+	    "ID" : "1"
+	}
 }

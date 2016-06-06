@@ -1,10 +1,7 @@
 package org.quil.server.Tasks;
 
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.quil.interpreter.Interpreter;
 import org.quil.server.ResultsCache;
 
@@ -19,7 +16,7 @@ public class PriceTrade extends Task {
 		super(taskName, taskXML);
 		
 	}
-
+	
 	@Override
 	public void run() throws Exception {
 		

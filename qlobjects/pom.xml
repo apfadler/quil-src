@@ -5,8 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.quil</groupId>
-    <artifactId>scala-macros</artifactId>
+    <artifactId>qlobjects</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>qlobjects</name>
+    <url>http://maven.apache.org</url>
 
     <repositories>
         <repository>
@@ -50,6 +53,32 @@
             <artifactId>json4s-native_2.11</artifactId>
             <version>3.3.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.quil</groupId>
+            <artifactId>scala-macros</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quil</groupId>
+            <artifactId>interpreter</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quil</groupId>
+            <artifactId>quantlib</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.11</artifactId>
+            <version>2.2.6</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -63,12 +92,6 @@
                     <scalaCompatVersion>2.11.7</scalaCompatVersion>
                     <recompileMode>incremental</recompileMode>
                     <args> <arg>-target:jvm-1.7</arg> </args>
-                    <!-- <javacArgs>
-                        <javacArg>-source</javacArg>
-                        <javacArg>1.7</javacArg>
-                        <javacArg>-target</javacArg>
-                        <javacArg>1.7</javacArg>
-                    </javacArgs> -->
                     <compilerPlugins>
                         <compilerPlugin>
                             <groupId>org.scalamacros</groupId>
@@ -76,13 +99,10 @@
                             <version>2.1.0</version>
                         </compilerPlugin>
                     </compilerPlugins>
-                    <excludes>
-                        <exclude>org/quil/objects/package.scala</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>scala-compile-macro</id>
+                        <id>scala-compile-second</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>compile</goal>
@@ -93,6 +113,32 @@
                         <phase>process-test-resources</phase>
                         <goals>
                             <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <junitxml>.</junitxml>
+                    <filereports>WDF TestSuite.txt</filereports>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
                         </goals>
                     </execution>
                 </executions>

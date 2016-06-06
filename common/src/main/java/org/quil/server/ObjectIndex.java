@@ -3,26 +3,16 @@ package org.quil.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-
 import javax.cache.Cache.Entry;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
-import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
-import org.apache.ignite.cache.query.annotations.QuerySqlField;
 import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.resources.LoggerResource;
-import org.quil.JSON.Document;
 import org.quil.repository.FileSystemRepository;
-import org.quil.server.Tasks.PricePortfolio;
-import org.quil.server.Tasks.PriceTrade;
-import org.quil.server.Tasks.ScriptedTask;
-import org.quil.server.Tasks.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.quil.JSON.Document;
 
 public class ObjectIndex {
 	

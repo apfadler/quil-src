@@ -10,7 +10,7 @@ import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
 import org.quil.server.DocumentCache;
 import org.quil.server.SimpleCache;
-import org.quil.server.Tasks.TaskRunner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -23,7 +23,7 @@ public class QuantLibXmlTemplateInterpreter implements Interpreter {
 		System.loadLibrary("QuantLibJNI");
 	}
 	
-	final static Logger logger = LoggerFactory.getLogger(TaskRunner.class);
+	final static Logger logger = LoggerFactory.getLogger(QuantLibXmlTemplateInterpreter.class);
 	
 	protected JSONObject _data = new JSONObject();
 	protected JSONObject _result = new JSONObject();

@@ -5,15 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.quil</groupId>
-    <artifactId>objects</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>interpreter</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>interpreter</name>
+    <url>http://maven.apache.org</url>
 
     <repositories>
-        <repository>
-            <id>scala-tools.org</id>
-            <name>Scala-tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </repository>
         <repository>
             <id>quil-dev</id>
             <name>Quil Maven Repository</name>
@@ -35,9 +33,29 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>2.11.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>2.11.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quil</groupId>
+            <artifactId>quantlib</artifactId>
+            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -50,11 +68,11 @@
             <artifactId>json4s-native_2.11</artifactId>
             <version>3.3.0</version>
         </dependency>
-		
-		<dependency>
+
+        <dependency>
             <groupId>org.quil</groupId>
-            <artifactId>scala-macros</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>common</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -83,12 +101,6 @@
                     <scalaCompatVersion>2.11.7</scalaCompatVersion>
                     <recompileMode>incremental</recompileMode>
                     <args> <arg>-target:jvm-1.7</arg> </args>
-                    <!-- <javacArgs>
-                        <javacArg>-source</javacArg>
-                        <javacArg>1.7</javacArg>
-                        <javacArg>-target</javacArg>
-                        <javacArg>1.7</javacArg>
-                    </javacArgs> -->
                     <compilerPlugins>
                         <compilerPlugin>
                             <groupId>org.scalamacros</groupId>
@@ -99,7 +111,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>scala-compile-macro</id>
+                        <id>scala-compile-second</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>compile</goal>
@@ -140,35 +152,21 @@
                     </execution>
                 </executions>
             </plugin>
-			<!-- Maven Assembly Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4.1</version>
-				<configuration>
-					<!-- get all project dependencies -->
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<!-- MainClass in mainfest make a executable jar -->
-					<archive>
-					  <manifest>
-						<mainClass>com.mkyong.core.utils.App</mainClass>
-					  </manifest>
-					</archive>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
 
-				</configuration>
-				<executions>
-				  <execution>
-					<id>make-assembly</id>
-                                        <!-- bind to the packaging phase -->
-					<phase>package</phase> 
-					<goals>
-						<goal>single</goal>
-					</goals>
-				  </execution>
-				</executions>
-			</plugin>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>libs/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>../dist/libs</outputDirectory>
+                </configuration>
+
+            </plugin>
         </plugins>
     </build>
 </project>
