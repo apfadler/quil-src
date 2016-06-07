@@ -1,0 +1,24 @@
+{
+	"Interpreter" : "org.quil.interpreter.QuantLibObjects.QLObjectsInterpreter",
+
+	"Task"	: "RunQLObjectsApplication",
+
+	"MarketData" : { 
+		"Base" :"ExampleMarket",
+		"Additional" : {
+			"EUR_Swap_1Y" : "0.05"
+		}
+	},
+
+	"Trades" : {
+		"From" : "QLObjects/Trades/trades.json", 
+		"Where" : " true "
+	},
+
+	"Parametrization" : [
+		"QLObjects/Parametrization/Curves.json",
+		"QLObjects/Parametrization/Mappings.json"
+	],
+
+	"Controller" : "QLObjects/Controller.Example.scala"
+}

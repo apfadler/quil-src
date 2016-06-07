@@ -39,9 +39,12 @@ class Script extends QuantLibScript {
         val analyticEngine = new AnalyticHestonEngine(hestonModel)
         vanillaOption.setPricingEngine(analyticEngine)
         
+        println("Notional = " + tradeData.Notional.asString.toDouble)
+        
+        
         Document(
             Map(
-                "PV" -> (vanillaOption.NPV() * tradeData.Notional.asString.toDouble)
+                "PV" -> (vanillaOption.NPV() )
             )
         )
     

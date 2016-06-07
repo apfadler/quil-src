@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 
-
-
 public class QuantLibScriptInterpreter implements Interpreter {
 
 private boolean _error = false;
@@ -37,12 +35,15 @@ private boolean _error = false;
 	
 	public QuantLibScript compile(scala.tools.nsc.Interpreter intp, String script, String ID, int hashCode)
 	{
-		intp.compileString(script);
+
 		try {
+
+			intp.compileString(script);
 			Class compiledClass = intp.classLoader().loadClass("Script_"+ID);
 			compiledClasses.put(hashCode, compiledClass);
 			QuantLibScript scriptClass = (QuantLibScript)compiledClass.newInstance();
 			return scriptClass;
+
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,6 +51,9 @@ private boolean _error = false;
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		};

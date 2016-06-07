@@ -1,0 +1,11 @@
+{
+  "OISEurCollateral":{
+    "jsonClass":"Schema$Mapping",
+    "ID":"OISEurCollateral",
+    "Pairs":{
+      "DiscountCurve_EUR":"EUR_OIS",
+      "ForwardCurve_Euribor6M":"EUR_FWD_6M"
+    },
+    "TypeName":"Mapping"
+  }
+}

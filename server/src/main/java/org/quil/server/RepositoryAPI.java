@@ -1,10 +1,5 @@
 package org.quil.server;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -12,15 +7,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.ignite.Ignite;
-import org.apache.ignite.Ignition;
-import org.apache.ignite.cluster.ClusterMetrics;
-import org.apache.ignite.cluster.ClusterNode;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.quil.repository.FileSystemRepository;
-import org.quil.server.Tasks.Task;
-import org.quil.server.Tasks.TaskRunner;
+import org.quil.repository.CachedFileSystemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +25,7 @@ public class RepositoryAPI {
         {
     		// TODO Re-Desgn Repo Class (still ugly)
     		JSONObject repo = new JSONObject();
-			(new FileSystemRepository()).genRepositoryObject(null, repo, "");
+            CachedFileSystemRepository.instance().genRepositoryObject(null, repo, "");
 			return repo.toJSONString();
         }
         catch (Exception e)
@@ -53,7 +41,7 @@ public class RepositoryAPI {
     	try
         {
     		JSONObject fileData = new JSONObject();
-    		fileData.put("fileData", (new FileSystemRepository()).getFile(path));
+    		fileData.put("fileData", CachedFileSystemRepository.instance().getFile(path));
 			return fileData.toJSONString();
         }
         catch (Exception e)
@@ -68,7 +56,7 @@ public class RepositoryAPI {
     public String putFile(@PathParam("path") String path, String content) {
     	try
         {
-			(new FileSystemRepository()).putFile(path, content);
+            CachedFileSystemRepository.instance().putFile(path, content);
 			
 			return success();
         }
@@ -85,7 +73,7 @@ public class RepositoryAPI {
     public String deleteFile(@PathParam("path") String path) {
     	try
         {
-			(new FileSystemRepository()).deleteFile(path);
+            CachedFileSystemRepository.instance().deleteFile(path);
 			
 			return success();
         }
@@ -102,7 +90,7 @@ public class RepositoryAPI {
     public String createFolder(@PathParam("path") String path) {
     	try
         {
-			(new FileSystemRepository()).putFolder(path);
+            CachedFileSystemRepository.instance().putFolder(path);
 			
 			return success();
         }
@@ -119,7 +107,7 @@ public class RepositoryAPI {
     public String deleteFolder(@PathParam("path") String path) {
     	try
         {
-			(new FileSystemRepository()).deleteFile(path);
+            CachedFileSystemRepository.instance().deleteFile(path);
 			
 			return success();
         }

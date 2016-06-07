@@ -11,6 +11,7 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.quil.repository.CachedFileSystemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ignite.Ignition;
@@ -59,7 +60,7 @@ public class QuilServer {
         try {
         	
         	// TODO Make configurable
-        	TcpDiscoverySpi spi = new TcpDiscoverySpi(); 
+        	/*TcpDiscoverySpi spi = new TcpDiscoverySpi();
         	TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
         	ipFinder.setAddresses(Arrays.asList("127.0.0.1", "127.0.0.1:47500..47509"));
         	spi.setIpFinder(ipFinder);    	
@@ -69,7 +70,8 @@ public class QuilServer {
         	FifoQueueCollisionSpi spiCollision = new FifoQueueCollisionSpi();	
         	spiCollision.setParallelJobsNumber(4);
         	cfg.setCollisionSpi(spiCollision);
-        	
+
+        	*/
         	if (!workerNode) {
         		boolean clientmode = true;
         		try {
@@ -84,15 +86,25 @@ public class QuilServer {
 
         		logger.info("Client mode = " + clientmode);
 
-        		cfg.setClientMode(clientmode);
+				if (clientmode)
+					Ignition.start("config/quil-client.xml");
+				else
+					Ignition.start("config/quil-server.xml");
+
+        		//cfg.setClientMode(clientmode);
         	}
+			else {
+				Ignition.start("config/quil-server.xml");
+			}
         	
-        	cfg.setPeerClassLoadingEnabled(true);
-        	cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
-        	
-        	Ignition.start(cfg);
+        	//cfg.setPeerClassLoadingEnabled(true);
+        	//cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);*/
+
+
         	
         	runQuilStartupScript();
+
+			CachedFileSystemRepository.instance();
         	
         	if (!workerNode)  {
         		jettyServer.start();

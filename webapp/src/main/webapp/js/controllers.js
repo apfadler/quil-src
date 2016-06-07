@@ -734,11 +734,20 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 	
 	$scope.loadDefinedTasks = function() { $http.get('/api/repository/content').
 				success(function(data, status, headers, config) {
-					for (var i=0; i < data.children.length; i++) {
-					
-						if (data.children[i].id.indexOf("Task.") != -1 || data.children[i].id.indexOf(".scala") != -1)
-							$scope.definedTasks.push(data.children[i]);
-					}
+
+				    var findTasks = function(node) {
+
+				        for (var i=0; i < node.children.length; i++) {
+                        	if (node.children[i].id.indexOf("Task.") != -1 || node.children[i].id.indexOf(".scala") != -1)
+                                    $scope.definedTasks.push(node.children[i]);
+
+                            if (node.children[i].icon.indexOf("folder")!=-1)
+                                findTasks(node.children[i])
+                        }
+				    };
+
+				    findTasks(data);
+
 				}).
 				error(function(data, status, headers, config) {
 					console.log("Failed to get repo!");

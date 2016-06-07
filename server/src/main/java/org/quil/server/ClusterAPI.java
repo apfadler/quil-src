@@ -4,11 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -18,8 +15,6 @@ import org.apache.ignite.cluster.ClusterMetrics;
 import org.apache.ignite.cluster.ClusterNode;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.quil.server.Tasks.Task;
-import org.quil.server.Tasks.TaskRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

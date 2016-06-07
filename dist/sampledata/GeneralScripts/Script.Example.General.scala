@@ -23,7 +23,7 @@ var taskDescription  = """
 """;
 
 var T = Task.fromString(taskDescription);
-TaskRunner.runTask(T);
+TaskRunner.runTaskAndWait(T);
 
 var allTasks = Task.allTasks();
 

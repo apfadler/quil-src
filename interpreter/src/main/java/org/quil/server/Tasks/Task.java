@@ -1,13 +1,5 @@
 package org.quil.server.Tasks;
 
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.cache.Cache.Entry;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteLogger;
@@ -19,8 +11,12 @@ import org.apache.ignite.resources.LoggerResource;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.cache.Cache.Entry;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.UUID;
 
 public abstract class Task implements Serializable {
 	
