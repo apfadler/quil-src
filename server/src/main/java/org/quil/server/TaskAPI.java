@@ -74,7 +74,13 @@ public class TaskAPI {
     	HashMap<String, Task> tasks = Task.allTasks();
     	JSONArray jsonTasks = new JSONArray();
     	for (Map.Entry<String, Task> entry : tasks.entrySet() ) {
-    		jsonTasks.add(entry.getValue().toJSONObj());
+
+            JSONObject taskWithOutResult = new JSONObject();
+
+            Task t = entry.getValue();
+            t.setResult("");
+
+    		jsonTasks.add(t.toJSONObj());
     	}
     	
         return jsonTasks.toJSONString();

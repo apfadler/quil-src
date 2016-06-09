@@ -33,6 +33,13 @@
         <!-- Set to true to enable distributed class loading for examples, default is false. -->
         <property name="peerClassLoadingEnabled" value="true"/>
 
+	<property name="collisionSpi">
+    		<bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
+      		<!-- Execute one job at a time. -->
+      		<property name="parallelJobsNumber" value="4"/>
+    		</bean>
+ 	 </property>
+
         <!-- Enable task execution events for examples. -->
         <property name="includeEventTypes">
             <list>

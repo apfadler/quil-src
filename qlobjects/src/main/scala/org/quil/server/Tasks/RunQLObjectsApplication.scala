@@ -7,6 +7,7 @@ import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.quil.interpreter.Interpreter
 import org.quil.server.ResultsCache
+import org.slf4j.LoggerFactory
 
 /**
   * Created by d90590 on 07.06.2016.
@@ -19,6 +20,7 @@ object RunQLObjectsApplication {
 class RunQLObjectsApplication(val taskName:String, val taskDescription:String) extends
   org.quil.server.Tasks.Task(taskName,taskDescription) {
 
+  val logger = LoggerFactory.getLogger(classOf[RunQLObjectsApplication])
 
   def run() = {
 
@@ -28,9 +30,16 @@ class RunQLObjectsApplication(val taskName:String, val taskDescription:String) e
 
     val interpreter: Interpreter = Class.forName(taskDescription.get("Interpreter").asInstanceOf[String]).newInstance.asInstanceOf[Interpreter]
     interpreter.setData(taskDescription)
-    interpreter.interpret
+    try {
+      interpreter.interpret
+    }catch {
+      case e:Exception => logger.error("Interpretation failed:" + e.getMessage);
+    }
 
     Task.updateResult(_taskName, interpreter.getResult.toJSONString)
+
+    if (interpreter.getError) throw new Exception("Error during interpretation in task PriceTrade.")
+
     import scala.collection.JavaConversions._
     for (r <- interpreter.getResult.keySet) {
       val key: String = r.asInstanceOf[String]
@@ -48,7 +57,5 @@ class RunQLObjectsApplication(val taskName:String, val taskDescription:String) e
       }
       ResultsCache.add(_taskName, _taskTag, 0, key, strVal, doubleVal, intVal)
     }
-
-    if (interpreter.getError) throw new Exception("Error during interpretation in task PriceTrade.")
   }
 }

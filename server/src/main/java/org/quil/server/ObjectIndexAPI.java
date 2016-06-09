@@ -122,7 +122,7 @@ public class ObjectIndexAPI {
     		try {
     			Class.forName(IGNITE_JDBC_DRIVER_NAME);
     		} catch (ClassNotFoundException e) {
-    			error("Can't open connection");
+    			return error("Can't open connection");
     		}
 
     		try {
@@ -132,7 +132,7 @@ public class ObjectIndexAPI {
 
     			logger.info("Successfully created JDBC connection");
     		} catch (SQLException e) {
-    			error("Can't open connection: ");
+    			return error("Can't open connection: ");
 
     		}
 
@@ -160,9 +160,12 @@ public class ObjectIndexAPI {
     					
     					result.add(row);
     				}
-    			}
+    			} catch (Exception e) {
+					return error(e.toString());
+
+				}
     		} catch (Exception e) {
-    			error(e.toString());
+    			return error(e.toString());
 
     		} finally {
     			curStmt = null;

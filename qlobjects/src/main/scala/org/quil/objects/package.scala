@@ -137,7 +137,7 @@ package org.quil.objects {
 
   object Schema extends DefaultSchema  {
 
-    implicit var ctx = new Context
+    //implicit var ctx = new Context
 
     //Schema Objects
 
@@ -235,7 +235,7 @@ package org.quil.objects {
 
     import QLTypeMapping._
 
-    val determineConfig = (obj:SQObject) => {
+    def determineConfig (obj:SQObject)(implicit ctx:Context) = {
       obj match {
         case x:SwapTrade => {
 
@@ -253,7 +253,7 @@ package org.quil.objects {
       }
     }
 
-    val loadFixings = (obj:SQObject) => {
+    def loadFixings (obj:SQObject)(implicit ctx:Context) = {
       obj match {
         case x:Index => {
 
@@ -267,7 +267,7 @@ package org.quil.objects {
       }
     }
 
-    val buildCurve:(SQObject => YieldTermStructure) = (obj:SQObject) => {
+    def buildCurve (obj:SQObject)(implicit ctx:Context) : YieldTermStructure = {
 
       var instrIndex=0
 
@@ -325,7 +325,7 @@ package org.quil.objects {
     }
 
 
-    val buildTrade:(SQObject => org.quantlib.Instrument) = (trade:SQObject) => {
+    def buildTrade(trade:SQObject)(implicit ctx:Context) : org.quantlib.Instrument = {
 
       val result = trade match {
 

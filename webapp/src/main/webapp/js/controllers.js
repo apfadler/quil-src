@@ -5,23 +5,27 @@ var controllers = angular.module("controllers", []);
 //for file upload
 controllers.directive("fileread", [function () {
     return {
+        restrict : 'AE',
         scope: {
             fileread: "=",
             filename: "="
         },
         link: function (scope, element, attributes) {
             element.bind("change", function (changeEvent) {
+                console.log(scope)
                 var reader = new FileReader();
                 reader.onload = function (loadEvent) {
+
                     scope.$apply(function () {
                         scope.fileread = loadEvent.target.result;
                     });
                 }
                 var files = event.target.files;
                 var file = files[0];
-                scope.filename = file ? file.name : undefined;
+                //scope.filename = file ? file.name : undefined;
                 scope.$apply();
                 reader.readAsText(changeEvent.target.files[0]);
+
             });
         }
     }
@@ -204,16 +208,20 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		  }
 		});
 	};
-	
-   $scope.query = function() {
-	   
+
+
+   $scope.query = function(queryStr) {
+
 	   $http({method : "POST",
 		      url : "/api/objects/query",
-		      data : $scope.queryString,
+		      data : queryStr,
 		      headers : {'Content-Type' : 'text/plain'}
 	   }).
 		success(function(data, status, headers, config) {
 			console.log('post success');
+
+			if (Object.prototype.toString.call( data ) === '[object Array]') {
+
 			 $scope.showQueryResult = true;
 			
 			 for (var i=0; i < data.length;i++) {
@@ -225,7 +233,11 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 			 }
 			 
 			 $scope.lastQuery = data;
-			
+
+			} else {
+			    $scope.alerts.splice(0, 1);
+                						$scope.alerts.push({msg: 'Query Error:' + data.Msg, type : 'danger'});
+			}
 
 		}).
 		error(function(data, status, headers, config) {
@@ -235,7 +247,9 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		});
 	   
    }
-   
+
+   $scope.uploadFile = "";
+
    $scope.upload = function() {
 	   var url="";
 		if ($scope.cacheType == "documentcache")
@@ -249,8 +263,7 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		
 		if ($scope.cacheType == "simplecachesingle")
 			url = "/api/simplecache/"+ $scope.cacheId + "/put/"+ $scope.cacheKey;
-		
-		
+
 		   $http({method : "POST",
 			      url : url,
 			      data : $scope.uploadFile,
@@ -270,8 +283,8 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 			});
    }
    
-   $scope.queryString = "SELECT * FROM \"ExampleMarket\".String ";
-   $scope.lastQuery = [["as","asd"],["as", "asdsad"]];
+   $scope.queryString = "SELECT * FROM \"Results\".ResultItem  ";
+   $scope.lastQuery = [["Column"],["No Query submitted yet."]];
    $scope.showQueryResult = false;
    
    $scope.alerts = [];
@@ -308,6 +321,24 @@ controllers.controller("TaskController", ['$scope', '$http','$uibModal', '$state
 	$scope.parse = function (obj) {
         return JSON.parse(obj);
     }
+
+    $scope.viewResult = function (object) {
+
+        		var modalInstance = $uibModal.open({
+        		  animation: true,
+        		  templateUrl: "inspectTaskResult.html",
+        		  controller: 'inspectTaskCtrl',
+        		  windowClass: 'app-modal-window-inspect',
+        		  size: 'sm',
+        		  resolve: {
+        			obj: function () {
+        			  return object;
+        			}
+
+        		  }
+        		});
+        	};
+
 }]);
 
 controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal', function ($scope, $http, $uibModal) {
@@ -674,7 +705,7 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 	$scope.loadRepository();
 }]);
 
-controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	function ($scope, $state, $http) {
+controllers.controller("TaskActionController", ['$scope', '$state', '$http', '$uibModal',	function ($scope, $state, $http, $uibModal) {
 	
 	$scope.taskType = "PriceTrade";
 	$scope.definedTasks = [];
@@ -754,7 +785,7 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', 	fu
 				}
 			);
 	}
-	
+
 	$scope.loadDefinedTasks();
 		
 }]);
@@ -886,7 +917,44 @@ controllers.controller('inspectObjectCtrl',['$scope', '$uibModalInstance','$http
 	  
 
 	}])
-	
+
+.filter('parse', function() {
+  return function(input, uppercase) {
+   return JSON.stringify(input);
+  };
+})
+.filter('parse', function() {
+  return function(input, uppercase) {
+   return JSON.parse(input);
+  };
+});
+
+
+controllers.controller('inspectTaskCtrl',['$scope', '$uibModalInstance','$http','obj', function ($scope, $uibModalInstance, $http, obj) {
+
+	  $scope.resultData = {};
+	  $scope.task = obj;
+
+	  $http.get("/api/compute/tasks/"+obj.name+"/result")
+		.success(function(data, status, headers, config) {
+			$scope.resultData = data;
+		})
+		.error(function(data, status, headers, config) {
+
+			console.log("Failed to get data!");
+		});
+
+	  $scope.ok = function () {
+	    $uibModalInstance.close('ok');
+	  };
+
+	  $scope.cancel = function () {
+	   $uibModalInstance.dismiss('cancel');
+	  };
+
+
+	}])
+
 .filter('parse', function() {
   return function(input, uppercase) {
    return JSON.stringify(input);

@@ -7,6 +7,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.internal.util.IgniteExceptionRegistry;
 import org.apache.ignite.resources.LoggerResource;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -54,10 +55,16 @@ public abstract class Task implements Serializable {
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName("Tasks");
-        cfg.setIndexedTypes(String.class, Task.class,
-        				    String.class, PriceTrade.class,
-        				    String.class, PricePortfolio.class, 
-        				    String.class, ScriptedTask.class);
+
+		try {
+			cfg.setIndexedTypes(String.class, Task.class,
+					String.class, PriceTrade.class,
+					String.class, PricePortfolio.class,
+					String.class, ScriptedTask.class,
+					String.class, Class.forName("org.quil.server.Tasks.RunQLObjectsApplication"));
+		}catch (Exception e) {
+			logger.info("Failed to set indexed types");
+		}
         
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
         
@@ -112,8 +119,15 @@ public abstract class Task implements Serializable {
 		
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName("Tasks");
-        cfg.setIndexedTypes(String.class, Task.class, String.class, PriceTrade.class, String.class, PricePortfolio.class, String.class, ScriptedTask.class);
-        
+		try {
+			cfg.setIndexedTypes(String.class, Task.class,
+					String.class, PriceTrade.class,
+					String.class, PricePortfolio.class,
+					String.class, ScriptedTask.class,
+					String.class, Class.forName("org.quil.server.Tasks.RunQLObjectsApplication"));
+		}catch (Exception e) {
+			logger.info("Failed to set indexed types");
+		}
         IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
         
         HashMap<String, Task> all = new HashMap<String, Task>();

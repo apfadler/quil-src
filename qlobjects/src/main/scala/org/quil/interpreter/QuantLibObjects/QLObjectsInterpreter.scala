@@ -8,7 +8,6 @@ import org.json.simple._
 import org.json.simple.parser.JSONParser
 import org.quil.repository.CachedFileSystemRepository
 import org.quil.objects._
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import scala.tools.nsc.Settings
@@ -21,7 +20,7 @@ import org.quil.interpreter.QuantLibTemplates.Market
   *
   * Created by d90590 on 06.06.2016.
   */
-class QLObjectsInterpreter extends org.quil.interpreter.Interpreter {
+class QLObjectsInterpreter extends Interpreter {
 
   val logger = LoggerFactory.getLogger(classOf[QLObjectsInterpreter])
 
@@ -41,6 +40,11 @@ class QLObjectsInterpreter extends org.quil.interpreter.Interpreter {
 
     val ignite = Ignition.ignite()
 
+    val baos: ByteArrayOutputStream = new ByteArrayOutputStream
+    val ps: PrintStream = new PrintStream(baos)
+    val out: StringWriter = new StringWriter
+    val stream: PrintWriter = new PrintWriter(out)
+
     try {
 
       logger.info("Loading Controller")
@@ -49,6 +53,7 @@ class QLObjectsInterpreter extends org.quil.interpreter.Interpreter {
 
       val paramObjects = _data.get("Parametrization").asInstanceOf[JSONArray]
 
+      implicit var ctx = new Context
       import Schema._
 
       logger.info("Loading Parametrization")
@@ -96,10 +101,13 @@ class QLObjectsInterpreter extends org.quil.interpreter.Interpreter {
 
       }
 
-      //load Steps
+      //Load steps by compiling the scala script
       val script: String = _data.get("Script").asInstanceOf[String]
       val init: String = """import scala.collection.JavaConversions._;
                             import org.quil.objects._;
+
+                            implicit val ctx:Context = ctx_;
+
                             import org.quil.objects.Schema._;
                             import org.quantlib.{Array=>QArray, Index=>QIndex, _}; """
 
@@ -107,32 +115,30 @@ class QLObjectsInterpreter extends org.quil.interpreter.Interpreter {
       val settings: Settings = new Settings
       settings.usejavacp.tryToSetFromPropertyValue("true")
       settings.embeddedDefaults(Thread.currentThread().getContextClassLoader)
-      val baos: ByteArrayOutputStream = new ByteArrayOutputStream
-      val ps: PrintStream = new PrintStream(baos)
-      val out: StringWriter = new StringWriter
-      val stream: PrintWriter = new PrintWriter(out)
+
       val imain: IMain = new IMain(settings, stream)
+
+      println(imain.bind("ctx_", "org.quil.objects.Context", ctx))
 
       imain.interpret(init)
 
       var r: Result = imain.bind("MD", "org.quil.interpreter.QuantLibTemplates.Market", MD)
       println(r)
 
+      // Execute all steps
       var oldOut = Console.out
       imain.eval("Console").asInstanceOf[Console.type].setOut(baos)
       imain.interpret("var Steps = List[(String,(SQObject=>Any))]()\n" + controllerScript)
-
       val steps = imain.eval("Steps").asInstanceOf[List[(String,(org.quil.objects.SQObject=>Any))]]
-
       var res = List[(String,Any)]()
       steps.reverse.foreach {step =>
         logger.info("Executing Step '"+step._1+"'")
         res :::= Graph.applyOnce(initObject, step._2)
       }
-
       Console.setOut(oldOut)
 
-
+      // Return results
+      // TODO need a replacement for stupid org.json.simple
       implicit val formats = serializationFormat()
       val resStr = s"""{ "EvaluationResult" : ${write(res)},
                           "Output" : ${write(baos.toString)},
@@ -144,6 +150,18 @@ class QLObjectsInterpreter extends org.quil.interpreter.Interpreter {
       _result = new JSONParser().parse(resStr).asInstanceOf[JSONObject]
 
     } catch  {
+      case e:javax.script.ScriptException => {
+
+        _error = true
+
+        implicit  val formats = Schema.serializationFormat()
+
+        val resStr = s"""{ "error" : ${write(e.getMessage+"\n"+baos.toString+"\n"+out.toString)} }"""
+
+        _result = new JSONParser().parse(resStr).asInstanceOf[JSONObject]
+
+        throw new Exception("Script Error: " + _result.get("error"))
+      }
       case e:Exception => {
         _error = true
          throw e }
