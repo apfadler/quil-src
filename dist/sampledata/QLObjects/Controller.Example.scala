@@ -1,3 +1,5 @@
+System.out.println(Settings.instance.getEvaluationDate)
+
 
 // Determine Pricing Config for all trades
 Steps ::= "Step_1" -> ((obj: SQObject) =>  {

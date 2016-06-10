@@ -75,7 +75,7 @@ public class TaskRunner {
 		Ignite ignite = Ignition.ignite();
 		
         // submit task async
-        ignite.compute().withName(task.getName()).withAsync().run(new IgniteRunnable() {
+        ignite.compute(ignite.cluster().forAttribute("ROLE", "worker")).withName(task.getName()).withAsync().run(new IgniteRunnable() {
         	
         	@LoggerResource
             private IgniteLogger log;
@@ -109,7 +109,7 @@ public static void runTaskAndWait(final Task task) throws ParseException {
 		Ignite ignite = Ignition.ignite();
 		
         // submit task sync
-        ignite.compute().withName(task.getName()).run(new IgniteRunnable() {
+        ignite.compute(ignite.cluster().forAttribute("ROLE", "worker")).withName(task.getName()).run(new IgniteRunnable() {
         	
         	@LoggerResource
             private IgniteLogger log;

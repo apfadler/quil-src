@@ -1,10 +1,12 @@
 package org.quil.interpreter.QuantLibTemplates;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.quil.interpreter.QuantLibScript.QuantLibScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -24,22 +26,29 @@ public class ScriptedController extends Controller  {
 
 	final static Logger logger = LoggerFactory.getLogger(ScriptedController.class);
 
-	private String script;
+	private String _script;
 	private static ILoop interp;
 
 	
 	public ScriptedController(String script)
 	{
-		this.script = script;
+		_script = script;
 	}
-	
-	
-	public GenericScalaScript compile(Interpreter intp, String script, String ID)
+
+
+	static HashMap<Integer,Class> compiledClasses = new HashMap<Integer,Class>();
+
+	public GenericScalaScript compile(scala.tools.nsc.Interpreter intp, String script, String ID, int hashCode)
 	{
-		intp.compileString(script);
+
 		try {
-			GenericScalaScript scriptClass =  (GenericScalaScript) intp.classLoader().loadClass("Script_"+ID).newInstance();
+
+			intp.compileString(script);
+			Class compiledClass = intp.classLoader().loadClass("Script_"+ID);
+			compiledClasses.put(hashCode, compiledClass);
+			GenericScalaScript scriptClass = (GenericScalaScript) compiledClass.newInstance();
 			return scriptClass;
+
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,8 +58,11 @@ public class ScriptedController extends Controller  {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		};
-		
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 	
@@ -60,17 +72,31 @@ public class ScriptedController extends Controller  {
 		try {
 			Parameters P = (Parameters)_context.getBean("P");
 			long start = System.currentTimeMillis();
-			
-			scala.tools.nsc.Settings settings = new scala.tools.nsc.Settings(null) ;
-		    settings.usejavacp().tryToSetFromPropertyValue("true");
-		    Interpreter interp = new Interpreter( settings); 	
-		    interp.setContextClassLoader();
-		    
+
 		    String ID = UUID.randomUUID().toString().replace("-", "_");
-		    this.script = this.script.replaceAll("class Script extends", "class Script_"+ID+" extends");
-		    GenericScalaScript scalaScript = compile(interp,this.script,ID);
+
+			int hashCode = _script.hashCode();
+			GenericScalaScript scalaScript;
+			if (compiledClasses.containsKey(hashCode)) {
+
+				logger.info("Class is cached.");
+
+				scalaScript = (GenericScalaScript) compiledClasses.get(hashCode).newInstance();
+
+			} else {
+
+				logger.info("Class does not exist in cache. Compiling...");
+
+				scala.tools.nsc.Settings settings = new scala.tools.nsc.Settings(null) ;
+				settings.usejavacp().tryToSetFromPropertyValue("true");
+				scala.tools.nsc.Interpreter interp = new scala.tools.nsc.Interpreter( settings);
+				interp.setContextClassLoader();
+
+				_script = _script.replaceAll("class Script extends", "class Script_"+ID+" extends");
+				scalaScript = compile(interp, _script,ID, hashCode);
+			}
 		    
-		    logger.debug("Script compilation took " + (System.currentTimeMillis() - start) + "ms");
+		    logger.debug("Script compilation/class lookup took " + (System.currentTimeMillis() - start) + "ms");
 		    start = System.currentTimeMillis();
 		    scalaScript.main(_context, Ignition.ignite());
 		

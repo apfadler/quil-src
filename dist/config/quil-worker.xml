@@ -22,10 +22,14 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <!-- Imports default Ignite configuration -->
+    <!-- Imports default Quil configuration -->
     <import resource="quil-common.xml"/>
 
     <bean parent="ignite.cfg">
-        <!-- <property name="clientMode" value="true"/> -->
+        <property name="userAttributes">
+            <map>
+                <entry key="ROLE" value="worker"/>
+            </map>
+        </property>
     </bean>
 </beans>

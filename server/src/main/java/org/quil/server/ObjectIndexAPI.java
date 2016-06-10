@@ -1,5 +1,6 @@
 package org.quil.server;
 
+import java.util.List;
 import java.util.Map;
 
 import java.util.UUID;
@@ -13,11 +14,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.query.QueryCursor;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cache.query.SqlQuery;
+import org.apache.ignite.internal.processors.cache.QueryCursorImpl;
+import org.apache.ignite.internal.processors.query.GridQueryFieldMetadata;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
+import org.quil.server.Tasks.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +115,7 @@ public class ObjectIndexAPI {
     
     private static final String IGNITE_JDBC_DRIVER_NAME = "org.apache.ignite.IgniteJdbcDriver";
     
-    @POST
+   /* @POST
     @Path("query")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
@@ -177,7 +185,54 @@ public class ObjectIndexAPI {
     	{
     		return error(e.toString());
     	}
-    }
+    }*/
+
+	@POST
+	@Path("query")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String query(String query) {
+		try
+		{
+			Ignite ignite = Ignition.ignite();
+			IgniteCache<String, Task> cache = ignite.cache("Tasks");
+
+			SqlFieldsQuery sql = new SqlFieldsQuery(query);
+			sql.setLocal(true);
+
+			JSONArray result = new JSONArray();
+			try (QueryCursor<List<?>> cursor = cache.query(sql)) {
+
+				JSONArray jsonHeaderRow = new JSONArray();
+
+				for(int i=0; i < ((QueryCursorImpl) cursor).fieldsMeta().size(); i++) {
+
+					GridQueryFieldMetadata m = (GridQueryFieldMetadata)(((QueryCursorImpl) cursor).fieldsMeta()).get(i);
+
+					jsonHeaderRow.add(m.fieldName());
+				}
+
+				result.add(jsonHeaderRow);
+
+				for (List<?> row : cursor) {
+					JSONArray jsonRow = new JSONArray();
+
+					for (int i = 0; i < row.size(); i++) {
+						GridQueryFieldMetadata m = (GridQueryFieldMetadata)(((QueryCursorImpl) cursor).fieldsMeta()).get(i);
+						jsonRow.add(row.get(i).toString());
+					}
+
+					result.add(jsonRow);
+				}
+			}
+
+			return result.toJSONString();
+		}
+		catch (Exception e)
+		{
+			return error(e.toString());
+		}
+	}
      
     private String success() {
     	return "{ \"Status\" : \"SUCCESS\" }";

@@ -126,6 +126,17 @@ class QLObjectsInterpreter extends Interpreter {
       println(r)
 
       // Execute all steps
+      try {
+        org.quantlib.Settings.instance().setEvaluationDate(QLTypeMapping.parseDate(_data.get("EvaluationDate").toString))
+      } catch {
+        case _ => {
+          _error = true
+          val resStr = s"""{ "error" : "Failed to set evaluation date" }"""
+          _result = new JSONParser().parse(resStr).asInstanceOf[JSONObject]
+          throw new Exception("Failed to set EvaluationDate")
+        }
+      }
+
       var oldOut = Console.out
       imain.eval("Console").asInstanceOf[Console.type].setOut(baos)
       imain.interpret("var Steps = List[(String,(SQObject=>Any))]()\n" + controllerScript)

@@ -71,7 +71,7 @@ public class PricePortfolio extends Task {
 		}
 		
 		Ignite ignite = Ignition.ignite();
-        Collection<JSONObject> results = ignite.compute().call(jobs);
+        Collection<JSONObject> results = ignite.compute(ignite.cluster().forAttribute("ROLE", "worker")).call(jobs);
         
         int idx=1;
         Vector<String> resultsStr = new Vector<String>();

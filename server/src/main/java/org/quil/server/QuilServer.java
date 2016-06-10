@@ -1,15 +1,21 @@
 package org.quil.server;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.annotation.Name;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.quil.repository.CachedFileSystemRepository;
 import org.slf4j.Logger;
@@ -54,7 +60,16 @@ public class QuilServer {
         	logger.info("Defaulting to port 8081");
         }
 
-        Server jettyServer = new Server(port);
+
+
+
+
+		QueuedThreadPool tp = new QueuedThreadPool();
+		tp.setMaxThreads(100);tp.setMinThreads(10);
+		Server jettyServer = new Server(tp);
+		ServerConnector c = new ServerConnector(jettyServer);
+		c.setPort(port);
+		jettyServer.addConnector(c);
         jettyServer.setHandler(contexts);
  
         try {
@@ -74,12 +89,14 @@ public class QuilServer {
         	*/
         	if (!workerNode) {
         		boolean clientmode = true;
+				boolean standalone = false;
         		try {
         			String env = System.getenv("QUIL_SERVER_STANDALONE");
         			if (env.compareToIgnoreCase("yes") == 0 || env.compareToIgnoreCase("true") == 0 )
         			{
         				clientmode = false;
-        			}
+        				standalone=true;
+					}
 
         		} catch (Exception e) {
         		}
@@ -89,12 +106,18 @@ public class QuilServer {
 				if (clientmode)
 					Ignition.start("config/quil-client.xml");
 				else
-					Ignition.start("config/quil-server.xml");
-
+				{
+					if (standalone)
+						Ignition.start("config/quil-worker.xml");
+					else
+						Ignition.start("config/quil-server.xml");
+				}
         		//cfg.setClientMode(clientmode);
         	}
 			else {
-				Ignition.start("config/quil-server.xml");
+				Ignition.start("config/quil-worker.xml");
+
+
 			}
         	
         	//cfg.setPeerClassLoadingEnabled(true);
@@ -102,12 +125,14 @@ public class QuilServer {
 
 
         	
-        	runQuilStartupScript();
 
-			CachedFileSystemRepository.instance();
-        	
         	if (!workerNode)  {
-        		jettyServer.start();
+
+				runQuilStartupScript();
+
+				CachedFileSystemRepository.instance();
+
+				jettyServer.start();
             
         		logger.info("QuilServer running.");
 			

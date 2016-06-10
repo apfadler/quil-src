@@ -43,8 +43,21 @@ public class CachedFileSystemRepository {
 
 		_baseFolder = System.getenv("QUIL_HOME")+"/sampledata/";
 
-		logger.info("Building IGFS cache for repository.");
-		initIgfs(null, "/");
+		boolean workerNode = false;
+		try {
+			String env = System.getenv("QUIL_WORKER");
+			if (env.compareToIgnoreCase("yes") == 0 || env.compareToIgnoreCase("true") == 0 )
+			{
+				workerNode = true;
+			}
+
+		} catch (Exception e) {
+		}
+
+		if (!workerNode) {
+			logger.info("Building IGFS cache for repository.");
+			initIgfs(null, "/");
+		}
 	}
 
 	protected void initIgfs(File node, String path) {

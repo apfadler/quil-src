@@ -243,7 +243,7 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 		error(function(data, status, headers, config) {
 			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
 			$scope.alerts.splice(0, 1);
-						$scope.alerts.push({msg: 'Error removing cache.', type : 'danger'});
+						$scope.alerts.push({msg: 'Error executing query.', type : 'danger'});
 		});
 	   
    }

@@ -15,13 +15,15 @@ if [ -z "$QUIL_PORT" ]; then
     export QUIL_PORT=8081
 fi 
 
-$QUIL_HOME/bin/quil-client.sh simplecache Templates put Trade.Swap $QUIL_HOME/sampledata/Template.Trade.Swap.xml
+$QUIL_HOME/bin/quil-client.sh simplecache Templates put Trade.Swap $QUIL_HOME/sampledata/QLXMLTemplates/Template.Trade.Swap.xml
 
-$QUIL_HOME/bin/quil-client.sh simplecache ExampleMarket createFromCSV $QUIL_HOME/sampledata/Data.Market.csv
+$QUIL_HOME/bin/quil-client.sh simplecache ExampleMarket createFromCSV $QUIL_HOME/sampledata/FlatFiles/Data.Market.csv
 
-$QUIL_HOME/bin/quil-client.sh documentcache ExampleTrades createFromCSV $QUIL_HOME/sampledata/Data.Trades.csv
+$QUIL_HOME/bin/quil-client.sh documentcache ExampleTrades createFromCSV $QUIL_HOME/sampledata/FlatFiles/Data.Trades.Large.csv
 
-$QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/Task.PriceSingleTrade.json
+$QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLXMLTemplates/Task.PriceSingleTrade.json
 
-$QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/Task.PriceTrades.json
+$QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLXMLTemplates/Task.PriceTrades.json
+
+$QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLObjects/Task.QuantlibObjects.json
 

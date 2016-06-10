@@ -2,6 +2,8 @@
 	"Interpreter" : "org.quil.interpreter.QuantLibObjects.QLObjectsInterpreter",
 
 	"Task"	: "RunQLObjectsApplication",
+	
+	"EvaluationDate" : "2015-06-09",
 
 	"MarketData" : { 
 		"Base" :"ExampleMarket",
