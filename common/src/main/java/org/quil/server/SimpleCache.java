@@ -67,7 +67,7 @@ public class SimpleCache extends Cache {
         logger.debug("Cache created");
 	}
 	
-	public int size()
+	/*public int size()
 	{
 		Ignite ignite = Ignition.ignite();
         IgniteCache<?, ?>  cache = ignite.cache(_cacheName);
@@ -84,7 +84,7 @@ public class SimpleCache extends Cache {
         }
         
         return s;
-	}
+	}*/
 	
 	public void put(String key, String value)
 	{

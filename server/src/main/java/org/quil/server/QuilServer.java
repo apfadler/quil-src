@@ -65,9 +65,10 @@ public class QuilServer {
 
 
 		QueuedThreadPool tp = new QueuedThreadPool();
-		tp.setMaxThreads(100);tp.setMinThreads(10);
+		tp.setMaxThreads(1000);tp.setMinThreads(10);
 		Server jettyServer = new Server(tp);
-		ServerConnector c = new ServerConnector(jettyServer);
+		//ServerConnector c = new ServerConnector(jettyServer);
+		org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector c= new org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector(jettyServer);
 		c.setPort(port);
 		jettyServer.addConnector(c);
         jettyServer.setHandler(contexts);

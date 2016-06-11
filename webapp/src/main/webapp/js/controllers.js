@@ -32,7 +32,7 @@ controllers.directive("fileread", [function () {
 }]);
 
 
-controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches','DeployedObjects',function ($scope, $interval, ClusterNodes, Tasks, Caches, DeployedObjects) {
+controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes', 'Tasks', 'Caches',function ($scope, $interval, ClusterNodes, Tasks, Caches) {
 
 	$scope.clusterNodes = [];
 	$scope.tasks = [];
@@ -41,11 +41,6 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 	$scope.dataServices = [];
 	$scope.deployedObjects = [];
 
-	$interval( function() {
-		$scope.clusterNodes = ClusterNodes(); 
-	}, 100);
-
-	
 	$scope.updateTasks = function() {
 		
 		for (var i=0; i < $scope.tasks.length; i++)
@@ -84,7 +79,6 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 				$scope.tasks[i].result = JSON.parse($scope.tasks[i].result);
 			}
 			catch(e) {
-				//$scope.tasks[i].result = {};
 			}
 
 		}
@@ -97,35 +91,11 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 
 
 		$scope.updateTasks();
+		$scope.clusterNodes = ClusterNodes();
+		$scope.dataServices = Caches();
 
-	}, 100);
+	}, 1000);
 	
-	$interval( function() {
-		$scope.dataServices = Caches(); 
-	}, 100);
-
-	/*$interval( function() {
-		$scope.deployedObjects = DeployedObjects(); 
-
-		for (var i=0; i < $scope.deployedObjects.length; i++)
-		{
-			var cacheType = "simplecache";
-
-			for (var j=0; j < $scope.dataServices.length; j++) {
-				if ($scope.dataServices[j].name == $scope.deployedObjects[i].cacheId ) {
-					if ($scope.dataServices[j].type.indexOf("Doc") != -1) {
-						cacheType ="documentcache";
-					}
-				}
-
-			}
-
-			$scope.deployedObjects[i].url = "/api/" + cacheType +
-											"/"+$scope.deployedObjects[i].cacheId+"/get/" 
-											+ $scope.deployedObjects[i].fileId;
-		};
-
-	}, 100);*/
 
 	$scope.logTxt = "";
 	var logEvents = new EventSource('/api/log/stream');

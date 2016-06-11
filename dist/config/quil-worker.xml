@@ -25,11 +25,21 @@
     <!-- Imports default Quil configuration -->
     <import resource="quil-common.xml"/>
 
+
+
     <bean parent="ignite.cfg">
+
+        <property name="collisionSpi">
+            <bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
+                <property name="parallelJobsNumber" value="16"/>
+            </bean>
+        </property>
+
         <property name="userAttributes">
             <map>
                 <entry key="ROLE" value="worker"/>
             </map>
         </property>
+
     </bean>
 </beans>

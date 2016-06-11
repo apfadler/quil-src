@@ -111,81 +111,7 @@ public class ObjectIndexAPI {
         
         return success();
     }
-    
-    
-    private static final String IGNITE_JDBC_DRIVER_NAME = "org.apache.ignite.IgniteJdbcDriver";
-    
-   /* @POST
-    @Path("query")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String query(String query) {
-    	try
-        {
-    		String IGNITE_JDBC_URL = "jdbc:ignite://localhost:11211/Tasks";
-    		Connection conn = null;
 
-    		Statement curStmt;
-
-    		try {
-    			Class.forName(IGNITE_JDBC_DRIVER_NAME);
-    		} catch (ClassNotFoundException e) {
-    			return error("Can't open connection");
-    		}
-
-    		try {
-    			logger.info("connect to " + IGNITE_JDBC_URL);
-
-    			conn = DriverManager.getConnection(IGNITE_JDBC_URL);
-
-    			logger.info("Successfully created JDBC connection");
-    		} catch (SQLException e) {
-    			return error("Can't open connection: ");
-
-    		}
-
-    		JSONArray result = new JSONArray();
-    		try (Statement stmt = conn.createStatement()) {
-
-    			curStmt = stmt;
-
-    			try (ResultSet res = stmt.executeQuery(query)) {
-    				ResultSetMetaData md = res.getMetaData();
-
-    				JSONArray columns = new JSONArray();
-    				for (int i = 1; i <= md.getColumnCount(); i++) {
-    					columns.add(md.getColumnName(i));
-					}
-    				result.add(columns);
-    				
-    				while (res.next()) {
-    					
-    					JSONArray row = new JSONArray();
-    					
-    					for (int i = 1; i <= md.getColumnCount(); i++) {
-    						row.add(res.getString(i));
-    					}
-    					
-    					result.add(row);
-    				}
-    			} catch (Exception e) {
-					return error(e.toString());
-
-				}
-    		} catch (Exception e) {
-    			return error(e.toString());
-
-    		} finally {
-    			curStmt = null;
-    		}
-
-    		return result.toJSONString();
-        }
-    	catch (Exception e)
-    	{
-    		return error(e.toString());
-    	}
-    }*/
 
 	@POST
 	@Path("query")
@@ -201,9 +127,14 @@ public class ObjectIndexAPI {
 			sql.setLocal(true);
 
 			JSONArray result = new JSONArray();
+
+			logger.info("Query: " + query);
+
 			try (QueryCursor<List<?>> cursor = cache.query(sql)) {
 
 				JSONArray jsonHeaderRow = new JSONArray();
+
+				logger.info("Getting results.");
 
 				for(int i=0; i < ((QueryCursorImpl) cursor).fieldsMeta().size(); i++) {
 
@@ -225,6 +156,8 @@ public class ObjectIndexAPI {
 					result.add(jsonRow);
 				}
 			}
+
+			logger.info("returning results.");
 
 			return result.toJSONString();
 		}

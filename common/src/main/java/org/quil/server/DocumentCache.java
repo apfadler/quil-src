@@ -67,7 +67,7 @@ public class DocumentCache extends Cache {
         logger.debug("Cache created");
 	}
 	
-	public int size()
+	/*public int size()
 	{
 		Ignite ignite = Ignition.ignite();
         IgniteCache<String, Document>  cache = ignite.cache(_cacheName);
@@ -75,7 +75,7 @@ public class DocumentCache extends Cache {
         int s;
         try
 		{
-        	s = cache.size(CachePeekMode.PRIMARY);	
+        	s = cache.localSize(CachePeekMode.PRIMARY);
 		}
         catch (Exception e)
         {
@@ -84,7 +84,7 @@ public class DocumentCache extends Cache {
         }
         
         return s;
-	}
+	}*/
 	
 	public void put(String key, Document doc)
 	{
