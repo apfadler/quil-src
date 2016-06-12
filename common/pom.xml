@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <ignite.version>1.5.0.final</ignite.version>
+        <ignite.version>1.6.0</ignite.version>
     </properties>
 
     <repositories>

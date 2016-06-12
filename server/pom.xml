@@ -9,7 +9,7 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<ignite.version>1.5.0.final</ignite.version>
+		<ignite.version>1.6.0</ignite.version>
 	</properties>
 
 	<repositories>
@@ -74,6 +74,11 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
+			<version>9.2.3.v20140905</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
 			<version>9.2.3.v20140905</version>
 		</dependency>
 		<dependency>
