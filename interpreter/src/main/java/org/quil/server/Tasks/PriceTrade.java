@@ -19,7 +19,9 @@ public class PriceTrade extends Task {
 	
 	@Override
 	public void run() throws Exception {
-		
+
+		Task.updateStatus(_taskName, Status.RUNNING);
+
 		JSONParser parser = new JSONParser();
 
 		final JSONObject taskDescription = (JSONObject) parser.parse(_taskDescription);

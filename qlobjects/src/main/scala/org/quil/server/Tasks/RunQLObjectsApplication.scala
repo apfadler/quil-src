@@ -7,15 +7,12 @@ import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.quil.interpreter.Interpreter
 import org.quil.server.ResultsCache
+import org.quil.server.Tasks.Task.Status
 import org.slf4j.LoggerFactory
 
 /**
   * Created by d90590 on 07.06.2016.
   */
-
-object RunQLObjectsApplication {
-
-}
 
 class RunQLObjectsApplication(val taskName:String, val taskDescription:String) extends
   org.quil.server.Tasks.Task(taskName,taskDescription) {
@@ -23,6 +20,8 @@ class RunQLObjectsApplication(val taskName:String, val taskDescription:String) e
   val logger = LoggerFactory.getLogger(classOf[RunQLObjectsApplication])
 
   def run() = {
+
+    Task.updateStatus(_taskName, Status.RUNNING)
 
     val parser: JSONParser = new JSONParser
 

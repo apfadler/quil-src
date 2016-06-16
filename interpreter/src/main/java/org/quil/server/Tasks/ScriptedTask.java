@@ -19,6 +19,8 @@ public class ScriptedTask extends Task {
 
 	@Override
 	public void run() throws Exception {
+
+		Task.updateStatus(_taskName, Status.RUNNING);
 		
 		JSONParser parser = new JSONParser();
 

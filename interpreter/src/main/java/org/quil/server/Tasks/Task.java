@@ -9,6 +9,7 @@ import org.apache.ignite.cache.query.annotations.QuerySqlField;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.internal.util.IgniteExceptionRegistry;
 import org.apache.ignite.resources.LoggerResource;
+import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -16,6 +17,8 @@ import org.json.simple.parser.ParseException;
 import javax.cache.Cache.Entry;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -38,7 +41,16 @@ public abstract class Task implements Serializable {
 	
 	@QuerySqlField
 	protected int _taskStatus = 0;
-	
+
+	@QuerySqlField
+	protected Date _submitTime = new Date(0);
+
+	@QuerySqlField
+	protected Date _startTime = new Date(0);
+
+	@QuerySqlField
+	protected Date _stopTime = new Date(0);
+
 	static class Status {
 		final static int PENDING = 0;
 		final static int RUNNING = 1;
@@ -156,11 +168,21 @@ public abstract class Task implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		_submitTime = new Date();
 	}
 	
 	
 	public void setStatus(int status) {
 		_taskStatus = status;
+
+		if (status == Status.RUNNING) {
+			_startTime = new Date();
+		}
+
+		if (status == Status.FINISHED || status == Status.ERROR) {
+			_stopTime = new Date();
+		}
 	}
 	
 	public String getDescription() {
@@ -188,13 +210,30 @@ public abstract class Task implements Serializable {
 	}
 	
 	public JSONObject toJSONObj()  {
-		
+
+		SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
 		JSONObject obj = new JSONObject();
 		obj.put("name", _taskName);
 		obj.put("status", _taskStatus);
 		obj.put("result", _taskResult);
 		obj.put("tag", _taskTag);
-	
+
+		if (_submitTime.compareTo(new Date(0)) == 0)
+			obj.put("submitTime", " ");
+		else
+			obj.put("submitTime", df.format(_submitTime));
+
+		if (_startTime.compareTo(new Date(0)) == 0)
+			obj.put("startTime", " ");
+		else
+			obj.put("startTime", df.format(_startTime));
+
+		if (_stopTime.compareTo(new Date(0)) == 0)
+			obj.put("stopTime", " ");
+		else
+			obj.put("stopTime", df.format(_stopTime));
+
 		return obj;
 	}
 	

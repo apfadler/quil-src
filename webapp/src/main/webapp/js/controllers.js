@@ -45,6 +45,10 @@ controllers.controller("MainController", ['$scope', '$interval', 'ClusterNodes',
 		
 		for (var i=0; i < $scope.tasks.length; i++)
 		{
+		    if ($scope.tasks[i].status == 0) {
+                $scope.runningTasks.push($scope.tasks[i]);
+                $scope.tasks[i].status_text = "Pending";
+            }
 			if ($scope.tasks[i].status == 1) {
 				$scope.runningTasks.push($scope.tasks[i]);
 				$scope.tasks[i].status_text = "Running";

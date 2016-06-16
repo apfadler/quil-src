@@ -47,7 +47,7 @@ public class TaskRunner {
 	                }
 	                if (evt.name().compareTo("TASK_STARTED") == 0)
 	                {
-	                	Task.updateStatus(evt.taskName(),Task.Status.RUNNING);
+	                	Task.updateStatus(evt.taskName(),Task.Status.PENDING);
 	                }
 	                if (evt.name().compareTo("TASK_FAILED") == 0)
 	                {
