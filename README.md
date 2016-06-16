@@ -37,7 +37,7 @@ Follow the instructions at https://github.com/apfadler/quil-docker
 
 # Running QUIL
 
-**Single node**
+**Single node (standalone mode)**
 
 Starting one ignite server node with QUIL webapp and rest interface running on localhost:8081/frontend
 
@@ -49,10 +49,25 @@ Starting one ignite server node with QUIL webapp and rest interface running on l
 
 4.) Try bin/quil-run-examples.sh to upload example data and price basic example trades (uses curl to upload data and start pricing)
 
-Starting quil-server.sh will only start an ignite client node which will try to connect to an ignite grid and then serve the webapp and rest api.
 
-**Starting a QUIL grid**
+**Quil Grid with one master node and several worker nodes**
 
-Additional worker nodes can be started using bin/quil-worker.sh.  This will start another ignite nodes with all neccessary QUIL libs in the classpath. Grid discovery will probably work only with nodes running on the same machine. There are Docker images available that are configured for running a grid on AWS using S3 based grid discovery.
+Master Node:
+
+1.) cd dist/
+
+2.) bin/quil-server.sh 
+
+This will start a quil master node.  It provides the webapp and rest interface, but does not execute any tasks. Instead, it will schedule all tasks to be executed on one of the available worker nodes.
+
+
+Worker Nodes:
+
+1.) cd dist/
+
+2.) bin/quil-worker.sh 
+
+
+You can start as many worker nodes as you like using bin/quil-worker.sh. Automatic grid discovery using TCP Multicast should work out of the box. If you run into problems please check the Apache Ignite docs and adjust conf/quil-common.xml accordingly.  There are also Docker images available that are configured for running a grid on AWS using S3 based grid discovery.
 
 
