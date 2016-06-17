@@ -34,13 +34,22 @@ function addEachJarInDirWinCygwin(){
 cd $QUIL_HOME
 
 if [ "$(uname)" == "Darwin" ]; then
+
     addEachJarInDir "libs/"  
+	java -cp "$QUIL_CLASSPATH" org.quil.console.ScalaConsole "$@"
+	
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    addEachJarInDir "libs/"
+
+    addEachJarInDir "libs/"	
+	java -cp "$QUIL_CLASSPATH" org.quil.console.ScalaConsole "$@"
+	
 elif [ "$(expr substr $(uname -s) 1 4)" == "MING" ]; then
-    addEachJarInDirWinCygwin "libs/"
+    
+	addEachJarInDirWinCygwin "libs/"
+	stty -icanon min 1 -echo > /dev/null 2>&1
+	java -cp "$QUIL_CLASSPATH" -Djline.terminal=jline.UnixTerminal -Dlog4j.configuration=file:config/java.util.logging.properties org.quil.console.ScalaConsole "$@"
+	stty icanon echo > /dev/null 2>&1
 fi
 
-echo $QUIL_CLASSPATH
-java -cp "$QUIL_CLASSPATH" org.quil.console.ScalaConsole "$@"
+
 
