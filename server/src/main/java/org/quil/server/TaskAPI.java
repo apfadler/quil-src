@@ -11,6 +11,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.ignite.Ignition;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.quil.server.Tasks.TaskRunner;
@@ -90,7 +91,7 @@ public class TaskAPI {
     @Path("tasks/{taskid}")
     @Produces(MediaType.APPLICATION_JSON)
     public String task(@PathParam("taskid") String taskid) {
-        
+
         try {
         	return Task.get(taskid).toJSONString();
         } catch (Exception e) {

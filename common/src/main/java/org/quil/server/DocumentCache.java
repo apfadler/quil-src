@@ -24,28 +24,31 @@ public class DocumentCache extends Cache {
 	
 	static final Logger logger = LoggerFactory.getLogger(DocumentCache.class);
 	
-	static public DocumentCache getOrCreate(String cacheName)
-	{
-		if (caches.containsKey(cacheName) ) {
+	static public DocumentCache getOrCreate(String cacheName) throws Exception {
+
+		if (Cache.exists(cacheName)) {
 			
-			Cache cache = caches.get(cacheName);
+			Cache c = Cache.findCache(cacheName);
 			
-			if (cache.getClass() == DocumentCache.class)
+			if (c.getClass() == DocumentCache.class)
 			{
-				return (DocumentCache) caches.get(cacheName);
+				return  (DocumentCache)c;
 			} 
 			else
 			{
-				return null;
+				throw new Exception("Invalid Cache type.");
 			}
 		}
 		else {
 			DocumentCache cache = new DocumentCache(cacheName);
-			caches.put(cacheName, cache);
-			
 			return cache;
 		}
 		
+	}
+
+	public DocumentCache(IgniteCache<?, ?> cache)
+	{
+		_cacheName = cache.getName();
 	}
 
 	public DocumentCache(String cacheName)
@@ -63,29 +66,16 @@ public class DocumentCache extends Cache {
    
         Ignite ignite = Ignition.ignite();
         ignite.getOrCreateCache(cfg);
-        
-        logger.debug("Cache created");
-	}
-	
-	/*public int size()
-	{
-		Ignite ignite = Ignition.ignite();
-        IgniteCache<String, Document>  cache = ignite.cache(_cacheName);
-        
-        int s;
-        try
-		{
-        	s = cache.localSize(CachePeekMode.PRIMARY);
+
+		try {
+			Cache.register(this);
+		} catch (Exception e) {
+			logger.error("Failed to register Cache");
 		}
-        catch (Exception e)
-        {
-        	System.out.println(e.getMessage());
-        	return 0;
-        }
-        
-        return s;
-	}*/
-	
+		logger.debug("Cache created");
+
+	}
+
 	public void put(String key, Document doc)
 	{
 		CacheConfiguration<String, Document> cfg = new CacheConfiguration<String, Document>();

@@ -18,8 +18,6 @@ public class ObjectIndex {
 	
 	final static Logger logger = LoggerFactory.getLogger(ObjectIndex.class);
 	
-	public static ArrayList<String> usedCaches = new ArrayList<String>();
-	
 	public static void addToIndex(String origKey, String cacheName) {
 		
 		Ignite ignite = Ignition.ignite();
@@ -86,7 +84,7 @@ public class ObjectIndex {
 	}
 	
 	
-	public static void add(String cacheType, String cacheID, String fileID, String filePath) throws IOException {
+	public static void add(String cacheType, String cacheID, String fileID, String filePath) throws Exception {
 		
 		FileSystemRepository repo = new FileSystemRepository();
 		
@@ -95,10 +93,6 @@ public class ObjectIndex {
         	cache.put(fileID, repo.getFile(filePath));
         	
         	addToIndex(fileID,cacheID);
-        	
-        	if (!usedCaches.contains(cacheID)) {
-        		usedCaches.add(cacheID);
-        	}
 		}
 		
 		if (cacheType.compareTo("DocumentCache") == 0) {
@@ -106,12 +100,7 @@ public class ObjectIndex {
         	cache.put(fileID, (Document)((new org.quil.JSON.Parser()).parse(repo.getFile(filePath))));
    
         	addToIndex(fileID,cacheID);
-        	
-        	if (!usedCaches.contains(cacheID)) {
-        		usedCaches.add(cacheID);
-        	}
 		}
 		
 	}
-
 }

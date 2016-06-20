@@ -77,7 +77,7 @@ public class ObjectIndexAPI {
 			JSONArray used = new JSONArray();
 			
 			int id = 0;
-			for ( String e : ObjectIndex.usedCaches)
+			for ( String e : Ignition.ignite().cacheNames())
 			{
 				JSONObject obj = new JSONObject();
 				
@@ -92,24 +92,6 @@ public class ObjectIndexAPI {
         {
         	return error(e.toString());
         }
-    }
-    
-    //TODO remove
-    @POST
-    @Path("{cacheid}/put/{key}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String put(@PathParam("cacheid") String cacheid, @PathParam("key") String key, String data) {
-    	try
-        {
-        	ObjectIndex.addToIndex(key, cacheid);
-        }
-        catch (Exception e)
-        {
-        	return error(e.toString());
-        }
-        
-        return success();
     }
 
 

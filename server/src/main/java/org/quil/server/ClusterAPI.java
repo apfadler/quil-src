@@ -2,6 +2,7 @@ package org.quil.server;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -10,7 +11,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.query.QueryCursor;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cluster.ClusterMetrics;
 import org.apache.ignite.cluster.ClusterNode;
 import org.json.simple.JSONArray;
@@ -70,23 +74,30 @@ public class ClusterAPI {
     	try
         {
     		Ignite ignite = Ignition.ignite();
-			
-			HashMap<String, Cache> cacheCollection = Cache.getAllCaches();
-			
-			JSONArray cacheStates = new JSONArray();
-			
-			int id = 0;
-			for ( Map.Entry<String, Cache> entry : cacheCollection.entrySet() )
-			{
-				JSONObject cacheStatus = new JSONObject();
-				
-				cacheStatus.put("name", entry.getKey());
-				cacheStatus.put("type", entry.getValue().getClass().getName());
-				cacheStatus.put("size", entry.getValue().size());
 
-				cacheStates.add(cacheStatus);
+			JSONArray cacheStates = new JSONArray();
+
+			try
+			{
+				HashMap<String,Cache> caches = Cache.allCaches();
+				for (Map.Entry<String, Cache> c : caches.entrySet()) {
+					JSONObject cacheStatus = new JSONObject();
+
+					cacheStatus.put("name", c.getValue().getCacheName());
+					cacheStatus.put("type", c.getValue().getClass().toString());
+					cacheStatus.put("size", c.getValue().size());
+
+					cacheStates.add(cacheStatus);
+
+				}
+
+			}
+			catch(Exception e) {
+				logger.error("Failed to get list of active caches ");
+				error("Failed to get list of active caches.");
 			}
 			
+
 			return cacheStates.toJSONString();
         }
         catch (Exception e)

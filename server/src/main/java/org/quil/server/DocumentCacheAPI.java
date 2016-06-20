@@ -26,7 +26,7 @@ public class DocumentCacheAPI {
     @Path("{cacheid}/createFromCSV")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createFromCSV(@PathParam("cacheid") String cacheid, String data) {
+    public String createFromCSV(@PathParam("cacheid") String cacheid, String data) throws Exception {
     	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
     	cache.removeAll();
     	
@@ -78,7 +78,7 @@ public class DocumentCacheAPI {
     @Path("{cacheid}/createFromJSONObject")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createFromJSONObject(@PathParam("cacheid") String cacheid, String data) {
+    public String createFromJSONObject(@PathParam("cacheid") String cacheid, String data) throws Exception {
     	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
     	cache.removeAll();
     	
@@ -147,7 +147,7 @@ public class DocumentCacheAPI {
     @Path("{cacheid}/createFromJSONArray")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createFromJSONArray(@PathParam("cacheid") String cacheid, String data) {
+    public String createFromJSONArray(@PathParam("cacheid") String cacheid, String data) throws Exception {
     	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
     	cache.removeAll();
     	

@@ -35,7 +35,7 @@ public class SimpleCacheAPI {
     @Path("{cacheid}/createFromCSV")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createFromCSV(@PathParam("cacheid") String cacheid, String data) {
+    public String createFromCSV(@PathParam("cacheid") String cacheid, String data) throws Exception {
     	SimpleCache cache = SimpleCache.getOrCreate(cacheid);
     	cache.removeAll();
     	

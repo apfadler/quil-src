@@ -22,30 +22,31 @@ import org.slf4j.LoggerFactory;
 public class SimpleCache extends Cache {
 	
 	static final Logger logger = LoggerFactory.getLogger(SimpleCache.class);
-	
-	
-	static public SimpleCache getOrCreate(String cacheName)
-	{
-		if (caches.containsKey(cacheName)) {
-			
-			Cache cache = caches.get(cacheName);
-			
-			if (cache.getClass() == SimpleCache.class)
+
+	static public SimpleCache getOrCreate(String cacheName) throws Exception {
+		if (Cache.exists(cacheName)) {
+
+			Cache c = Cache.findCache(cacheName);
+
+			if (c.getClass() == SimpleCache.class)
 			{
-				return (SimpleCache) caches.get(cacheName);
-			} 
+				return  (SimpleCache)c;
+			}
 			else
 			{
-				return null;
+				throw new Exception("Invalid Cache type.");
 			}
 		}
 		else {
 			SimpleCache cache = new SimpleCache(cacheName);
-			caches.put(cacheName, cache);
-			
 			return cache;
 		}
 		
+	}
+
+	public SimpleCache(IgniteCache<?, ?> cache)
+	{
+		_cacheName = cache.getName();
 	}
 
 	public SimpleCache(String cacheName)
@@ -63,29 +64,16 @@ public class SimpleCache extends Cache {
    
         Ignite ignite = Ignition.ignite();
         ignite.getOrCreateCache(cfg);
-        
-        logger.debug("Cache created");
-	}
-	
-	/*public int size()
-	{
-		Ignite ignite = Ignition.ignite();
-        IgniteCache<?, ?>  cache = ignite.cache(_cacheName);
-        
-        int s;
-        try
-		{
-        	s = cache.size(CachePeekMode.PRIMARY);	
+
+		try {
+			Cache.register(this);
+		} catch (Exception e) {
+			logger.error("Failed to register cache");
 		}
-        catch (Exception e)
-        {
-        	System.out.println(e.getMessage());
-        	return 0;
-        }
-        
-        return s;
-	}*/
-	
+
+		logger.debug("Cache created");
+	}
+
 	public void put(String key, String value)
 	{
 		CacheConfiguration<String, String> cfg = new CacheConfiguration<String, String>();
