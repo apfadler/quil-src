@@ -142,5 +142,12 @@
                 </bean>
             </list>
         </property>
+		
+		<property name="binaryConfiguration">
+			<bean class="org.apache.ignite.configuration.BinaryConfiguration">
+				<property name="compactFooter" value="false"/>
+			</bean>
+		</property>
+
     </bean>
 </beans>
