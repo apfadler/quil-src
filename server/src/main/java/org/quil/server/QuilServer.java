@@ -18,6 +18,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.quil.repository.CachedFileSystemRepository;
+import org.quil.server.Tasks.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ignite.Ignition;
@@ -34,8 +35,7 @@ public class QuilServer {
 	static final Logger logger = LoggerFactory.getLogger(QuilServer.class);
 	
     public static void main(String[] args) throws Exception {
-    	
-    	
+
     	boolean workerNode = false;
         try {
         	String env = System.getenv("QUIL_WORKER");
@@ -61,33 +61,16 @@ public class QuilServer {
         }
 
 
-
-
-
 		QueuedThreadPool tp = new QueuedThreadPool();
 		tp.setMaxThreads(1000);tp.setMinThreads(10);
 		Server jettyServer = new Server(tp);
-		//ServerConnector c = new ServerConnector(jettyServer);
-		org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector c= new org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector(jettyServer);
+		org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector c =
+				new org.eclipse.jetty.server.nio.NetworkTrafficSelectChannelConnector(jettyServer);
 		c.setPort(port);
 		jettyServer.addConnector(c);
         jettyServer.setHandler(contexts);
  
         try {
-        	
-        	// TODO Make configurable
-        	/*TcpDiscoverySpi spi = new TcpDiscoverySpi();
-        	TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-        	ipFinder.setAddresses(Arrays.asList("127.0.0.1", "127.0.0.1:47500..47509"));
-        	spi.setIpFinder(ipFinder);    	
-        	IgniteConfiguration cfg = new IgniteConfiguration();
-        	cfg.setDiscoverySpi(spi);
-
-        	FifoQueueCollisionSpi spiCollision = new FifoQueueCollisionSpi();	
-        	spiCollision.setParallelJobsNumber(4);
-        	cfg.setCollisionSpi(spiCollision);
-
-        	*/
         	if (!workerNode) {
         		boolean clientmode = true;
 				boolean standalone = false;
@@ -96,7 +79,7 @@ public class QuilServer {
         			if (env.compareToIgnoreCase("yes") == 0 || env.compareToIgnoreCase("true") == 0 )
         			{
         				clientmode = false;
-        				standalone=true;
+        				standalone = true;
 					}
 
         		} catch (Exception e) {
@@ -104,14 +87,17 @@ public class QuilServer {
 
         		logger.info("Client mode = " + clientmode);
 
-				if (clientmode)
+				if (clientmode) {
 					Ignition.start("config/quil-client.xml");
+				}
 				else
 				{
-					if (standalone)
+					if (standalone) {
 						Ignition.start("config/quil-worker.xml");
-					else
+					}
+					else {
 						Ignition.start("config/quil-server.xml");
+					}
 				}
         		//cfg.setClientMode(clientmode);
         	}
@@ -120,14 +106,10 @@ public class QuilServer {
 
 
 			}
-        	
-        	//cfg.setPeerClassLoadingEnabled(true);
-        	//cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);*/
-
-
-        	
 
         	if (!workerNode)  {
+
+				Task.cache();
 
 				runQuilStartupScript();
 
@@ -139,6 +121,7 @@ public class QuilServer {
 			
         		jettyServer.join();
         	}
+
         } finally {
             jettyServer.destroy();
         }

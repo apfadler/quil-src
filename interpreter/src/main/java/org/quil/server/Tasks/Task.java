@@ -61,24 +61,7 @@ public abstract class Task implements Serializable {
 	
 	public static Task fromString(String taskDescription) {
 		String taskName = UUID.randomUUID().toString();
-		
-		Ignite ignite = Ignition.ignite();
-		CacheConfiguration<String, Task> cfg = new CacheConfiguration<String, Task>();
-		
-        cfg.setCacheMode(CacheMode.REPLICATED);
-        cfg.setName("Tasks");
-
-		try {
-			cfg.setIndexedTypes(String.class, Task.class,
-					String.class, PriceTrade.class,
-					String.class, PricePortfolio.class,
-					String.class, ScriptedTask.class,
-					String.class, Class.forName("org.quil.server.Tasks.RunQLObjectsApplication"));
-		}catch (Exception e) {
-			logger.info("Failed to set indexed types");
-		}
-        
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
+        IgniteCache<String,Task> tasks = cache();
         
         try {
 			JSONObject taskObj = (JSONObject) (new JSONParser()).parse(taskDescription);
@@ -100,37 +83,31 @@ public abstract class Task implements Serializable {
 	}
 	
 	public static Task get(String taskName) {
-		
-		Ignite ignite = Ignition.ignite();
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
+        IgniteCache<String,Task> tasks = cache();
         
 		return tasks.get(taskName);
 	}
 	
 	public static void updateStatus(String taskName, int status) {
-		
-		Ignite ignite = Ignition.ignite();
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
+        IgniteCache<String,Task> tasks = cache();
         Task task = tasks.get(taskName); 
         task.setStatus(status);
         tasks.put(taskName, task);
 	}
 	
 	public static void updateResult(String taskName, String result) {
-		Ignite ignite = Ignition.ignite();
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache("Tasks");
+        IgniteCache<String,Task> tasks = cache();
         Task task = tasks.get(taskName); 
         task.setResult(result);
-        
         tasks.put(taskName, task);
 	}
-	
-	public static HashMap<String, Task> allTasks() {
+
+	public static IgniteCache<String, Task> cache() {
 		Ignite ignite = Ignition.ignite();
 		CacheConfiguration<String, Task> cfg = new CacheConfiguration<String, Task>();
-		
-        cfg.setCacheMode(CacheMode.REPLICATED);
-        cfg.setName("Tasks");
+
+		cfg.setCacheMode(CacheMode.REPLICATED);
+		cfg.setName("Tasks");
 		try {
 			cfg.setIndexedTypes(String.class, Task.class,
 					String.class, PriceTrade.class,
@@ -140,7 +117,13 @@ public abstract class Task implements Serializable {
 		}catch (Exception e) {
 			logger.info("Failed to set indexed types");
 		}
-        IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);     
+		IgniteCache<String,Task> tasks = ignite.getOrCreateCache(cfg);
+
+		return tasks;
+	}
+
+	public static HashMap<String, Task> allTasks() {
+        IgniteCache<String,Task> tasks = cache();
         
         HashMap<String, Task> all = new HashMap<String, Task>();
         
