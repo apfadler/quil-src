@@ -26,6 +26,6 @@
     <import resource="quil-common.xml"/>
 
     <bean parent="ignite.cfg">
-        <!-- <property name="clientMode" value="true"/> -->
+         <property name="clientMode" value="true"/>
     </bean>
 </beans>
