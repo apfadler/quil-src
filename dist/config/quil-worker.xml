@@ -29,11 +29,13 @@
 
     <bean parent="ignite.cfg">
 
-        <property name="collisionSpi">
+        <!--
+		Uncomment to limit max parallelity per node
+		<property name="collisionSpi">
             <bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
-                <property name="parallelJobsNumber" value="3"/>
+                <property name="parallelJobsNumber" value="16"/>
             </bean>
-        </property>
+        </property> -->
 
         <property name="userAttributes">
             <map>
