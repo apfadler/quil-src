@@ -16,6 +16,35 @@ public class PriceTrade extends Task {
 		super(taskName, taskXML);
 		
 	}
+
+	private String tryToFindTradeID(JSONObject taskDescription) {
+		String Id = "";
+		try {
+			JSONObject tradeData = null;
+
+			try {
+				tradeData = (JSONObject) taskDescription.get("TradeData");
+			} catch(Exception e) {
+			}
+
+			if (tradeData == null) {
+				try {
+					tradeData = (JSONObject) new JSONParser().parse((String) taskDescription.get("TradeData"));
+				} catch (Exception e) {
+				}
+			}
+
+			Id = (String)tradeData.get("Id");
+			if (Id == null)
+				Id = (String)tradeData.get("ID");
+			if (Id == null)
+				Id = "";
+
+		}catch (Exception e) {
+		}
+
+		return Id;
+	}
 	
 	@Override
 	public void run() throws Exception {
@@ -25,6 +54,8 @@ public class PriceTrade extends Task {
 		JSONParser parser = new JSONParser();
 
 		final JSONObject taskDescription = (JSONObject) parser.parse(_taskDescription);
+
+		String Id = tryToFindTradeID(taskDescription);
 
 		Interpreter interpreter = (Interpreter) Class.forName((String) taskDescription.get("Interpreter")).newInstance();
 		interpreter.setData(taskDescription);
@@ -45,7 +76,7 @@ public class PriceTrade extends Task {
 			}catch(Exception e) {
 			}
 			
-			ResultsCache.add(_taskName,  _taskTag, 0,
+			ResultsCache.add(_taskName,  _taskTag, 0, Id,
 							  key, strVal,doubleVal,intVal);
 		}
 

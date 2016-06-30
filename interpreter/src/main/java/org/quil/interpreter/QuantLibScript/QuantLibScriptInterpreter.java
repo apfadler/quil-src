@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
 import org.quil.interpreter.QuantLibTemplates.Market;
@@ -109,21 +110,14 @@ private boolean _error = false;
 		long stop = System.currentTimeMillis();
 		long compileTime = stop-start;
 	    logger.debug("Script compilation took " + compileTime + "ms");
-		
-		JSONObject tradeData = (JSONObject) _data.get("TradeData");
+
+		JSONObject tradeData = (JSONObject) new JSONParser().parse((String)_data.get("TradeData"));
 		if (tradeData != null) {
 			
 			logger.info("Injecting trade parameters.");
 			
-			if (tradeData.containsKey("Repository") && tradeData.containsKey("Key"))
-			{
-				//TODO this is horrible...
-				Document tradeDataFromRepo = DocumentCache.getOrCreate((String)tradeData.get("Repository")).get((String)(tradeData.get("Key")));
-				compiledScript.setTradeData(tradeDataFromRepo);
-			}
-			else {
-				compiledScript.setTradeData(  (new org.quil.JSON.Parser()).parse(tradeData.toString())  );
-			}
+
+			compiledScript.setTradeData(  (new org.quil.JSON.Parser()).parse(tradeData.toString())  );
 		}
 		
 		JSONObject marketData = (JSONObject) _data.get("MarketData");

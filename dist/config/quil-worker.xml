@@ -31,7 +31,7 @@
 
         <property name="collisionSpi">
             <bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
-                <property name="parallelJobsNumber" value="16"/>
+                <property name="parallelJobsNumber" value="3"/>
             </bean>
         </property>
 

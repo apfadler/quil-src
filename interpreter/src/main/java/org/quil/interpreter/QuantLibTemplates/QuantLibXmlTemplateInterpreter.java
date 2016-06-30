@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.quil.JSON.Document;
 import org.quil.interpreter.Interpreter;
 import org.quil.server.DocumentCache;
@@ -49,17 +50,21 @@ public class QuantLibXmlTemplateInterpreter implements Interpreter {
 		if (templateContent == null) {
 			throw new Exception("No such template");
 		}
-		
-		File temp = File.createTempFile("tempfile", ".tmp"); 
+
+		File temp = File.createTempFile("tempfile", ".tmp");
 		BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
 		bw.write(templateContent);
 		bw.close();
-		
+
 		FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(temp.getAbsolutePath());
-		
-		JSONObject tradeData = (JSONObject) _data.get("TradeData");
+
+		JSONObject tradeData = null;
+		try {
+			tradeData = (JSONObject) new JSONParser().parse((String) _data.get("TradeData"));
+		} catch (Exception e) {
+			tradeData = (JSONObject) _data.get("TradeData");
+		}
 		if (tradeData != null) {
-			
 			if (tradeData.containsKey("Repository") && tradeData.containsKey("Key"))
 			{
 				//TODO this is horrible...
@@ -111,8 +116,8 @@ public class QuantLibXmlTemplateInterpreter implements Interpreter {
 			if (executor.getError())
 				_error = true;
 		}
-		
-		
+
+		temp.delete();
 	}
 
 	@Override

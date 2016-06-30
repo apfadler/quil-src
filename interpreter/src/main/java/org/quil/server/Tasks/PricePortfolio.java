@@ -39,7 +39,6 @@ public class PricePortfolio extends Task {
 		String predicate = (String) taskDescription.get("Where");
 
 		List<Document> tradeList = DocumentCache.getOrCreate(trades).filter(predicate);
-
 		
 		ArrayList<IgniteCallable<JSONObject>> jobs = new ArrayList<IgniteCallable<JSONObject>> ();
 
@@ -50,15 +49,15 @@ public class PricePortfolio extends Task {
 				public JSONObject call() throws Exception {
 					Interpreter interpreter = (Interpreter) Class.forName((String) taskDescription.get("Interpreter")).newInstance();
 
-					
-					//TODO copy everything
 					JSONObject subTask = new JSONObject();
 					subTask.put("Template", (String)taskDescription.get("Template"));
 					subTask.put("PricerScript", (String)taskDescription.get("PricerScript"));
 					subTask.put("Repository", (String)taskDescription.get("Repository"));
 					subTask.put("MarketData", taskDescription.get("MarketData"));
-					JSONObject tradeData = (JSONObject) (new JSONParser()).parse(trade.toString());
-					subTask.put("TradeData", tradeData);
+					subTask.put("TradeData", trade.toString());
+					subTask.put("Resources", (String)taskDescription.get("Resources"));
+					subTask.put("ValuationDate", (String)taskDescription.get("ValuationDate"));
+					subTask.put("OutputTemplate", (String)taskDescription.get("OutputTemplate"));
 
 					interpreter.setData(subTask);
 					interpreter.interpret();
@@ -66,8 +65,41 @@ public class PricePortfolio extends Task {
 					if (interpreter.getError()) {
 						Task.updateStatus(_taskName, Task.Status.ERROR);
 					}
-					
-					return interpreter.getResult();
+
+					String Id = null;
+					try {
+						Id = (String)trade.apply("Id");
+					}catch (Exception e) {
+					}
+
+					if (Id == null) {
+						try {
+							Id = (String)trade.apply("ID");
+						}catch (Exception e) {
+						}
+					}
+
+					if (Id == null) {
+						try {
+							Id = (String)trade.apply("id");
+						}catch (Exception e) {
+						}
+					}
+
+					if (Id == null) Id = "";
+
+					JSONObject res = interpreter.getResult();
+
+					if (Id == "") {
+						Id = (String)res.get("id");
+						if (Id == null)
+							Id = (String)res.get("ID");
+						if (Id == null)
+							Id = (String)res.get("Id");
+					}
+
+					res.put("Id", Id);
+					return res;
 				}
 			});
 		}
@@ -79,6 +111,8 @@ public class PricePortfolio extends Task {
         Vector<String> resultsStr = new Vector<String>();
         for (JSONObject r : results) {
         	resultsStr.add(r.toJSONString());
+
+			String Id = (String)r.get("Id");
         	
         	for (Object rr : r.keySet()) {
     			
@@ -90,11 +124,12 @@ public class PricePortfolio extends Task {
     				strVal = (String)r.get(key);
     				doubleVal = Double.parseDouble((String)r.get(key));
     				intVal = Integer.parseInt((String)r.get(key));
+
     			}catch(Exception e) {
     				
     			}
     			
-    			ResultsCache.add(_taskName,  _taskTag, idx,
+    			ResultsCache.add(_taskName,  _taskTag, idx, Id,
     							  key, strVal,doubleVal,intVal);
     		}
         	

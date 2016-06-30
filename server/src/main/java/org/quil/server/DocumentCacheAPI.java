@@ -1,5 +1,6 @@
 package org.quil.server;
  
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -161,14 +162,39 @@ public class DocumentCacheAPI {
     public String addJSONArray(@PathParam("cacheid") String cacheid, String data) {
     	try
         {
+            int next = 0;
+            char[] d = data.toCharArray();
+            if (d[next] != '[') throw new Exception("Invalid Character: " + d[next]);
+            int level = 0;
+            ArrayList<Integer> starts = new ArrayList<Integer>();
+            ArrayList<Integer> ends = new ArrayList<Integer>();
+            while (next < data.length()-1) {
+
+                if (d[next] == '{') {
+                    if (level == 0) starts.add(next);
+                    level++;
+                }
+                if (d[next] == '}') {
+                    level--;
+                    if (level == 0) ends.add(next+1);
+                }
+
+                next++;
+            }
+
+            if (starts.size() != ends.size()) throw new Exception("Parser Error");
+
+
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
         	
-        	JSONParser parser = new JSONParser();
-        	JSONArray jsonArray = (JSONArray) parser.parse(data);
+        	//JSONParser parser = new JSONParser();
+        	//JSONArray jsonArray = (JSONArray) parser.parse(data);
         	
-        	for (Object obj : jsonArray ) {
-        		cache.put(cacheid+"_" + UUID.randomUUID(),
-        				(Document)((new org.quil.JSON.Parser()).parse(((JSONObject)obj).toJSONString())));
+        	for (int i=0; i < starts.size(); i++ ) {
+
+                System.out.println(data.substring(starts.get(i),ends.get(i)));
+                cache.put(cacheid+"_" + UUID.randomUUID(),
+        				(Document)((new org.quil.JSON.Parser()).parse(data.substring(starts.get(i),ends.get(i)))));
         	}
         		
         }

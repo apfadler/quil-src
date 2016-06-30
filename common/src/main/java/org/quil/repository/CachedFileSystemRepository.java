@@ -256,7 +256,7 @@ public class CachedFileSystemRepository {
 				out.write(data);
 
 				System.out.println();
-				System.out.println(">>> Wrote data to file: " + path);
+				System.out.println(">>> Wrote data to file: " + path + "(" + data.length + " bytes)");
 			}
 		}
 

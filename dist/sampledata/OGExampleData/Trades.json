@@ -1,0 +1,327 @@
+[{
+ "@bean": "com.opengamma.strata.product.swap.SwapTrade",
+ "info": {
+  "id": "example~1",
+  "counterparty": "example~A",
+  "settlementDate": "2014-09-12",
+  "attributes": {
+   "description": "Fixed vs Libor 3m"
+  }
+ },
+ "product": {
+  "legs": [{
+   "@bean": "RateCalculationSwapLeg",
+   "payReceive": "Pay",
+   "accrualSchedule": {
+    "startDate": "2014-09-12",
+    "endDate": "2021-09-12",
+    "frequency": "P6M",
+    "businessDayAdjustment": {
+     "convention": "ModifiedFollowing",
+     "calendar": "GBLO+USNY"
+    },
+    "stubConvention": "ShortInitial"
+   },
+   "paymentSchedule": {
+    "paymentFrequency": "P6M",
+    "paymentRelativeTo": "PeriodEnd",
+    "paymentDateOffset": {
+     "days": 0,
+     "calendar": "NoHolidays",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "compoundingMethod": "None"
+   },
+   "notionalSchedule": {
+    "currency": "USD",
+    "amount": {
+     "initialValue": 1.0E8,
+     "steps": []
+    },
+    "initialExchange": false,
+    "intermediateExchange": false,
+    "finalExchange": false
+   },
+   "calculation": {
+    "@bean": "FixedRateCalculation",
+    "dayCount": "30U/360",
+    "rate": {
+     "initialValue": 0.015,
+     "steps": []
+    }
+   }
+  }, {
+   "@bean": "RateCalculationSwapLeg",
+   "payReceive": "Receive",
+   "accrualSchedule": {
+    "startDate": "2014-09-12",
+    "endDate": "2021-09-12",
+    "frequency": "P3M",
+    "businessDayAdjustment": {
+     "convention": "ModifiedFollowing",
+     "calendar": "GBLO"
+    },
+    "stubConvention": "ShortInitial"
+   },
+   "paymentSchedule": {
+    "paymentFrequency": "P3M",
+    "paymentRelativeTo": "PeriodEnd",
+    "paymentDateOffset": {
+     "days": 0,
+     "calendar": "NoHolidays",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "compoundingMethod": "None"
+   },
+   "notionalSchedule": {
+    "currency": "USD",
+    "amount": {
+     "initialValue": 1.0E8,
+     "steps": []
+    },
+    "initialExchange": false,
+    "intermediateExchange": false,
+    "finalExchange": false
+   },
+   "calculation": {
+    "@bean": "IborRateCalculation",
+    "dayCount": "Act/360",
+    "index": "USD-LIBOR-3M",
+    "fixingRelativeTo": "PeriodStart",
+    "fixingDateOffset": {
+     "days": -2,
+     "calendar": "GBLO",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "negativeRateMethod": "AllowNegative"
+   }
+  }]
+ }
+},
+{
+ "@bean": "com.opengamma.strata.product.swap.SwapTrade",
+ "info": {
+  "id": "example~2",
+  "counterparty": "example~B",
+  "settlementDate": "2014-09-12",
+  "attributes": {
+   "description": "Fixed vs Libor 3m"
+  }
+ },
+ "product": {
+  "legs": [{
+   "@bean": "RateCalculationSwapLeg",
+   "payReceive": "Pay",
+   "accrualSchedule": {
+    "startDate": "2014-09-12",
+    "endDate": "2021-09-12",
+    "frequency": "P6M",
+    "businessDayAdjustment": {
+     "convention": "ModifiedFollowing",
+     "calendar": "GBLO+USNY"
+    },
+    "stubConvention": "ShortInitial"
+   },
+   "paymentSchedule": {
+    "paymentFrequency": "P6M",
+    "paymentRelativeTo": "PeriodEnd",
+    "paymentDateOffset": {
+     "days": 0,
+     "calendar": "NoHolidays",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "compoundingMethod": "None"
+   },
+   "notionalSchedule": {
+    "currency": "USD",
+    "amount": {
+     "initialValue": 1.0E8,
+     "steps": []
+    },
+    "initialExchange": false,
+    "intermediateExchange": false,
+    "finalExchange": false
+   },
+   "calculation": {
+    "@bean": "FixedRateCalculation",
+    "dayCount": "30U/360",
+    "rate": {
+     "initialValue": 0.015,
+     "steps": []
+    }
+   }
+  }, {
+   "@bean": "RateCalculationSwapLeg",
+   "payReceive": "Receive",
+   "accrualSchedule": {
+    "startDate": "2014-09-12",
+    "endDate": "2021-09-12",
+    "frequency": "P3M",
+    "businessDayAdjustment": {
+     "convention": "ModifiedFollowing",
+     "calendar": "GBLO"
+    },
+    "stubConvention": "ShortInitial"
+   },
+   "paymentSchedule": {
+    "paymentFrequency": "P3M",
+    "paymentRelativeTo": "PeriodEnd",
+    "paymentDateOffset": {
+     "days": 0,
+     "calendar": "NoHolidays",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "compoundingMethod": "None"
+   },
+   "notionalSchedule": {
+    "currency": "USD",
+    "amount": {
+     "initialValue": 1.0E8,
+     "steps": []
+    },
+    "initialExchange": false,
+    "intermediateExchange": false,
+    "finalExchange": false
+   },
+   "calculation": {
+    "@bean": "IborRateCalculation",
+    "dayCount": "Act/360",
+    "index": "USD-LIBOR-3M",
+    "fixingRelativeTo": "PeriodStart",
+    "fixingDateOffset": {
+     "days": -2,
+     "calendar": "GBLO",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "negativeRateMethod": "AllowNegative"
+   }
+  }]
+ }
+},
+{
+ "@bean": "com.opengamma.strata.product.swap.SwapTrade",
+ "info": {
+  "id": "example~3",
+  "counterparty": "example~C",
+  "settlementDate": "2014-09-12",
+  "attributes": {
+   "description": "Fixed vs Libor 3m"
+  }
+ },
+ "product": {
+  "legs": [{
+   "@bean": "RateCalculationSwapLeg",
+   "payReceive": "Pay",
+   "accrualSchedule": {
+    "startDate": "2014-09-12",
+    "endDate": "2021-09-12",
+    "frequency": "P6M",
+    "businessDayAdjustment": {
+     "convention": "ModifiedFollowing",
+     "calendar": "GBLO+USNY"
+    },
+    "stubConvention": "ShortInitial"
+   },
+   "paymentSchedule": {
+    "paymentFrequency": "P6M",
+    "paymentRelativeTo": "PeriodEnd",
+    "paymentDateOffset": {
+     "days": 0,
+     "calendar": "NoHolidays",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "compoundingMethod": "None"
+   },
+   "notionalSchedule": {
+    "currency": "USD",
+    "amount": {
+     "initialValue": 1.0E8,
+     "steps": []
+    },
+    "initialExchange": false,
+    "intermediateExchange": false,
+    "finalExchange": false
+   },
+   "calculation": {
+    "@bean": "FixedRateCalculation",
+    "dayCount": "30U/360",
+    "rate": {
+     "initialValue": 0.015,
+     "steps": []
+    }
+   }
+  }, {
+   "@bean": "RateCalculationSwapLeg",
+   "payReceive": "Receive",
+   "accrualSchedule": {
+    "startDate": "2014-09-12",
+    "endDate": "2021-09-12",
+    "frequency": "P3M",
+    "businessDayAdjustment": {
+     "convention": "ModifiedFollowing",
+     "calendar": "GBLO"
+    },
+    "stubConvention": "ShortInitial"
+   },
+   "paymentSchedule": {
+    "paymentFrequency": "P3M",
+    "paymentRelativeTo": "PeriodEnd",
+    "paymentDateOffset": {
+     "days": 0,
+     "calendar": "NoHolidays",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "compoundingMethod": "None"
+   },
+   "notionalSchedule": {
+    "currency": "USD",
+    "amount": {
+     "initialValue": 1.0E8,
+     "steps": []
+    },
+    "initialExchange": false,
+    "intermediateExchange": false,
+    "finalExchange": false
+   },
+   "calculation": {
+    "@bean": "IborRateCalculation",
+    "dayCount": "Act/360",
+    "index": "USD-LIBOR-3M",
+    "fixingRelativeTo": "PeriodStart",
+    "fixingDateOffset": {
+     "days": -2,
+     "calendar": "GBLO",
+     "adjustment": {
+      "convention": "NoAdjust",
+      "calendar": "NoHolidays"
+     }
+    },
+    "negativeRateMethod": "AllowNegative"
+   }
+  }]
+ }
+}]

@@ -86,8 +86,8 @@
                     <property name="dataCacheName" value="igfs-data"/>
 
                     <!-- Must correlate with cache affinity mapper. -->
-                    <property name="blockSize" value="#{128 * 1024}"/>
-                    <property name="perNodeBatchSize" value="512"/>
+                    <property name="blockSize" value="#{1024 * 1024}"/>
+                    <property name="perNodeBatchSize" value="2048"/>
                     <property name="perNodeParallelBatchCount" value="16"/>
 
                     <!-- Set number of prefetch blocks. -->
@@ -129,7 +129,7 @@
                     <property name="affinityMapper">
                         <bean class="org.apache.ignite.igfs.IgfsGroupDataBlocksKeyMapper">
                             <!-- Haw many blocks in row will be stored on the same node. -->
-                            <constructor-arg value="512"/>
+                            <constructor-arg value="2048"/>
                         </bean>
                     </property>
                 </bean>

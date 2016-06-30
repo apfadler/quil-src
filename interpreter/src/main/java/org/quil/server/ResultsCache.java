@@ -14,11 +14,11 @@ public class ResultsCache extends Cache {
 	@LoggerResource
     private static IgniteLogger logger;
 	
-	public static void add(String _taskName, String _taskTag, int _index,
+	public static void add(String _taskName, String _taskTag, int _index, String _id,
 			String _key, String _stringValue, double _doubleValue,
 			int _intValue) {
 		
-		ResultItem r = new ResultItem( _taskName,  _taskTag,  _index, _key,  _stringValue,  _doubleValue,_intValue);
+		ResultItem r = new ResultItem( _taskName,  _taskTag,  _index, _id, _key,  _stringValue,  _doubleValue,_intValue);
 		
 		Ignite ignite = Ignition.ignite();
 		CacheConfiguration<String, ResultItem> cfg = new CacheConfiguration<String, ResultItem>();

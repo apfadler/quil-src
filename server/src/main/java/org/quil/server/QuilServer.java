@@ -72,39 +72,27 @@ public class QuilServer {
  
         try {
         	if (!workerNode) {
-        		boolean clientmode = true;
 				boolean standalone = false;
         		try {
         			String env = System.getenv("QUIL_SERVER_STANDALONE");
         			if (env.compareToIgnoreCase("yes") == 0 || env.compareToIgnoreCase("true") == 0 )
         			{
-        				clientmode = false;
         				standalone = true;
 					}
 
         		} catch (Exception e) {
         		}
 
-        		logger.info("Client mode = " + clientmode);
 
-				if (clientmode) {
-					Ignition.start("config/quil-client.xml");
+				if (standalone) {
+					Ignition.start("config/quil-worker.xml");
 				}
-				else
-				{
-					if (standalone) {
-						Ignition.start("config/quil-worker.xml");
-					}
-					else {
-						Ignition.start("config/quil-server.xml");
-					}
+				else {
+					Ignition.start("config/quil-server.xml");
 				}
-        		//cfg.setClientMode(clientmode);
         	}
 			else {
 				Ignition.start("config/quil-worker.xml");
-
-
 			}
 
         	if (!workerNode)  {

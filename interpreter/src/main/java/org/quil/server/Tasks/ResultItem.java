@@ -6,13 +6,14 @@ import org.apache.ignite.cache.query.annotations.QuerySqlField;
 public class ResultItem implements Serializable{
 		
 		
-		public ResultItem(String _taskName, String _taskTag, int _index,
+		public ResultItem(String _taskName, String _taskTag, int _index, String _id,
 				String _field, String _stringValue, double _doubleValue,
 				int _intValue) {
 			
 			this._taskName = _taskName;
 			this._taskTag = _taskTag;
 			this._index = _index;
+			this._id = _id;
 			this._field = _field;
 			this._stringValue = _stringValue;
 			this._doubleValue = _doubleValue;
@@ -28,7 +29,10 @@ public class ResultItem implements Serializable{
 		
 		@QuerySqlField
 		protected String _taskTag = "";
-		
+
+		@QuerySqlField(index=true)
+		protected String _id = "";
+
 		@QuerySqlField
 		protected int _index = 0;
 		

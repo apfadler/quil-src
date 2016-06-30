@@ -16,6 +16,27 @@
         <module>webapp</module>
         <module>interpreter</module>
         <module>qlobjects</module>
+        <module>models</module>
     </modules>
+
+    <repositories>
+        <repository>
+            <id>scala-tools.org</id>
+            <name>Scala-tools Maven2 Repository</name>
+            <url>http://scala-tools.org/repo-releases</url>
+        </repository>
+        <repository>
+            <id>quil-dev</id>
+            <name>Quil Maven Repository</name>
+            <url>https://github.com/apfadler/quil-maven/raw/master/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>scala-tools.org</id>
+            <name>Scala-tools Maven2 Repository</name>
+            <url>http://scala-tools.org/repo-releases</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

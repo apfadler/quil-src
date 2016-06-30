@@ -62,7 +62,7 @@ public class DocumentCache extends Cache {
         cfg.setCacheMode(CacheMode.REPLICATED);
         cfg.setName(_cacheName);
 
-        cfg.setIndexedTypes(String.class, org.quil.JSON.ComplexElement.class);
+        cfg.setIndexedTypes(String.class, org.quil.JSON.Document.class);
    
         Ignite ignite = Ignition.ignite();
         ignite.getOrCreateCache(cfg);

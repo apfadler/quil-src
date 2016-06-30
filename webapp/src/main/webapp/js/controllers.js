@@ -228,7 +228,10 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 	   var url="";
 		if ($scope.cacheType == "documentcache")
 			url = "/api/documentcache/"+ $scope.cacheId + "/addFromCSV";
-		
+
+		if ($scope.cacheType == "documentcachearray")
+        			url = "/api/documentcache/"+ $scope.cacheId + "/addJSONArray";
+
 		if ($scope.cacheType == "documentcachesingle")
 			url = "/api/documentcache/"+ $scope.cacheId + "/put/"+ $scope.cacheKey;
 		
@@ -257,7 +260,7 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 			});
    }
    
-   $scope.queryString = "SELECT * FROM \"Results\".ResultItem  ";
+   $scope.queryString = "SELECT * FROM \"Results\".ResultItem LIMIT 0,10 ";
    $scope.lastQuery = [["Column"],["No Query submitted yet."]];
    $scope.showQueryResult = false;
    
@@ -596,7 +599,10 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 			var url="";
 			if (data.cacheType == "documentcache")
 				url = "/api/documentcache/"+ data.cacheId + "/addFromCSV";
-			
+
+			if (data.cacheType == "documentcachearray")
+            				url = "/api/documentcache/"+ data.cacheId + "/addJSONArray";
+
 			if (data.cacheType == "documentcachesingle")
 				url = "/api/documentcache/"+ data.cacheId + "/put/"+ data.cacheKey;
 			

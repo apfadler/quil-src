@@ -66,7 +66,8 @@ public abstract class Task implements Serializable {
         try {
 			JSONObject taskObj = (JSONObject) (new JSONParser()).parse(taskDescription);
 			
-			Constructor c =  Class.forName("org.quil.server.Tasks." + (String) taskObj.get("Task")).getConstructor(String.class, String.class);
+			Constructor c =  Class.forName("org.quil.server.Tasks." +
+					(String) taskObj.get("Task")).getConstructor(String.class, String.class);
 			Task task = (Task) c.newInstance(taskName, taskDescription);
 			tasks.put(taskName,task);
 			

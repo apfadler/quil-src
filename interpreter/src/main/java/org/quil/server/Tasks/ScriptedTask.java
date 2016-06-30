@@ -45,7 +45,7 @@ public class ScriptedTask extends Task {
 			}catch(Exception e) {
 			}
 			
-			ResultsCache.add(_taskName,  _taskTag, 0,
+			ResultsCache.add(_taskName,  _taskTag, 0, "",
 							  key, strVal,doubleVal,intVal);
 		}
 

@@ -1,0 +1,9 @@
+{
+	"Interpreter" : "org.quil.interpreter.strata.StrataInterpreter",
+	"Task"	: "PricePortfolio",
+	"OutputTemplate" : "/OGExampleData/reports/swap-report-template.ini",
+	"Resources" : "/OGExampleData",
+	"Trades" : "ExampleTrades",
+	"Where" : " true ",
+	"ValuationDate" : "2014-01-22"
+}
