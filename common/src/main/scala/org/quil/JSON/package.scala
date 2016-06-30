@@ -14,6 +14,14 @@ package org.quil.JSON {
 		implicit def documentToMap(d: Document): Map[String, Any] = d.fields
 	}
 
+	object Document {
+		def apply(fields:Map[String,Any]):Document  = {
+			val doc = new Document("{}")
+			doc.apply(fields)
+			doc
+		}
+	}
+
 	class Document(private var jsonStr:String) {
 
 		implicit val formats = org.json4s.DefaultFormats

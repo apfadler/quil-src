@@ -54,7 +54,7 @@ class RunQLObjectsApplication(val taskName:String, val taskDescription:String) e
         case e: Exception => {
         }
       }
-      ResultsCache.add(_taskName, _taskTag, 0, key, strVal, doubleVal, intVal)
+      ResultsCache.add(_taskName, _taskTag, 0, "",key, strVal, doubleVal, intVal)
     }
   }
 }

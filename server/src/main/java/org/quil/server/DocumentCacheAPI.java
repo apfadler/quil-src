@@ -186,13 +186,8 @@ public class DocumentCacheAPI {
 
 
         	DocumentCache cache = DocumentCache.getOrCreate(cacheid);
-        	
-        	//JSONParser parser = new JSONParser();
-        	//JSONArray jsonArray = (JSONArray) parser.parse(data);
-        	
-        	for (int i=0; i < starts.size(); i++ ) {
 
-                System.out.println(data.substring(starts.get(i),ends.get(i)));
+        	for (int i=0; i < starts.size(); i++ ) {
                 cache.put(cacheid+"_" + UUID.randomUUID(),
         				(Document)((new org.quil.JSON.Parser()).parse(data.substring(starts.get(i),ends.get(i)))));
         	}

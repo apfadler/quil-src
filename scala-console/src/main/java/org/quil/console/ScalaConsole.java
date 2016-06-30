@@ -17,7 +17,6 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
-import org.quil.server.QuilServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,14 @@ public class ScalaConsole
 
 		CommandLineParser parser = new BasicParser();
 
-		String scriptInit = "import org.quil.server._;import org.quil.interpreter._; "+
-		"import org.quil.server.Tasks._; import org.quil.server.Tasks._; import org.quil.interpreter.QuantLibTemplates; import scala.collection.JavaConversions._;";
+		String scriptInit = "import org.quil.server._;import org.quil.interpreter._; import org.quil.JSON._;  import org.apache.ignite.scalar.scalar._;"+
+		"import org.quil.server.Tasks._; import org.quil.server.Tasks._; import org.quil.interpreter.QuantLibTemplates._; import scala.collection.JavaConversions._;"
+				+"def query(sql:String) = {\n" +
+				"    import org.apache.ignite.cache.query.SqlQuery\n" +
+				"    import org.apache.ignite.cache.query.SqlFieldsQuery\n" +
+				"    val cache = ignite$.cache(\"Tasks\")\n" +
+				"    cache.query(new SqlFieldsQuery(sql)) map { x => x }\n" +
+				"}";
 
 		String loadScript = "";
 		CommandLine cmd = null;
@@ -97,14 +102,14 @@ public class ScalaConsole
         } catch (Exception e) {
         }
         
-        logger.info("Client mode = " + clientmode);
+        //logger.info("Client mode = " + clientmode);
         
-    	cfg.setClientMode(clientmode);
-    	cfg.setPeerClassLoadingEnabled(true);
-    	cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
+    	//cfg.setClientMode(clientmode);
+    	//cfg.setPeerClassLoadingEnabled(true);
+    	//cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
     	
     	// Connect to ignite and run console 
-    	try (Ignite ignite =  Ignition.start(cfg)) {
+    	try (Ignite ignite =  Ignition.start("config/quil-client.xml")) {
 
 			logger.info("Connected to Ignite Cluster.");
 			
