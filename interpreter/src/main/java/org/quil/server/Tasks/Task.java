@@ -59,7 +59,7 @@ public abstract class Task implements Serializable {
 	}
 	
 	
-	public static Task fromString(String taskDescription) {
+	public static Task fromString(String taskDescription, Boolean managed) {
 		String taskName = UUID.randomUUID().toString();
         IgniteCache<String,Task> tasks = cache();
         
@@ -69,7 +69,9 @@ public abstract class Task implements Serializable {
 			Constructor c =  Class.forName("org.quil.server.Tasks." +
 					(String) taskObj.get("Task")).getConstructor(String.class, String.class);
 			Task task = (Task) c.newInstance(taskName, taskDescription);
-			tasks.put(taskName,task);
+
+			if (managed)
+				tasks.put(taskName,task);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -77,6 +79,14 @@ public abstract class Task implements Serializable {
 		}
         
 		return tasks.get(taskName);
+	}
+
+	public static Task fromString(String taskDescription) {
+		return fromString(taskDescription, true);
+	}
+
+	public static Task createUnmanaged(String taskDescription) {
+		return fromString(taskDescription, false);
 	}
 	
 	static Task fromJSONObject(JSONObject taskDescription) {

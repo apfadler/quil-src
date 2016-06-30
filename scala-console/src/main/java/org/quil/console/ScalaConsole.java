@@ -45,9 +45,15 @@ public class ScalaConsole
 
 		CommandLineParser parser = new BasicParser();
 
-		String scriptInit = "import org.quil.server._;import org.quil.interpreter._; import org.quil.JSON._;  import org.apache.ignite.scalar.scalar._;"+
-		"import org.quil.server.Tasks._; import org.quil.server.Tasks._; import org.quil.interpreter.QuantLibTemplates._; import scala.collection.JavaConversions._;"
-				+"def query(sql:String) = {\n" +
+		String scriptInit = "import org.quil.server._;"+
+				"import org.quil.interpreter._;" +
+				"import org.quil.JSON._;"+"" +
+				"import org.apache.ignite.scalar.scalar._;"+
+				"import org.quil.server.Tasks._;"+
+				"import org.quil.server.Tasks._;"+
+				"import org.quil.interpreter.QuantLibTemplates._;"+"" +
+				"import scala.collection.JavaConversions._;"+
+				"def query(sql:String) = {\n" +
 				"    import org.apache.ignite.cache.query.SqlQuery\n" +
 				"    import org.apache.ignite.cache.query.SqlFieldsQuery\n" +
 				"    val cache = ignite$.cache(\"Tasks\")\n" +
@@ -81,16 +87,7 @@ public class ScalaConsole
 			logger.error("Failed to parse comand line properties", e);
 			help();
 		}
-   
-    	
-    	// Initialize Ignite
-    	TcpDiscoverySpi spi = new TcpDiscoverySpi(); 
-    	TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-    	ipFinder.setAddresses(Arrays.asList("127.0.0.1", "127.0.0.1:47500..47509"));
-    	spi.setIpFinder(ipFinder);    	
-    	IgniteConfiguration cfg = new IgniteConfiguration();
-    	cfg.setDiscoverySpi(spi);
-    	
+
     	boolean clientmode = true;
         try {
         	String env = System.getenv("QUIL_SERVER_STANDALONE");
@@ -101,13 +98,7 @@ public class ScalaConsole
         	
         } catch (Exception e) {
         }
-        
-        //logger.info("Client mode = " + clientmode);
-        
-    	//cfg.setClientMode(clientmode);
-    	//cfg.setPeerClassLoadingEnabled(true);
-    	//cfg.setIncludeEventTypes(EVTS_TASK_EXECUTION);
-    	
+
     	// Connect to ignite and run console 
     	try (Ignite ignite =  Ignition.start("config/quil-client.xml")) {
 
@@ -115,13 +106,8 @@ public class ScalaConsole
 			
 			scala.tools.nsc.Settings settings = new scala.tools.nsc.Settings(null) ;
 		    settings.usejavacp().tryToSetFromPropertyValue("true");
-		    QuilILoop loop = new QuilILoop(scriptInit, loadScript); 	
-		    
-		    //loop.interpreter().setContextClassLoader();
-		    
-		    //loop.pasteCommand(scriptInit);
+		    QuilILoop loop = new QuilILoop(scriptInit, loadScript);
 		    loop.process(settings);
-	    
     	}
 	   
     }

@@ -222,6 +222,44 @@ controllers.controller("DataController", ['$scope', '$http', '$uibModal', functi
 	   
    }
 
+   $scope.downloadQuery = function(queryStr) {
+
+   	   $http({method : "POST",
+   		      url : "/api/objects/query",
+   		      data : queryStr,
+   		      headers : {'Content-Type' : 'text/plain'}
+   	   }).
+   		success(function(data, status, headers, config) {
+   			console.log('post success');
+
+   			if (Object.prototype.toString.call( data ) === '[object Array]') {
+
+   			 var csv = ""
+
+   			 for (var i=0; i < data.length;i++) {
+   				 for (var j=0; j < data[i].length;j++) {
+   					 csv += data[i][j] + ";";
+   				 }
+   				 csv+="\r\n";
+   			 }
+
+   			  var file = new File([csv], "query_result.csv", {type: "text/plain;charset=utf-8"});
+              saveAs(file);
+
+   			} else {
+   			    $scope.alerts.splice(0, 1);
+                   						$scope.alerts.push({msg: 'Query Error:' + data.Msg, type : 'danger'});
+   			}
+
+   		}).
+   		error(function(data, status, headers, config) {
+   			console.log("\r\n" + "ERROR::HTTP POST returned status " + status + "\r\n");
+   			$scope.alerts.splice(0, 1);
+   						$scope.alerts.push({msg: 'Error executing query.', type : 'danger'});
+   		});
+
+      }
+
    $scope.uploadFile = "";
 
    $scope.upload = function() {
