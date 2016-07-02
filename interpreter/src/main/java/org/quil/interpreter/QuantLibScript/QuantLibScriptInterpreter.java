@@ -111,11 +111,15 @@ private boolean _error = false;
 		long compileTime = stop-start;
 	    logger.debug("Script compilation took " + compileTime + "ms");
 
-		JSONObject tradeData = (JSONObject) new JSONParser().parse((String)_data.get("TradeData"));
+		JSONObject tradeData = null;
+		try {
+			tradeData = (JSONObject) new JSONParser().parse((String) _data.get("TradeData"));
+		} catch (Exception e) {
+			tradeData = (JSONObject) _data.get("TradeData");
+		}
 		if (tradeData != null) {
 			
 			logger.info("Injecting trade parameters.");
-			
 
 			compiledScript.setTradeData(  (new org.quil.JSON.Parser()).parse(tradeData.toString())  );
 		}

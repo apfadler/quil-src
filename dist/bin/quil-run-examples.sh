@@ -19,11 +19,15 @@ $QUIL_HOME/bin/quil-client.sh simplecache Templates put Trade.Swap $QUIL_HOME/sa
 
 $QUIL_HOME/bin/quil-client.sh simplecache ExampleMarket createFromCSV $QUIL_HOME/sampledata/FlatFiles/Data.Market.csv
 
-$QUIL_HOME/bin/quil-client.sh documentcache ExampleTrades createFromCSV $QUIL_HOME/sampledata/FlatFiles/Data.Trades.Large.csv
+$QUIL_HOME/bin/quil-client.sh documentcache ExampleTrades createFromCSV $QUIL_HOME/sampledata/FlatFiles/Data.Trades.csv
 
 $QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLXMLTemplates/Task.PriceSingleTrade.json
 
 $QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLXMLTemplates/Task.PriceTrades.json
 
 $QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLObjects/Task.QuantlibObjects.json
+
+$QUIL_HOME/bin/quil-client.sh simplecache Pricers put Pricer.Swap $QUIL_HOME/sampledata/QLScriptPricer/Script.QuantlibScript.ExamplePricer.scala
+
+$QUIL_HOME/bin/quil-client.sh compute task submit $QUIL_HOME/sampledata/QLScriptPricer/Task.PriceTrades.QLScript.json
 
