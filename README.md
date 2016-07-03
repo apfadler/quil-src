@@ -1,7 +1,11 @@
 # quil-src
-This is the source code for QUIL: a proof of concept for a distributed pricing architecture based on Apache Ignite and QuantLib.
+This is the source code for QUIL: a proof of concept for a distributed pricing architecture based on Apache Ignite and QuantLib. Alongside QuantLib it also includes OpenGamma's Strata Library.
 
 For more info see http://quantlib.org/slides/qlum15/pfadler.pdf.
+
+License: Apache 2.0
+
+(c) 2016 Andreas Pfadler 
 
 # Quickstart using Docker
 
@@ -12,15 +16,13 @@ Follow the instructions at https://github.com/apfadler/quil-docker
 **Prerequisites:**
 
 
-
-1.) Java 7 SDK
+1.) Java 8 SDK
 
 2.) Maven
 
 3.) npm
 
 4.) A QuanlibJNI.so/.dll compiled for Quantlib 1.7
-
 
 
 **Building QUIL:**
@@ -67,7 +69,11 @@ Worker Nodes:
 
 2.) bin/quil-worker.sh 
 
+**Quil Scala Console**
 
-You can start as many worker nodes as you like using bin/quil-worker.sh. Automatic grid discovery using TCP Multicast should work out of the box. If you run into problems please check the Apache Ignite docs and adjust conf/quil-common.xml accordingly.  There are also Docker images available that are configured for running a grid on AWS using S3 based grid discovery.
+
+1.) bin/quil-console.sh
+
+2.) Wait until the scala prompt appears. Now you are able to run scala scripts using quil/quantlib/ignite APIs. Useful for experimentation and testing...
 
 
