@@ -952,13 +952,16 @@ controllers.controller('inspectTaskCtrl',['$scope', '$uibModalInstance','$http',
 
 	  $scope.resultData = {};
 	  $scope.task = obj;
+	  $scope.readingData = true;
 
 	  $http.get("/api/compute/tasks/"+obj.name+"/result")
 		.success(function(data, status, headers, config) {
 			$scope.resultData = data;
+			$scope.readingData = false;
 		})
 		.error(function(data, status, headers, config) {
-
+            $scope.resultData = {Error: "Failed to retrieve task result data."}
+            $scope.readingData = false;
 			console.log("Failed to get data!");
 		});
 

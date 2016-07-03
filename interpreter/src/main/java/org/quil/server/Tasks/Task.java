@@ -101,16 +101,26 @@ public abstract class Task implements Serializable {
 	
 	public static void updateStatus(String taskName, int status) {
         IgniteCache<String,Task> tasks = cache();
-        Task task = tasks.get(taskName); 
-        task.setStatus(status);
-        tasks.put(taskName, task);
+
+		try {
+			Task task = tasks.get(taskName);
+			task.setStatus(status);
+			tasks.put(taskName, task);
+		} catch(Exception e) {
+			logger.error("Failed to update status:" + e.toString());
+		}
 	}
 	
 	public static void updateResult(String taskName, String result) {
         IgniteCache<String,Task> tasks = cache();
-        Task task = tasks.get(taskName); 
-        task.setResult(result);
-        tasks.put(taskName, task);
+
+		try {
+			Task task = tasks.get(taskName);
+			task.setResult(result);
+			tasks.put(taskName, task);
+		} catch(Exception e) {
+			logger.error("Failed to update status:" + e.toString());
+		}
 	}
 
 	public static IgniteCache<String, Task> cache() {
