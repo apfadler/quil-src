@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Ref;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -68,17 +69,59 @@ public class StrataInterpreter implements Interpreter {
     protected JSONObject _data = new JSONObject();
     protected JSONObject _result = new JSONObject();
 
-    private class OGCacheItem {
-        long _lastModified;
-        MarketData _md;
-        CalculationFunctions _fun;
-        CalculationRules _rules;
-        ReferenceData _refData;
-    }
-
     static HashMap<String, OGCacheItem> OGCache = new HashMap<String, OGCacheItem>();
 
     public StrataInterpreter() {
+    }
+
+    synchronized public static OGCacheItem getMD(String resourceRoot, LocalDate valuationDate) {
+
+        Boolean useFromCache =  OGCache.containsKey(resourceRoot);
+
+        Ignite ignite = Ignition.ignite();
+        IgniteFileSystem fs = ignite.fileSystem("quil-igfs");
+
+
+        if (useFromCache) {
+
+            logger.info("Cache lookup.");
+
+            OGCacheItem cache = OGCache.get(resourceRoot);
+
+            if (fs.info(new IgfsPath(resourceRoot)).modificationTime() <= cache._lastModified) {
+                logger.info("Using cache.");
+                useFromCache = true;
+            }
+
+        }
+
+        if (!useFromCache)
+        {
+
+            QuilMarketDataBuilder builder = QuilMarketDataBuilder.ofIgfsPath(new IgfsPath(resourceRoot));
+            MarketData ogMarketData = builder.buildSnapshot(valuationDate);
+            CalculationFunctions functions = StandardComponents.calculationFunctions();
+            CalculationRules rules = CalculationRules.of(functions, builder.ratesLookup(valuationDate));
+            ReferenceData refData = ReferenceData.standard();
+
+            OGCacheItem cache = new OGCacheItem();
+
+            cache._lastModified = fs.info(new IgfsPath(resourceRoot)).modificationTime();
+            cache._md = ogMarketData;
+            cache._fun = functions;
+            cache._rules = rules;
+            cache._refData = refData;
+
+            OGCache.put(resourceRoot, cache);
+
+            return cache;
+
+        } else {
+
+            OGCacheItem cache = OGCache.get(resourceRoot);
+
+            return cache;
+        }
     }
 
     @Override
@@ -131,53 +174,11 @@ public class StrataInterpreter implements Interpreter {
             CalculationRules rules;
             ReferenceData refData;
 
-            Boolean useFromCache = false;
-
-            Ignite ignite = Ignition.ignite();
-            IgniteFileSystem fs = ignite.fileSystem("quil-igfs");
-
-
-            if (OGCache.containsKey(resourceRoot)) {
-
-                logger.info("Cache lookup.");
-
-                OGCacheItem cache = OGCache.get(resourceRoot);
-
-                if (fs.info(new IgfsPath(resourceRoot)).modificationTime() <= cache._lastModified) {
-                    logger.info("Using cache.");
-                    useFromCache = true;
-                }
-
-            }
-
-            if (!useFromCache)
-            {
-
-                QuilMarketDataBuilder builder = QuilMarketDataBuilder.ofIgfsPath(new IgfsPath(resourceRoot));
-                ogMarketData = builder.buildSnapshot(valuationDate);
-                functions = StandardComponents.calculationFunctions();
-                rules = CalculationRules.of(functions, builder.ratesLookup(valuationDate));
-                refData = ReferenceData.standard();
-
-                OGCacheItem cache = new OGCacheItem();
-
-                cache._lastModified = fs.info(new IgfsPath(resourceRoot)).modificationTime();
-                cache._md = ogMarketData;
-                cache._fun = functions;
-                cache._rules = rules;
-                cache._refData = refData;
-
-                OGCache.put(resourceRoot, cache);
-
-            } else {
-
-                OGCacheItem cache = OGCache.get(resourceRoot);
-                ogMarketData = cache._md;
-                functions = cache._fun;
-                rules = cache._rules;
-                refData = cache._refData;
-
-            }
+            OGCacheItem cache = getMD(resourceRoot, valuationDate);
+            ogMarketData = cache._md;
+            functions = cache._fun;
+            rules = cache._rules;
+            refData = cache._refData;
 
             logger.info("OG Init took " + (System.currentTimeMillis()-start) + " ms");
 

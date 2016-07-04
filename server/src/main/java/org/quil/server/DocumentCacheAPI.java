@@ -175,8 +175,8 @@ public class DocumentCacheAPI {
                     level++;
                 }
                 if (d[next] == '}') {
+                    if (level == 1) { ends.add(next+1); };
                     level--;
-                    if (level == 0) ends.add(next+1);
                 }
 
                 next++;
