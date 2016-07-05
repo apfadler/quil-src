@@ -76,7 +76,7 @@ Worker Nodes:
 
 2.) Wait until the scala prompt appears. Now you are able to run scala scripts using quil/quantlib/ignite APIs. Useful for experimentation and testing...
 
-** Notes **
+**Notes**
 
 Environment Variables: 
 
