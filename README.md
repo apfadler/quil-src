@@ -76,4 +76,20 @@ Worker Nodes:
 
 2.) Wait until the scala prompt appears. Now you are able to run scala scripts using quil/quantlib/ignite APIs. Useful for experimentation and testing...
 
+** Notes **
 
+Environment Variables: 
+
+1.) QUIL_HOME: Should contain the path to the root of the QUIL distribution (i.e. what's in the dist/ directory)
+
+2.) QUIL_WORKER, QUIL_SERVER_STANDALONE: These variables control whether we want to start a master or worker node.
+
+3.) QUIL_SERVER, QUIL_PORT: Only relevant for the quil-client.sh shell script 
+
+4.) IGNITE_H2_DEBUG_CONSOLE: If set to "true" (without quotes) this will open up a H2 web interface in your browser. Useful for looking at the various caches and running SQL queries.
+
+5.) QUIL_WARPATH: Path to .war file for QUIL web app or path to unpacked .war file (for development purposes)
+
+Windows:
+
+There are some .bat files in bin/ that may be used start QUIL master and worker nodes. There is, however, no equivalent for the quil-client.sh script.
