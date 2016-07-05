@@ -34,7 +34,7 @@ private boolean _error = false;
 	
 	static HashMap<Integer,Class> compiledClasses = new HashMap<Integer,Class>();
 	
-	public QuantLibScript compile(scala.tools.nsc.Interpreter intp, String script, String ID, int hashCode)
+	static public QuantLibScript compile(scala.tools.nsc.Interpreter intp, String script, String ID, int hashCode)
 	{
 
 		try {
@@ -61,6 +61,33 @@ private boolean _error = false;
 		
 		return null;
 	}
+
+	static synchronized QuantLibScript getCompiledScript(String script) throws Exception {
+		QuantLibScript compiledScript;
+
+		int hashCode = script.hashCode();
+		if (compiledClasses.containsKey(hashCode)) {
+
+			logger.info("Class is cached.");
+
+			compiledScript = (QuantLibScript) compiledClasses.get(hashCode).newInstance();
+
+		} else {
+
+			logger.info("Class does not exist in cache. Compiling...");
+
+			scala.tools.nsc.Settings settings = new scala.tools.nsc.Settings(null) ;
+			settings.usejavacp().tryToSetFromPropertyValue("true");
+			scala.tools.nsc.Interpreter interp = new scala.tools.nsc.Interpreter( settings);
+			interp.setContextClassLoader();
+
+			String ID = UUID.randomUUID().toString().replace("-", "_");
+			script = script.replaceAll("class Script extends", "class Script_"+ID+" extends");
+			compiledScript = compile(interp, script,ID, hashCode);
+		}
+
+		return compiledScript;
+	}
 	
 	@Override
 	public void interpret() throws Exception {
@@ -84,28 +111,7 @@ private boolean _error = false;
 		
 		long start = System.currentTimeMillis();
 		
-		QuantLibScript compiledScript;
-		
-		int hashCode = script.hashCode();
-		if (compiledClasses.containsKey(hashCode)) {
-			
-			logger.info("Class is cached.");
-			
-			compiledScript = (QuantLibScript) compiledClasses.get(hashCode).newInstance();
-			
-		} else {
-		
-			logger.info("Class does not exist in cache. Compiling...");
-			
-			scala.tools.nsc.Settings settings = new scala.tools.nsc.Settings(null) ;
-		    settings.usejavacp().tryToSetFromPropertyValue("true");
-		    scala.tools.nsc.Interpreter interp = new scala.tools.nsc.Interpreter( settings); 	
-		    interp.setContextClassLoader();
-		    
-		    String ID = UUID.randomUUID().toString().replace("-", "_");
-		    script = script.replaceAll("class Script extends", "class Script_"+ID+" extends");
-		    compiledScript = compile(interp, script,ID, hashCode);
-		}
+		QuantLibScript compiledScript = getCompiledScript(script);
 	    
 		long stop = System.currentTimeMillis();
 		long compileTime = stop-start;
