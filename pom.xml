@@ -13,6 +13,7 @@
         <module>server</module>
         <module>scala-macros</module>
         <module>scala-console</module>
+	    <module>python-console</module>
         <module>webapp</module>
         <module>interpreter</module>
         <module>qlobjects</module>

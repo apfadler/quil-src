@@ -65,6 +65,30 @@ public class TaskAPI {
         
         return success();
     }
+
+    @POST
+    @Path("task/submitPythonScript")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String submitPythonScript(String script) {
+        try
+        {
+            JSONObject scriptTask = new JSONObject();
+
+            scriptTask.put("Interpreter", "org.quil.interpreter.PythonScripts.PythonScriptInterpreter");
+            scriptTask.put("Script", script);
+            scriptTask.put("Task", "ScriptedTask");
+
+            Task task = Task.fromString(scriptTask.toJSONString());
+            TaskRunner.runTask(task);
+        }
+        catch (Exception e)
+        {
+            return error(e.toString());
+        }
+
+        return success();
+    }
     
     
     @GET

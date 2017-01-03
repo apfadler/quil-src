@@ -388,6 +388,8 @@ controllers.controller("RepositoryController", ['$scope', '$http' , '$uibModal',
 							$scope.ace.getSession().setMode("ace/mode/xml");
 						else if ($scope.currentFile.indexOf("json") != -1)
 							$scope.ace.getSession().setMode("ace/mode/json");
+						else if ($scope.currentFile.indexOf("py") != -1)
+                        	$scope.ace.getSession().setMode("ace/mode/python");
 						else
 							$scope.ace.getSession().setMode("ace/mode/plain_text");
 			
@@ -732,7 +734,7 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', '$u
 		
 		console.log(taskDescription);
 		
-		if (type != "Script") {
+		if (type != "Script" && type != "PythonScript") {
 			//add a tag
 			var taskObj = JSON.parse(taskDescription);
 			taskObj["Tag"] = $scope.taskTag;
@@ -764,6 +766,9 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', '$u
 						var type="";
 						if ($scope.taskID.indexOf("scala") != -1)
 							type="Script";
+
+						if ($scope.taskID.indexOf("py") != -1)
+                        	type="PythonScript";
 						
 						if ( data.hasOwnProperty("fileData")) {
 						
@@ -787,7 +792,9 @@ controllers.controller("TaskActionController", ['$scope', '$state', '$http', '$u
 				    var findTasks = function(node) {
 
 				        for (var i=0; i < node.children.length; i++) {
-                        	if (node.children[i].id.indexOf("Task.") != -1 || node.children[i].id.indexOf(".scala") != -1)
+                        	if (node.children[i].id.indexOf("Task.") != -1
+                        	    || node.children[i].id.indexOf(".scala") != -1
+                        	    || node.children[i].id.indexOf(".py") != -1)
                                     $scope.definedTasks.push(node.children[i]);
 
                             if (node.children[i].icon.indexOf("folder")!=-1)
