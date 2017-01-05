@@ -92,7 +92,7 @@
               <goal>bower</goal>
             </goals>
             <configuration>
-              <arguments>--allow-root install</arguments>
+              <arguments>--allow-root install --force</arguments>
             </configuration>
           </execution>
 
